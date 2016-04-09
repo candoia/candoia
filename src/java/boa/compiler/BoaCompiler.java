@@ -108,8 +108,10 @@ public class BoaCompiler {
 		final BufferedOutputStream o = new BufferedOutputStream(new FileOutputStream(outputFile));
 
 		if (cl.hasOption("output")) {
-			DefaultProperties.GH_GIT_PATH = cl.getOptionValue("output").split(",")[0] + DefaultProperties.CLONE_DIR_NAME;
-			DefaultProperties.GH_JSON_PATH = cl.getOptionValue("output").split(",")[0] + DefaultProperties.JSON_DIR_NAME;
+			DefaultProperties.GH_GIT_PATH = cl.getOptionValue("output").split(",")[0]
+					+ DefaultProperties.CLONE_DIR_NAME;
+			DefaultProperties.GH_JSON_PATH = cl.getOptionValue("output").split(",")[0]
+					+ DefaultProperties.JSON_DIR_NAME;
 			DefaultProperties.GH_JSON_CACHE_PATH = cl.getOptionValue("output").split(",")[0];
 			DefaultProperties.GH_TICKETS_PATH = DefaultProperties.GH_JSON_PATH;
 			// Evaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH);
@@ -209,7 +211,6 @@ public class BoaCompiler {
 				final BoaLexer lexer = new BoaLexer(new ANTLRFileStream(f.getAbsolutePath()));
 				lexer.removeErrorListeners();
 				lexer.addErrorListener(new LexerErrorListener());
-
 				final CommonTokenStream tokens = new CommonTokenStream(lexer);
 				final BoaParser parser = new BoaParser(tokens);
 				parser.removeErrorListeners();
@@ -237,24 +238,14 @@ public class BoaCompiler {
 						LOG.info(f.getName() + ": task complexity: "
 								+ (!simpleVisitor.isComplex() ? "simple" : "complex"));
 						isSimple &= !simpleVisitor.isComplex();
-
 						new LocalAggregationTransformer().start(p);
-
-						// if a job has no visitor, let it have its own method
-						// also let jobs have own methods if visitor merging is
-						// disabled
 						if (!simpleVisitor.isComplex() || cl.hasOption("nv") || inputFiles.size() == 1) {
 							new VisitorOptimizingTransformer().start(p);
-
 							final CodeGeneratingVisitor cg = new CodeGeneratingVisitor(jobName);
 							cg.start(p);
 							jobs.add(cg.getCode());
-
 							jobnames.add(jobName);
-						}
-						// if a job has visitors, fuse them all together into a
-						// single program
-						else {
+						} else {
 							p.getProgram().jobName = jobName;
 							visitorPrograms.add(p.getProgram());
 						}

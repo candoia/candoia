@@ -9,6 +9,7 @@ import com.google.inject.Injector;
 
 import boa.types.Issues.Issue.IssueKind;
 import boa.types.Issues.Issue.State;
+import boa.types.Issues.IssueRepository.IssueRepositoryKind;
 import boa.datagen.DefaultProperties;
 import boa.datagen.bugForge.BugForge;
 import boa.types.Issues.IssueRepository;
@@ -65,6 +66,7 @@ public class GithubIssues implements BugForge {
 		}
 		final IssueRepository.Builder issueRepoBuilder = IssueRepository.newBuilder();
 		issueRepoBuilder.setUrl(url);
+		issueRepoBuilder.setKind(IssueRepositoryKind.GITISSUE);
 		String projName = project.getName().substring(project.getName().lastIndexOf('/') + 1);
 		String issuepath = DefaultProperties.GH_TICKETS_PATH + "/" + projName + "/issues";
 		if (new File(issuepath).isDirectory()) {

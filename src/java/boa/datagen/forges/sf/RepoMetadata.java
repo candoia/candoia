@@ -13,6 +13,7 @@ import boa.datagen.util.FileIO;
 import boa.types.Code.CodeRepository;
 import boa.types.Code.CodeRepository.RepositoryKind;
 import boa.types.Issues.IssueRepository;
+import boa.types.Issues.IssueRepository.IssueRepositoryKind;
 import boa.types.Shared.Person;
 import boa.types.Toplevel.Project;
 import boa.types.Toplevel.Project.ForgeKind;
@@ -608,6 +609,12 @@ public class RepoMetadata {
 			cr.setUrl(gitRepository);
 			cr.setKind(RepositoryKind.GIT);
 			project.addCodeRepositories(cr.build());
+		}
+		if (issueRepository != null) {
+			IssueRepository.Builder ir = IssueRepository.newBuilder();
+			ir.setUrl(issueRepository);
+			ir.setKind(IssueRepositoryKind.SVNTICKETS);
+			project.addIssueRepositories(ir.build());
 		}
 		Project prj = project.build();
 		return prj;
