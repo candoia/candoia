@@ -36,7 +36,6 @@ import boa.types.Code.CodeRepository;
 import boa.types.Code.Revision;
 import boa.types.Diff.ChangedFile;
 import boa.types.Issues.IssueRepository;
-import boa.types.Issues.IssuesRoot;
 import boa.types.Shared.ChangeKind;
 import boa.types.Shared.Person;
 import boa.types.Toplevel.Project;
@@ -67,7 +66,6 @@ public class BoaAstIntrinsics {
 
 	private static final ASTRoot emptyAst = ASTRoot.newBuilder().build();
 	private static final CommentsRoot emptyComments = CommentsRoot.newBuilder().build();
-	private static final IssuesRoot emptyIssues = IssuesRoot.newBuilder().build();
 
 	/**
 	 * Given a ChangedFile, return the AST for that file at that revision.
@@ -164,38 +162,6 @@ public class BoaAstIntrinsics {
 
 		System.err.println("error with comments: " + rowName);
 		return emptyComments;
-	}
-
-	/**
-	 * Given an IssueRepository, return the issues.
-	 * 
-	 * @param f the IssueRepository to get issues for
-	 * @return the issues list, or an empty list on any sort of error
-	 */
-	@FunctionSpec(name = "getissues", returnType = "IssuesRoot", formalParameters = { "IssueRepository" })
-	public static IssuesRoot getissues(final IssueRepository f) {
-		if (issuesMap == null)
-			openIssuesMap();
-
-		try {
-			final BytesWritable value = new BytesWritable();
-			if (issuesMap.get(new Text(f.getKey()), value) != null) {
-				final CodedInputStream _stream = CodedInputStream.newInstance(value.getBytes(), 0, value.getLength());
-				final IssuesRoot root = IssuesRoot.parseFrom(_stream);
-				return root;
-			}
-		} catch (final InvalidProtocolBufferException e) {
-			e.printStackTrace();
-		} catch (final IOException e) {
-			e.printStackTrace();
-		} catch (final RuntimeException e) {
-			e.printStackTrace();
-		} catch (final Error e) {
-			e.printStackTrace();
-		}
-
-		System.err.println("error with issues: " + f.getKey());
-		return emptyIssues;
 	}
 
 	@SuppressWarnings("rawtypes")

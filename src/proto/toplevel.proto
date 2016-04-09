@@ -37,4 +37,5 @@ message Project {
 		QUALITAS = 4;
 	}
 	required ForgeKind kind = 21;
+	repeated uint64 watchers = 22;
 }

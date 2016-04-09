@@ -395,6 +395,20 @@ public final class Toplevel {
      * <code>required .boa.types.Project.ForgeKind kind = 21;</code>
      */
     boa.types.Toplevel.Project.ForgeKind getKind();
+
+    // repeated uint64 watchers = 22;
+    /**
+     * <code>repeated uint64 watchers = 22;</code>
+     */
+    java.util.List<java.lang.Long> getWatchersList();
+    /**
+     * <code>repeated uint64 watchers = 22;</code>
+     */
+    int getWatchersCount();
+    /**
+     * <code>repeated uint64 watchers = 22;</code>
+     */
+    long getWatchers(int index);
   }
   /**
    * Protobuf type {@code boa.types.Project}
@@ -597,6 +611,27 @@ public final class Toplevel {
               }
               break;
             }
+            case 176: {
+              if (!((mutable_bitField0_ & 0x00200000) == 0x00200000)) {
+                watchers_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField0_ |= 0x00200000;
+              }
+              watchers_.add(input.readUInt64());
+              break;
+            }
+            case 178: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00200000) == 0x00200000) && input.getBytesUntilLimit() > 0) {
+                watchers_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField0_ |= 0x00200000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                watchers_.add(input.readUInt64());
+              }
+              input.popLimit(limit);
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -643,6 +678,9 @@ public final class Toplevel {
         }
         if (((mutable_bitField0_ & 0x00080000) == 0x00080000)) {
           issueRepositories_ = java.util.Collections.unmodifiableList(issueRepositories_);
+        }
+        if (((mutable_bitField0_ & 0x00200000) == 0x00200000)) {
+          watchers_ = java.util.Collections.unmodifiableList(watchers_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -1472,6 +1510,29 @@ public final class Toplevel {
       return kind_;
     }
 
+    // repeated uint64 watchers = 22;
+    public static final int WATCHERS_FIELD_NUMBER = 22;
+    private java.util.List<java.lang.Long> watchers_;
+    /**
+     * <code>repeated uint64 watchers = 22;</code>
+     */
+    public java.util.List<java.lang.Long>
+        getWatchersList() {
+      return watchers_;
+    }
+    /**
+     * <code>repeated uint64 watchers = 22;</code>
+     */
+    public int getWatchersCount() {
+      return watchers_.size();
+    }
+    /**
+     * <code>repeated uint64 watchers = 22;</code>
+     */
+    public long getWatchers(int index) {
+      return watchers_.get(index);
+    }
+
     private void initFields() {
       id_ = "";
       name_ = "";
@@ -1494,6 +1555,7 @@ public final class Toplevel {
       codeRepositories_ = java.util.Collections.emptyList();
       issueRepositories_ = java.util.Collections.emptyList();
       kind_ = boa.types.Toplevel.Project.ForgeKind.OTHER;
+      watchers_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1609,6 +1671,9 @@ public final class Toplevel {
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         output.writeEnum(21, kind_.getNumber());
+      }
+      for (int i = 0; i < watchers_.size(); i++) {
+        output.writeUInt64(22, watchers_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -1747,6 +1812,15 @@ public final class Toplevel {
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(21, kind_.getNumber());
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < watchers_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt64SizeNoTag(watchers_.get(i));
+        }
+        size += dataSize;
+        size += 2 * getWatchersList().size();
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1926,6 +2000,8 @@ public final class Toplevel {
         }
         kind_ = boa.types.Toplevel.Project.ForgeKind.OTHER;
         bitField0_ = (bitField0_ & ~0x00100000);
+        watchers_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00200000);
         return this;
       }
 
@@ -2076,6 +2152,11 @@ public final class Toplevel {
           to_bitField0_ |= 0x00000080;
         }
         result.kind_ = kind_;
+        if (((bitField0_ & 0x00200000) == 0x00200000)) {
+          watchers_ = java.util.Collections.unmodifiableList(watchers_);
+          bitField0_ = (bitField0_ & ~0x00200000);
+        }
+        result.watchers_ = watchers_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2319,6 +2400,16 @@ public final class Toplevel {
         }
         if (other.hasKind()) {
           setKind(other.getKind());
+        }
+        if (!other.watchers_.isEmpty()) {
+          if (watchers_.isEmpty()) {
+            watchers_ = other.watchers_;
+            bitField0_ = (bitField0_ & ~0x00200000);
+          } else {
+            ensureWatchersIsMutable();
+            watchers_.addAll(other.watchers_);
+          }
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -4656,6 +4747,72 @@ public final class Toplevel {
         return this;
       }
 
+      // repeated uint64 watchers = 22;
+      private java.util.List<java.lang.Long> watchers_ = java.util.Collections.emptyList();
+      private void ensureWatchersIsMutable() {
+        if (!((bitField0_ & 0x00200000) == 0x00200000)) {
+          watchers_ = new java.util.ArrayList<java.lang.Long>(watchers_);
+          bitField0_ |= 0x00200000;
+         }
+      }
+      /**
+       * <code>repeated uint64 watchers = 22;</code>
+       */
+      public java.util.List<java.lang.Long>
+          getWatchersList() {
+        return java.util.Collections.unmodifiableList(watchers_);
+      }
+      /**
+       * <code>repeated uint64 watchers = 22;</code>
+       */
+      public int getWatchersCount() {
+        return watchers_.size();
+      }
+      /**
+       * <code>repeated uint64 watchers = 22;</code>
+       */
+      public long getWatchers(int index) {
+        return watchers_.get(index);
+      }
+      /**
+       * <code>repeated uint64 watchers = 22;</code>
+       */
+      public Builder setWatchers(
+          int index, long value) {
+        ensureWatchersIsMutable();
+        watchers_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint64 watchers = 22;</code>
+       */
+      public Builder addWatchers(long value) {
+        ensureWatchersIsMutable();
+        watchers_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint64 watchers = 22;</code>
+       */
+      public Builder addAllWatchers(
+          java.lang.Iterable<? extends java.lang.Long> values) {
+        ensureWatchersIsMutable();
+        super.addAll(values, watchers_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint64 watchers = 22;</code>
+       */
+      public Builder clearWatchers() {
+        watchers_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00200000);
+        onChanged();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:boa.types.Project)
     }
 
@@ -4682,7 +4839,7 @@ public final class Toplevel {
   static {
     java.lang.String[] descriptorData = {
       "\n\016toplevel.proto\022\tboa.types\032\014shared.prot" +
-      "o\032\ncode.proto\032\014issues.proto\"\214\005\n\007Project\022" +
+      "o\032\ncode.proto\032\014issues.proto\"\236\005\n\007Project\022" +
       "\n\n\002id\030\001 \002(\t\022\014\n\004name\030\002 \002(\t\022\023\n\013project_url" +
       "\030\003 \002(\t\022\024\n\014homepage_url\030\004 \001(\t\022\024\n\014created_" +
       "date\030\005 \001(\004\022\023\n\013description\030\006 \001(\t\022\031\n\021opera" +
@@ -4696,10 +4853,10 @@ public final class Toplevel {
       "\021code_repositories\030\023 \003(\0132\031.boa.types.Cod" +
       "eRepository\0226\n\022issue_repositories\030\024 \003(\0132" +
       "\032.boa.types.IssueRepository\022*\n\004kind\030\025 \002(" +
-      "\0162\034.boa.types.Project.ForgeKind\"Y\n\tForge" +
-      "Kind\022\t\n\005OTHER\020\000\022\006\n\002SF\020\001\022\017\n\013SOURCEFORGE\020\001" +
-      "\022\n\n\006GITHUB\020\002\022\n\n\006APACHE\020\003\022\014\n\010QUALITAS\020\004\032\002" +
-      "\020\001B\002H\001"
+      "\0162\034.boa.types.Project.ForgeKind\022\020\n\010watch" +
+      "ers\030\026 \003(\004\"Y\n\tForgeKind\022\t\n\005OTHER\020\000\022\006\n\002SF\020" +
+      "\001\022\017\n\013SOURCEFORGE\020\001\022\n\n\006GITHUB\020\002\022\n\n\006APACHE" +
+      "\020\003\022\014\n\010QUALITAS\020\004\032\002\020\001B\002H\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -4711,7 +4868,7 @@ public final class Toplevel {
           internal_static_boa_types_Project_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_boa_types_Project_descriptor,
-              new java.lang.String[] { "Id", "Name", "ProjectUrl", "HomepageUrl", "CreatedDate", "Description", "OperatingSystems", "ProgrammingLanguages", "Databases", "Licenses", "Interfaces", "Audiences", "Topics", "Status", "Translations", "Donations", "Maintainers", "Developers", "CodeRepositories", "IssueRepositories", "Kind", });
+              new java.lang.String[] { "Id", "Name", "ProjectUrl", "HomepageUrl", "CreatedDate", "Description", "OperatingSystems", "ProgrammingLanguages", "Databases", "Licenses", "Interfaces", "Audiences", "Topics", "Status", "Translations", "Donations", "Maintainers", "Developers", "CodeRepositories", "IssueRepositories", "Kind", "Watchers", });
           return null;
         }
       };

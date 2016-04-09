@@ -5,77 +5,119 @@ import "shared.proto";
 option optimize_for = SPEED;
 
 message IssueRepository {
-	enum IssueKind {
-		OTHER = 0;
-		BUGS = 1;
-		FEATURES = 2;
-		SUPPORT = 3;
-		PATCHES = 4;
-	}
-	required string url = 1;
-	required IssueKind kind = 2;
-	required string key = 3;
-}
-
-message IssuesRoot {
-	repeated Issue issues = 1;
+    enum IssueRepositoryKind {
+        UNKNOWN = 1;
+        GITISSUE = 2;
+        SVNTICKETS = 3;
+        BUGZILLA = 4;
+        JIRA = 5;
+    }
+    required string url = 1;
+    repeated Issue issues = 2;
+    required IssueRepositoryKind kind = 3;
 }
 
 message Issue {
-	required string id = 1;
-	required string status = 2;
-	required Person author = 3;
-	optional Person assignee = 4;
-	required string summary = 5;
-	required string description = 6;
-	required uint64 created_date = 7;
-	required uint64 modified_date = 8;
-	optional uint64 completed_date = 9;
-	repeated string keywords = 10;
-	optional int32 vote = 11;
-	optional string priority = 12;
-	repeated Attachment files = 13;
-	repeated IssueComment comments = 14;
-	/*
-	optional string component = 15;
-	optional string resolution = 16;
-	repeated string duplicated_by = 17;
-	optional string duplicate_of = 18;
-	optional string subcomponent = 19;
-	optional string version = 20;
-	optional string os = 21;
-	optional string platform = 22;
-	optional string milestone = 23;
-	optional string depends_on = 24;
-	optional string blocked = 25;
-	optional string secrecy = 26;
-	repeated IssueChange changes = 27;
-	*/
-}
-
-message Attachment {
-	required string url = 1;
-	required string filename = 2;
-	optional uint64 size = 3;
-	optional uint64 date = 4;
-	optional Person author = 5;
-	optional string description = 6;
+    enum IssueKind {
+        UNKNOWN = 1;
+        BUG = 2;
+        DUPLICATE = 3;
+        ENHANCEMENT = 4;
+        HELP_WANTED = 5;
+        INVALID = 6;
+        QUESTION = 7;
+        WONTFIX = 8;
+        TASK = 9;
+        INCOMPLETE = 10;
+        WORKSFORME = 11;
+    }
+    enum Priority {
+        P1 = 1;
+        P2 = 2;
+        P3 = 3;
+        P4 = 4;
+        P5 = 5;
+    }
+    enum Severity {
+        BLOCKER = 1;
+        CRITICAL = 2;
+        MAJOR = 3;
+        NORMAL = 4;
+        MINOR = 5;
+        TRIVIAL = 6;
+    }
+    enum State {
+        UNCONFIRMED = 1;
+        NEW = 2;
+        ASSIGNED = 3;
+        REOPENED = 4;
+        RESOLVED = 5;
+        VERIFIED = 6;
+        OPEN = 7;
+    }
+    required int32 id = 1;;
+    optional int32 number = 2;
+    required IssueKind kind = 3;
+    repeated IssueComment comments = 4;
+    repeated IssueAttachment attachments = 5;
+    required string title = 6;
+    optional string body = 7;
+    required State state = 8;
+    optional Person assignee = 9;
+    optional Person created_by = 10;
+    optional Person closed_by = 11;
+    required int64 created_at = 12;
+    required int64 updated_at = 13;
+    optional int64 closed_at = 14;
+    optional PullRequest pull_request = 15;
+    optional Milestone milestone = 16;
 }
 
 message IssueComment {
-	required string id = 1;
-	required uint64 date = 2;
-	required Person author = 3;
-	required string description = 4;
-	repeated Attachment files = 5;
+    required int32 id = 1;
+    required Person user = 2;
+    required uint64 created_at = 3;
+    optional uint64 updated_at = 4;
+    optional string body = 5;
+    repeated string attachments = 6;
 }
 
-message IssueChange {
-	required string id = 1;
-	required string what = 2;
-	required uint64 date = 3;
-	required Person author = 4;
-	required string old_value = 5;
-	required string new_value = 6;
-	optional string description = 7;
+message IssueAttachment {   
+    required int32 id = 1;
+    optional string type = 2;
+    optional string description = 3;
+    required string filename = 4;
+    optional bytes content = 5;
+    optional uint64 date = 6;
+    optional string url = 7;
 }
+
+message PullRequest {
+    required int32 id = 1;
+    optional uint64 merged_at = 2;
+    optional string merge_commit_sha = 3;
+    optional int32 review_comments = 4;
+    optional int32 commits = 5;
+    optional bool merged = 6;
+    optional bool mergeable = 7;
+    optional string mergeable_state = 8;
+    optional Person merged_by = 9;
+    optional int32 additions = 10;
+    optional int32 deletions = 11;
+    optional int32 changed_files = 12;
+}
+
+message Milestone {
+    required int32 id = 1;
+    required int32 number = 2;
+    optional string state = 3;
+    optional string title = 4;
+    optional string description = 5;
+    optional Person creator = 6;
+    optional int32 open_issues = 7;
+    optional int32 closed_issues = 8;
+    optional uint64 created_at = 9;
+    optional uint64 updated_at = 10;
+    optional uint64 due_on = 11;
+}
+

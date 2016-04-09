@@ -60,74 +60,6 @@ public final class Code {
      */
     boa.types.Code.RevisionOrBuilder getRevisionsOrBuilder(
         int index);
-
-    // repeated int32 branches = 4;
-    /**
-     * <code>repeated int32 branches = 4;</code>
-     */
-    java.util.List<java.lang.Integer> getBranchesList();
-    /**
-     * <code>repeated int32 branches = 4;</code>
-     */
-    int getBranchesCount();
-    /**
-     * <code>repeated int32 branches = 4;</code>
-     */
-    int getBranches(int index);
-
-    // repeated string branch_names = 5;
-    /**
-     * <code>repeated string branch_names = 5;</code>
-     */
-    java.util.List<java.lang.String>
-    getBranchNamesList();
-    /**
-     * <code>repeated string branch_names = 5;</code>
-     */
-    int getBranchNamesCount();
-    /**
-     * <code>repeated string branch_names = 5;</code>
-     */
-    java.lang.String getBranchNames(int index);
-    /**
-     * <code>repeated string branch_names = 5;</code>
-     */
-    com.google.protobuf.ByteString
-        getBranchNamesBytes(int index);
-
-    // repeated int32 tags = 6;
-    /**
-     * <code>repeated int32 tags = 6;</code>
-     */
-    java.util.List<java.lang.Integer> getTagsList();
-    /**
-     * <code>repeated int32 tags = 6;</code>
-     */
-    int getTagsCount();
-    /**
-     * <code>repeated int32 tags = 6;</code>
-     */
-    int getTags(int index);
-
-    // repeated string tag_names = 7;
-    /**
-     * <code>repeated string tag_names = 7;</code>
-     */
-    java.util.List<java.lang.String>
-    getTagNamesList();
-    /**
-     * <code>repeated string tag_names = 7;</code>
-     */
-    int getTagNamesCount();
-    /**
-     * <code>repeated string tag_names = 7;</code>
-     */
-    java.lang.String getTagNames(int index);
-    /**
-     * <code>repeated string tag_names = 7;</code>
-     */
-    com.google.protobuf.ByteString
-        getTagNamesBytes(int index);
   }
   /**
    * Protobuf type {@code boa.types.CodeRepository}
@@ -204,64 +136,6 @@ public final class Code {
               revisions_.add(input.readMessage(boa.types.Code.Revision.PARSER, extensionRegistry));
               break;
             }
-            case 32: {
-              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-                branches_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000008;
-              }
-              branches_.add(input.readInt32());
-              break;
-            }
-            case 34: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008) && input.getBytesUntilLimit() > 0) {
-                branches_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000008;
-              }
-              while (input.getBytesUntilLimit() > 0) {
-                branches_.add(input.readInt32());
-              }
-              input.popLimit(limit);
-              break;
-            }
-            case 42: {
-              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-                branchNames_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000010;
-              }
-              branchNames_.add(input.readBytes());
-              break;
-            }
-            case 48: {
-              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
-                tags_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000020;
-              }
-              tags_.add(input.readInt32());
-              break;
-            }
-            case 50: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020) && input.getBytesUntilLimit() > 0) {
-                tags_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000020;
-              }
-              while (input.getBytesUntilLimit() > 0) {
-                tags_.add(input.readInt32());
-              }
-              input.popLimit(limit);
-              break;
-            }
-            case 58: {
-              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
-                tagNames_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000040;
-              }
-              tagNames_.add(input.readBytes());
-              break;
-            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -272,18 +146,6 @@ public final class Code {
       } finally {
         if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
           revisions_ = java.util.Collections.unmodifiableList(revisions_);
-        }
-        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-          branches_ = java.util.Collections.unmodifiableList(branches_);
-        }
-        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-          branchNames_ = new com.google.protobuf.UnmodifiableLazyStringList(branchNames_);
-        }
-        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
-          tags_ = java.util.Collections.unmodifiableList(tags_);
-        }
-        if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
-          tagNames_ = new com.google.protobuf.UnmodifiableLazyStringList(tagNames_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -322,91 +184,67 @@ public final class Code {
     public enum RepositoryKind
         implements com.google.protobuf.ProtocolMessageEnum {
       /**
-       * <code>OTHER = 0;</code>
+       * <code>UNKNOWN = 1;</code>
        */
-      OTHER(0, 0),
+      UNKNOWN(0, 1),
       /**
-       * <code>SVN = 1;</code>
+       * <code>SVN = 2;</code>
        */
-      SVN(1, 1),
+      SVN(1, 2),
       /**
-       * <code>CVS = 2;</code>
+       * <code>CVS = 3;</code>
        */
-      CVS(3, 2),
+      CVS(2, 3),
       /**
-       * <code>GIT = 3;</code>
+       * <code>GIT = 4;</code>
        */
-      GIT(4, 3),
+      GIT(3, 4),
       /**
-       * <code>HG = 4;</code>
+       * <code>HG = 5;</code>
        */
-      HG(5, 4),
+      HG(4, 5),
       /**
-       * <code>BZR = 5;</code>
+       * <code>BZR = 6;</code>
        */
-      BZR(7, 5),
+      BZR(5, 6),
       ;
 
       /**
-       * <code>SUBVERSION = 1;</code>
+       * <code>UNKNOWN = 1;</code>
        */
-      public static final RepositoryKind SUBVERSION = SVN;
+      public static final int UNKNOWN_VALUE = 1;
       /**
-       * <code>MERCURIAL = 4;</code>
+       * <code>SVN = 2;</code>
        */
-      public static final RepositoryKind MERCURIAL = HG;
+      public static final int SVN_VALUE = 2;
       /**
-       * <code>BAZAAR = 5;</code>
+       * <code>CVS = 3;</code>
        */
-      public static final RepositoryKind BAZAAR = BZR;
+      public static final int CVS_VALUE = 3;
       /**
-       * <code>OTHER = 0;</code>
+       * <code>GIT = 4;</code>
        */
-      public static final int OTHER_VALUE = 0;
+      public static final int GIT_VALUE = 4;
       /**
-       * <code>SVN = 1;</code>
+       * <code>HG = 5;</code>
        */
-      public static final int SVN_VALUE = 1;
+      public static final int HG_VALUE = 5;
       /**
-       * <code>SUBVERSION = 1;</code>
+       * <code>BZR = 6;</code>
        */
-      public static final int SUBVERSION_VALUE = 1;
-      /**
-       * <code>CVS = 2;</code>
-       */
-      public static final int CVS_VALUE = 2;
-      /**
-       * <code>GIT = 3;</code>
-       */
-      public static final int GIT_VALUE = 3;
-      /**
-       * <code>HG = 4;</code>
-       */
-      public static final int HG_VALUE = 4;
-      /**
-       * <code>MERCURIAL = 4;</code>
-       */
-      public static final int MERCURIAL_VALUE = 4;
-      /**
-       * <code>BZR = 5;</code>
-       */
-      public static final int BZR_VALUE = 5;
-      /**
-       * <code>BAZAAR = 5;</code>
-       */
-      public static final int BAZAAR_VALUE = 5;
+      public static final int BZR_VALUE = 6;
 
 
       public final int getNumber() { return value; }
 
       public static RepositoryKind valueOf(int value) {
         switch (value) {
-          case 0: return OTHER;
-          case 1: return SVN;
-          case 2: return CVS;
-          case 3: return GIT;
-          case 4: return HG;
-          case 5: return BZR;
+          case 1: return UNKNOWN;
+          case 2: return SVN;
+          case 3: return CVS;
+          case 4: return GIT;
+          case 5: return HG;
+          case 6: return BZR;
           default: return null;
         }
       }
@@ -436,9 +274,7 @@ public final class Code {
         return boa.types.Code.CodeRepository.getDescriptor().getEnumTypes().get(0);
       }
 
-      private static final RepositoryKind[] VALUES = {
-        OTHER, SVN, SUBVERSION, CVS, GIT, HG, MERCURIAL, BZR, BAZAAR, 
-      };
+      private static final RepositoryKind[] VALUES = values();
 
       public static RepositoryKind valueOf(
           com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
@@ -556,120 +392,10 @@ public final class Code {
       return revisions_.get(index);
     }
 
-    // repeated int32 branches = 4;
-    public static final int BRANCHES_FIELD_NUMBER = 4;
-    private java.util.List<java.lang.Integer> branches_;
-    /**
-     * <code>repeated int32 branches = 4;</code>
-     */
-    public java.util.List<java.lang.Integer>
-        getBranchesList() {
-      return branches_;
-    }
-    /**
-     * <code>repeated int32 branches = 4;</code>
-     */
-    public int getBranchesCount() {
-      return branches_.size();
-    }
-    /**
-     * <code>repeated int32 branches = 4;</code>
-     */
-    public int getBranches(int index) {
-      return branches_.get(index);
-    }
-
-    // repeated string branch_names = 5;
-    public static final int BRANCH_NAMES_FIELD_NUMBER = 5;
-    private com.google.protobuf.LazyStringList branchNames_;
-    /**
-     * <code>repeated string branch_names = 5;</code>
-     */
-    public java.util.List<java.lang.String>
-        getBranchNamesList() {
-      return branchNames_;
-    }
-    /**
-     * <code>repeated string branch_names = 5;</code>
-     */
-    public int getBranchNamesCount() {
-      return branchNames_.size();
-    }
-    /**
-     * <code>repeated string branch_names = 5;</code>
-     */
-    public java.lang.String getBranchNames(int index) {
-      return branchNames_.get(index);
-    }
-    /**
-     * <code>repeated string branch_names = 5;</code>
-     */
-    public com.google.protobuf.ByteString
-        getBranchNamesBytes(int index) {
-      return branchNames_.getByteString(index);
-    }
-
-    // repeated int32 tags = 6;
-    public static final int TAGS_FIELD_NUMBER = 6;
-    private java.util.List<java.lang.Integer> tags_;
-    /**
-     * <code>repeated int32 tags = 6;</code>
-     */
-    public java.util.List<java.lang.Integer>
-        getTagsList() {
-      return tags_;
-    }
-    /**
-     * <code>repeated int32 tags = 6;</code>
-     */
-    public int getTagsCount() {
-      return tags_.size();
-    }
-    /**
-     * <code>repeated int32 tags = 6;</code>
-     */
-    public int getTags(int index) {
-      return tags_.get(index);
-    }
-
-    // repeated string tag_names = 7;
-    public static final int TAG_NAMES_FIELD_NUMBER = 7;
-    private com.google.protobuf.LazyStringList tagNames_;
-    /**
-     * <code>repeated string tag_names = 7;</code>
-     */
-    public java.util.List<java.lang.String>
-        getTagNamesList() {
-      return tagNames_;
-    }
-    /**
-     * <code>repeated string tag_names = 7;</code>
-     */
-    public int getTagNamesCount() {
-      return tagNames_.size();
-    }
-    /**
-     * <code>repeated string tag_names = 7;</code>
-     */
-    public java.lang.String getTagNames(int index) {
-      return tagNames_.get(index);
-    }
-    /**
-     * <code>repeated string tag_names = 7;</code>
-     */
-    public com.google.protobuf.ByteString
-        getTagNamesBytes(int index) {
-      return tagNames_.getByteString(index);
-    }
-
     private void initFields() {
       url_ = "";
-      kind_ = boa.types.Code.CodeRepository.RepositoryKind.OTHER;
+      kind_ = boa.types.Code.CodeRepository.RepositoryKind.UNKNOWN;
       revisions_ = java.util.Collections.emptyList();
-      branches_ = java.util.Collections.emptyList();
-      branchNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      tags_ = java.util.Collections.emptyList();
-      tagNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -706,18 +432,6 @@ public final class Code {
       for (int i = 0; i < revisions_.size(); i++) {
         output.writeMessage(3, revisions_.get(i));
       }
-      for (int i = 0; i < branches_.size(); i++) {
-        output.writeInt32(4, branches_.get(i));
-      }
-      for (int i = 0; i < branchNames_.size(); i++) {
-        output.writeBytes(5, branchNames_.getByteString(i));
-      }
-      for (int i = 0; i < tags_.size(); i++) {
-        output.writeInt32(6, tags_.get(i));
-      }
-      for (int i = 0; i < tagNames_.size(); i++) {
-        output.writeBytes(7, tagNames_.getByteString(i));
-      }
       getUnknownFields().writeTo(output);
     }
 
@@ -738,42 +452,6 @@ public final class Code {
       for (int i = 0; i < revisions_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, revisions_.get(i));
-      }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < branches_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeInt32SizeNoTag(branches_.get(i));
-        }
-        size += dataSize;
-        size += 1 * getBranchesList().size();
-      }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < branchNames_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeBytesSizeNoTag(branchNames_.getByteString(i));
-        }
-        size += dataSize;
-        size += 1 * getBranchNamesList().size();
-      }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < tags_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeInt32SizeNoTag(tags_.get(i));
-        }
-        size += dataSize;
-        size += 1 * getTagsList().size();
-      }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < tagNames_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeBytesSizeNoTag(tagNames_.getByteString(i));
-        }
-        size += dataSize;
-        size += 1 * getTagNamesList().size();
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -894,7 +572,7 @@ public final class Code {
         super.clear();
         url_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
-        kind_ = boa.types.Code.CodeRepository.RepositoryKind.OTHER;
+        kind_ = boa.types.Code.CodeRepository.RepositoryKind.UNKNOWN;
         bitField0_ = (bitField0_ & ~0x00000002);
         if (revisionsBuilder_ == null) {
           revisions_ = java.util.Collections.emptyList();
@@ -902,14 +580,6 @@ public final class Code {
         } else {
           revisionsBuilder_.clear();
         }
-        branches_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000008);
-        branchNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000010);
-        tags_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000020);
-        tagNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000040);
         return this;
       }
 
@@ -955,28 +625,6 @@ public final class Code {
         } else {
           result.revisions_ = revisionsBuilder_.build();
         }
-        if (((bitField0_ & 0x00000008) == 0x00000008)) {
-          branches_ = java.util.Collections.unmodifiableList(branches_);
-          bitField0_ = (bitField0_ & ~0x00000008);
-        }
-        result.branches_ = branches_;
-        if (((bitField0_ & 0x00000010) == 0x00000010)) {
-          branchNames_ = new com.google.protobuf.UnmodifiableLazyStringList(
-              branchNames_);
-          bitField0_ = (bitField0_ & ~0x00000010);
-        }
-        result.branchNames_ = branchNames_;
-        if (((bitField0_ & 0x00000020) == 0x00000020)) {
-          tags_ = java.util.Collections.unmodifiableList(tags_);
-          bitField0_ = (bitField0_ & ~0x00000020);
-        }
-        result.tags_ = tags_;
-        if (((bitField0_ & 0x00000040) == 0x00000040)) {
-          tagNames_ = new com.google.protobuf.UnmodifiableLazyStringList(
-              tagNames_);
-          bitField0_ = (bitField0_ & ~0x00000040);
-        }
-        result.tagNames_ = tagNames_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1026,46 +674,6 @@ public final class Code {
               revisionsBuilder_.addAllMessages(other.revisions_);
             }
           }
-        }
-        if (!other.branches_.isEmpty()) {
-          if (branches_.isEmpty()) {
-            branches_ = other.branches_;
-            bitField0_ = (bitField0_ & ~0x00000008);
-          } else {
-            ensureBranchesIsMutable();
-            branches_.addAll(other.branches_);
-          }
-          onChanged();
-        }
-        if (!other.branchNames_.isEmpty()) {
-          if (branchNames_.isEmpty()) {
-            branchNames_ = other.branchNames_;
-            bitField0_ = (bitField0_ & ~0x00000010);
-          } else {
-            ensureBranchNamesIsMutable();
-            branchNames_.addAll(other.branchNames_);
-          }
-          onChanged();
-        }
-        if (!other.tags_.isEmpty()) {
-          if (tags_.isEmpty()) {
-            tags_ = other.tags_;
-            bitField0_ = (bitField0_ & ~0x00000020);
-          } else {
-            ensureTagsIsMutable();
-            tags_.addAll(other.tags_);
-          }
-          onChanged();
-        }
-        if (!other.tagNames_.isEmpty()) {
-          if (tagNames_.isEmpty()) {
-            tagNames_ = other.tagNames_;
-            bitField0_ = (bitField0_ & ~0x00000040);
-          } else {
-            ensureTagNamesIsMutable();
-            tagNames_.addAll(other.tagNames_);
-          }
-          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -1183,7 +791,7 @@ public final class Code {
       }
 
       // required .boa.types.CodeRepository.RepositoryKind kind = 2;
-      private boa.types.Code.CodeRepository.RepositoryKind kind_ = boa.types.Code.CodeRepository.RepositoryKind.OTHER;
+      private boa.types.Code.CodeRepository.RepositoryKind kind_ = boa.types.Code.CodeRepository.RepositoryKind.UNKNOWN;
       /**
        * <code>required .boa.types.CodeRepository.RepositoryKind kind = 2;</code>
        */
@@ -1213,7 +821,7 @@ public final class Code {
        */
       public Builder clearKind() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        kind_ = boa.types.Code.CodeRepository.RepositoryKind.OTHER;
+        kind_ = boa.types.Code.CodeRepository.RepositoryKind.UNKNOWN;
         onChanged();
         return this;
       }
@@ -1458,324 +1066,6 @@ public final class Code {
         return revisionsBuilder_;
       }
 
-      // repeated int32 branches = 4;
-      private java.util.List<java.lang.Integer> branches_ = java.util.Collections.emptyList();
-      private void ensureBranchesIsMutable() {
-        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
-          branches_ = new java.util.ArrayList<java.lang.Integer>(branches_);
-          bitField0_ |= 0x00000008;
-         }
-      }
-      /**
-       * <code>repeated int32 branches = 4;</code>
-       */
-      public java.util.List<java.lang.Integer>
-          getBranchesList() {
-        return java.util.Collections.unmodifiableList(branches_);
-      }
-      /**
-       * <code>repeated int32 branches = 4;</code>
-       */
-      public int getBranchesCount() {
-        return branches_.size();
-      }
-      /**
-       * <code>repeated int32 branches = 4;</code>
-       */
-      public int getBranches(int index) {
-        return branches_.get(index);
-      }
-      /**
-       * <code>repeated int32 branches = 4;</code>
-       */
-      public Builder setBranches(
-          int index, int value) {
-        ensureBranchesIsMutable();
-        branches_.set(index, value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated int32 branches = 4;</code>
-       */
-      public Builder addBranches(int value) {
-        ensureBranchesIsMutable();
-        branches_.add(value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated int32 branches = 4;</code>
-       */
-      public Builder addAllBranches(
-          java.lang.Iterable<? extends java.lang.Integer> values) {
-        ensureBranchesIsMutable();
-        super.addAll(values, branches_);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated int32 branches = 4;</code>
-       */
-      public Builder clearBranches() {
-        branches_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000008);
-        onChanged();
-        return this;
-      }
-
-      // repeated string branch_names = 5;
-      private com.google.protobuf.LazyStringList branchNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      private void ensureBranchNamesIsMutable() {
-        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
-          branchNames_ = new com.google.protobuf.LazyStringArrayList(branchNames_);
-          bitField0_ |= 0x00000010;
-         }
-      }
-      /**
-       * <code>repeated string branch_names = 5;</code>
-       */
-      public java.util.List<java.lang.String>
-          getBranchNamesList() {
-        return java.util.Collections.unmodifiableList(branchNames_);
-      }
-      /**
-       * <code>repeated string branch_names = 5;</code>
-       */
-      public int getBranchNamesCount() {
-        return branchNames_.size();
-      }
-      /**
-       * <code>repeated string branch_names = 5;</code>
-       */
-      public java.lang.String getBranchNames(int index) {
-        return branchNames_.get(index);
-      }
-      /**
-       * <code>repeated string branch_names = 5;</code>
-       */
-      public com.google.protobuf.ByteString
-          getBranchNamesBytes(int index) {
-        return branchNames_.getByteString(index);
-      }
-      /**
-       * <code>repeated string branch_names = 5;</code>
-       */
-      public Builder setBranchNames(
-          int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureBranchNamesIsMutable();
-        branchNames_.set(index, value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string branch_names = 5;</code>
-       */
-      public Builder addBranchNames(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureBranchNamesIsMutable();
-        branchNames_.add(value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string branch_names = 5;</code>
-       */
-      public Builder addAllBranchNames(
-          java.lang.Iterable<java.lang.String> values) {
-        ensureBranchNamesIsMutable();
-        super.addAll(values, branchNames_);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string branch_names = 5;</code>
-       */
-      public Builder clearBranchNames() {
-        branchNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000010);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string branch_names = 5;</code>
-       */
-      public Builder addBranchNamesBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureBranchNamesIsMutable();
-        branchNames_.add(value);
-        onChanged();
-        return this;
-      }
-
-      // repeated int32 tags = 6;
-      private java.util.List<java.lang.Integer> tags_ = java.util.Collections.emptyList();
-      private void ensureTagsIsMutable() {
-        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
-          tags_ = new java.util.ArrayList<java.lang.Integer>(tags_);
-          bitField0_ |= 0x00000020;
-         }
-      }
-      /**
-       * <code>repeated int32 tags = 6;</code>
-       */
-      public java.util.List<java.lang.Integer>
-          getTagsList() {
-        return java.util.Collections.unmodifiableList(tags_);
-      }
-      /**
-       * <code>repeated int32 tags = 6;</code>
-       */
-      public int getTagsCount() {
-        return tags_.size();
-      }
-      /**
-       * <code>repeated int32 tags = 6;</code>
-       */
-      public int getTags(int index) {
-        return tags_.get(index);
-      }
-      /**
-       * <code>repeated int32 tags = 6;</code>
-       */
-      public Builder setTags(
-          int index, int value) {
-        ensureTagsIsMutable();
-        tags_.set(index, value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated int32 tags = 6;</code>
-       */
-      public Builder addTags(int value) {
-        ensureTagsIsMutable();
-        tags_.add(value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated int32 tags = 6;</code>
-       */
-      public Builder addAllTags(
-          java.lang.Iterable<? extends java.lang.Integer> values) {
-        ensureTagsIsMutable();
-        super.addAll(values, tags_);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated int32 tags = 6;</code>
-       */
-      public Builder clearTags() {
-        tags_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000020);
-        onChanged();
-        return this;
-      }
-
-      // repeated string tag_names = 7;
-      private com.google.protobuf.LazyStringList tagNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      private void ensureTagNamesIsMutable() {
-        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
-          tagNames_ = new com.google.protobuf.LazyStringArrayList(tagNames_);
-          bitField0_ |= 0x00000040;
-         }
-      }
-      /**
-       * <code>repeated string tag_names = 7;</code>
-       */
-      public java.util.List<java.lang.String>
-          getTagNamesList() {
-        return java.util.Collections.unmodifiableList(tagNames_);
-      }
-      /**
-       * <code>repeated string tag_names = 7;</code>
-       */
-      public int getTagNamesCount() {
-        return tagNames_.size();
-      }
-      /**
-       * <code>repeated string tag_names = 7;</code>
-       */
-      public java.lang.String getTagNames(int index) {
-        return tagNames_.get(index);
-      }
-      /**
-       * <code>repeated string tag_names = 7;</code>
-       */
-      public com.google.protobuf.ByteString
-          getTagNamesBytes(int index) {
-        return tagNames_.getByteString(index);
-      }
-      /**
-       * <code>repeated string tag_names = 7;</code>
-       */
-      public Builder setTagNames(
-          int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTagNamesIsMutable();
-        tagNames_.set(index, value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string tag_names = 7;</code>
-       */
-      public Builder addTagNames(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTagNamesIsMutable();
-        tagNames_.add(value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string tag_names = 7;</code>
-       */
-      public Builder addAllTagNames(
-          java.lang.Iterable<java.lang.String> values) {
-        ensureTagNamesIsMutable();
-        super.addAll(values, tagNames_);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string tag_names = 7;</code>
-       */
-      public Builder clearTagNames() {
-        tagNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000040);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string tag_names = 7;</code>
-       */
-      public Builder addTagNamesBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTagNamesIsMutable();
-        tagNames_.add(value);
-        onChanged();
-        return this;
-      }
-
       // @@protoc_insertion_point(builder_scope:boa.types.CodeRepository)
     }
 
@@ -1882,34 +1172,6 @@ public final class Code {
      */
     boa.types.Diff.ChangedFileOrBuilder getFilesOrBuilder(
         int index);
-
-    // repeated int32 parents = 7;
-    /**
-     * <code>repeated int32 parents = 7;</code>
-     */
-    java.util.List<java.lang.Integer> getParentsList();
-    /**
-     * <code>repeated int32 parents = 7;</code>
-     */
-    int getParentsCount();
-    /**
-     * <code>repeated int32 parents = 7;</code>
-     */
-    int getParents(int index);
-
-    // repeated int32 children = 8;
-    /**
-     * <code>repeated int32 children = 8;</code>
-     */
-    java.util.List<java.lang.Integer> getChildrenList();
-    /**
-     * <code>repeated int32 children = 8;</code>
-     */
-    int getChildrenCount();
-    /**
-     * <code>repeated int32 children = 8;</code>
-     */
-    int getChildren(int index);
   }
   /**
    * Protobuf type {@code boa.types.Revision}
@@ -2011,48 +1273,6 @@ public final class Code {
               files_.add(input.readMessage(boa.types.Diff.ChangedFile.PARSER, extensionRegistry));
               break;
             }
-            case 56: {
-              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
-                parents_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000040;
-              }
-              parents_.add(input.readInt32());
-              break;
-            }
-            case 58: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040) && input.getBytesUntilLimit() > 0) {
-                parents_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000040;
-              }
-              while (input.getBytesUntilLimit() > 0) {
-                parents_.add(input.readInt32());
-              }
-              input.popLimit(limit);
-              break;
-            }
-            case 64: {
-              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
-                children_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000080;
-              }
-              children_.add(input.readInt32());
-              break;
-            }
-            case 66: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080) && input.getBytesUntilLimit() > 0) {
-                children_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000080;
-              }
-              while (input.getBytesUntilLimit() > 0) {
-                children_.add(input.readInt32());
-              }
-              input.popLimit(limit);
-              break;
-            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -2063,12 +1283,6 @@ public final class Code {
       } finally {
         if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
           files_ = java.util.Collections.unmodifiableList(files_);
-        }
-        if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
-          parents_ = java.util.Collections.unmodifiableList(parents_);
-        }
-        if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
-          children_ = java.util.Collections.unmodifiableList(children_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -2284,52 +1498,6 @@ public final class Code {
       return files_.get(index);
     }
 
-    // repeated int32 parents = 7;
-    public static final int PARENTS_FIELD_NUMBER = 7;
-    private java.util.List<java.lang.Integer> parents_;
-    /**
-     * <code>repeated int32 parents = 7;</code>
-     */
-    public java.util.List<java.lang.Integer>
-        getParentsList() {
-      return parents_;
-    }
-    /**
-     * <code>repeated int32 parents = 7;</code>
-     */
-    public int getParentsCount() {
-      return parents_.size();
-    }
-    /**
-     * <code>repeated int32 parents = 7;</code>
-     */
-    public int getParents(int index) {
-      return parents_.get(index);
-    }
-
-    // repeated int32 children = 8;
-    public static final int CHILDREN_FIELD_NUMBER = 8;
-    private java.util.List<java.lang.Integer> children_;
-    /**
-     * <code>repeated int32 children = 8;</code>
-     */
-    public java.util.List<java.lang.Integer>
-        getChildrenList() {
-      return children_;
-    }
-    /**
-     * <code>repeated int32 children = 8;</code>
-     */
-    public int getChildrenCount() {
-      return children_.size();
-    }
-    /**
-     * <code>repeated int32 children = 8;</code>
-     */
-    public int getChildren(int index) {
-      return children_.get(index);
-    }
-
     private void initFields() {
       id_ = "";
       author_ = boa.types.Shared.Person.getDefaultInstance();
@@ -2337,8 +1505,6 @@ public final class Code {
       commitDate_ = 0L;
       log_ = "";
       files_ = java.util.Collections.emptyList();
-      parents_ = java.util.Collections.emptyList();
-      children_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -2404,12 +1570,6 @@ public final class Code {
       for (int i = 0; i < files_.size(); i++) {
         output.writeMessage(6, files_.get(i));
       }
-      for (int i = 0; i < parents_.size(); i++) {
-        output.writeInt32(7, parents_.get(i));
-      }
-      for (int i = 0; i < children_.size(); i++) {
-        output.writeInt32(8, children_.get(i));
-      }
       getUnknownFields().writeTo(output);
     }
 
@@ -2442,24 +1602,6 @@ public final class Code {
       for (int i = 0; i < files_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(6, files_.get(i));
-      }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < parents_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeInt32SizeNoTag(parents_.get(i));
-        }
-        size += dataSize;
-        size += 1 * getParentsList().size();
-      }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < children_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeInt32SizeNoTag(children_.get(i));
-        }
-        size += dataSize;
-        size += 1 * getChildrenList().size();
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2604,10 +1746,6 @@ public final class Code {
         } else {
           filesBuilder_.clear();
         }
-        parents_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000040);
-        children_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000080);
         return this;
       }
 
@@ -2673,16 +1811,6 @@ public final class Code {
         } else {
           result.files_ = filesBuilder_.build();
         }
-        if (((bitField0_ & 0x00000040) == 0x00000040)) {
-          parents_ = java.util.Collections.unmodifiableList(parents_);
-          bitField0_ = (bitField0_ & ~0x00000040);
-        }
-        result.parents_ = parents_;
-        if (((bitField0_ & 0x00000080) == 0x00000080)) {
-          children_ = java.util.Collections.unmodifiableList(children_);
-          bitField0_ = (bitField0_ & ~0x00000080);
-        }
-        result.children_ = children_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2743,26 +1871,6 @@ public final class Code {
               filesBuilder_.addAllMessages(other.files_);
             }
           }
-        }
-        if (!other.parents_.isEmpty()) {
-          if (parents_.isEmpty()) {
-            parents_ = other.parents_;
-            bitField0_ = (bitField0_ & ~0x00000040);
-          } else {
-            ensureParentsIsMutable();
-            parents_.addAll(other.parents_);
-          }
-          onChanged();
-        }
-        if (!other.children_.isEmpty()) {
-          if (children_.isEmpty()) {
-            children_ = other.children_;
-            bitField0_ = (bitField0_ & ~0x00000080);
-          } else {
-            ensureChildrenIsMutable();
-            children_.addAll(other.children_);
-          }
-          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -3480,138 +2588,6 @@ public final class Code {
         return filesBuilder_;
       }
 
-      // repeated int32 parents = 7;
-      private java.util.List<java.lang.Integer> parents_ = java.util.Collections.emptyList();
-      private void ensureParentsIsMutable() {
-        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
-          parents_ = new java.util.ArrayList<java.lang.Integer>(parents_);
-          bitField0_ |= 0x00000040;
-         }
-      }
-      /**
-       * <code>repeated int32 parents = 7;</code>
-       */
-      public java.util.List<java.lang.Integer>
-          getParentsList() {
-        return java.util.Collections.unmodifiableList(parents_);
-      }
-      /**
-       * <code>repeated int32 parents = 7;</code>
-       */
-      public int getParentsCount() {
-        return parents_.size();
-      }
-      /**
-       * <code>repeated int32 parents = 7;</code>
-       */
-      public int getParents(int index) {
-        return parents_.get(index);
-      }
-      /**
-       * <code>repeated int32 parents = 7;</code>
-       */
-      public Builder setParents(
-          int index, int value) {
-        ensureParentsIsMutable();
-        parents_.set(index, value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated int32 parents = 7;</code>
-       */
-      public Builder addParents(int value) {
-        ensureParentsIsMutable();
-        parents_.add(value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated int32 parents = 7;</code>
-       */
-      public Builder addAllParents(
-          java.lang.Iterable<? extends java.lang.Integer> values) {
-        ensureParentsIsMutable();
-        super.addAll(values, parents_);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated int32 parents = 7;</code>
-       */
-      public Builder clearParents() {
-        parents_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000040);
-        onChanged();
-        return this;
-      }
-
-      // repeated int32 children = 8;
-      private java.util.List<java.lang.Integer> children_ = java.util.Collections.emptyList();
-      private void ensureChildrenIsMutable() {
-        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
-          children_ = new java.util.ArrayList<java.lang.Integer>(children_);
-          bitField0_ |= 0x00000080;
-         }
-      }
-      /**
-       * <code>repeated int32 children = 8;</code>
-       */
-      public java.util.List<java.lang.Integer>
-          getChildrenList() {
-        return java.util.Collections.unmodifiableList(children_);
-      }
-      /**
-       * <code>repeated int32 children = 8;</code>
-       */
-      public int getChildrenCount() {
-        return children_.size();
-      }
-      /**
-       * <code>repeated int32 children = 8;</code>
-       */
-      public int getChildren(int index) {
-        return children_.get(index);
-      }
-      /**
-       * <code>repeated int32 children = 8;</code>
-       */
-      public Builder setChildren(
-          int index, int value) {
-        ensureChildrenIsMutable();
-        children_.set(index, value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated int32 children = 8;</code>
-       */
-      public Builder addChildren(int value) {
-        ensureChildrenIsMutable();
-        children_.add(value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated int32 children = 8;</code>
-       */
-      public Builder addAllChildren(
-          java.lang.Iterable<? extends java.lang.Integer> values) {
-        ensureChildrenIsMutable();
-        super.addAll(values, children_);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated int32 children = 8;</code>
-       */
-      public Builder clearChildren() {
-        children_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000080);
-        onChanged();
-        return this;
-      }
-
       // @@protoc_insertion_point(builder_scope:boa.types.Revision)
     }
 
@@ -3643,20 +2619,16 @@ public final class Code {
   static {
     java.lang.String[] descriptorData = {
       "\n\ncode.proto\022\tboa.types\032\ndiff.proto\032\014sha" +
-      "red.proto\"\276\002\n\016CodeRepository\022\013\n\003url\030\001 \002(" +
+      "red.proto\"\310\001\n\016CodeRepository\022\013\n\003url\030\001 \002(" +
       "\t\0226\n\004kind\030\002 \002(\0162(.boa.types.CodeReposito" +
       "ry.RepositoryKind\022&\n\trevisions\030\003 \003(\0132\023.b" +
-      "oa.types.Revision\022\020\n\010branches\030\004 \003(\005\022\024\n\014b" +
-      "ranch_names\030\005 \003(\t\022\014\n\004tags\030\006 \003(\005\022\021\n\ttag_n" +
-      "ames\030\007 \003(\t\"v\n\016RepositoryKind\022\t\n\005OTHER\020\000\022" +
-      "\007\n\003SVN\020\001\022\016\n\nSUBVERSION\020\001\022\007\n\003CVS\020\002\022\007\n\003GIT" +
-      "\020\003\022\006\n\002HG\020\004\022\r\n\tMERCURIAL\020\004\022\007\n\003BZR\020\005\022\n\n\006BA" +
-      "ZAAR\020\005\032\002\020\001\"\313\001\n\010Revision\022\n\n\002id\030\001 \002(\t\022!\n\006a",
-      "uthor\030\002 \002(\0132\021.boa.types.Person\022$\n\tcommit" +
-      "ter\030\003 \002(\0132\021.boa.types.Person\022\023\n\013commit_d" +
-      "ate\030\004 \002(\004\022\013\n\003log\030\005 \002(\t\022%\n\005files\030\006 \003(\0132\026." +
-      "boa.types.ChangedFile\022\017\n\007parents\030\007 \003(\005\022\020" +
-      "\n\010children\030\010 \003(\005B\002H\001"
+      "oa.types.Revision\"I\n\016RepositoryKind\022\013\n\007U" +
+      "NKNOWN\020\001\022\007\n\003SVN\020\002\022\007\n\003CVS\020\003\022\007\n\003GIT\020\004\022\006\n\002H" +
+      "G\020\005\022\007\n\003BZR\020\006\"\250\001\n\010Revision\022\n\n\002id\030\001 \002(\t\022!\n" +
+      "\006author\030\002 \002(\0132\021.boa.types.Person\022$\n\tcomm" +
+      "itter\030\003 \002(\0132\021.boa.types.Person\022\023\n\013commit" +
+      "_date\030\004 \002(\004\022\013\n\003log\030\005 \002(\t\022%\n\005files\030\006 \003(\0132",
+      "\026.boa.types.ChangedFileB\002H\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -3668,13 +2640,13 @@ public final class Code {
           internal_static_boa_types_CodeRepository_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_boa_types_CodeRepository_descriptor,
-              new java.lang.String[] { "Url", "Kind", "Revisions", "Branches", "BranchNames", "Tags", "TagNames", });
+              new java.lang.String[] { "Url", "Kind", "Revisions", });
           internal_static_boa_types_Revision_descriptor =
             getDescriptor().getMessageTypes().get(1);
           internal_static_boa_types_Revision_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_boa_types_Revision_descriptor,
-              new java.lang.String[] { "Id", "Author", "Committer", "CommitDate", "Log", "Files", "Parents", "Children", });
+              new java.lang.String[] { "Id", "Author", "Committer", "CommitDate", "Log", "Files", });
           return null;
         }
       };

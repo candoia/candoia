@@ -17,6 +17,7 @@
 
 package boa.datagen;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,6 +32,7 @@ import org.apache.hadoop.io.Text;
 
 import com.google.protobuf.CodedInputStream;
 
+import boa.types.Ast.ASTRoot;
 import boa.types.Toplevel.Project;
 
 /**
@@ -39,28 +41,39 @@ import boa.types.Toplevel.Project;
  */
 public class SeqProjectCombiner {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
+		try {
+			combine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static void combine() throws IOException {
+		System.out.println("Combiner method has been called");
 		Configuration conf = new Configuration();
-		conf.set("fs.default.name", "hdfs://boa-njt/");
+		// conf.set("fs.default.name", "hdfs://boa-njt/");
 		FileSystem fileSystem = FileSystem.get(conf);
-		String base = conf.get("fs.default.name", "");
-		
+		String base = DefaultProperties.GH_JSON_CACHE_PATH;
+
 		HashMap<String, String> sources = new HashMap<String, String>();
 		HashSet<String> marks = new HashSet<String>();
-		FileStatus[] files = fileSystem.listStatus(new Path(base + "tmprepcache/2015-07"));
+		FileStatus[] files = fileSystem.listStatus(new Path(base));
 		for (int i = 0; i < files.length; i++) {
 			FileStatus file = files[i];
 			String name = file.getPath().getName();
-			if (name.startsWith("projects-") && name.endsWith(".seq")) {
-				System.out.println("Reading file " + i + " in " + files.length + ": " + name);
+			if (name.contains("projects") && name.endsWith(".seq")) {
 				SequenceFile.Reader r = new SequenceFile.Reader(fileSystem, file.getPath(), conf);
 				final Text key = new Text();
 				final BytesWritable value = new BytesWritable();
 				try {
 					while (r.next(key, value)) {
 						String s = key.toString();
-						if (marks.contains(s)) continue;
-						Project p = Project.parseFrom(CodedInputStream.newInstance(value.getBytes(), 0, value.getLength()));
+						if (marks.contains(s))
+							continue;
+						Project p = Project
+								.parseFrom(CodedInputStream.newInstance(value.getBytes(), 0, value.getLength()));
 						if (p.getCodeRepositoriesCount() > 0 && p.getCodeRepositories(0).getRevisionsCount() > 0)
 							marks.add(s);
 						sources.put(s, name);
@@ -71,13 +84,36 @@ public class SeqProjectCombiner {
 				}
 				r.close();
 			}
+			else if (name.contains("ast") && name.endsWith(".seq")) {
+				SequenceFile.Reader r = new SequenceFile.Reader(fileSystem, file.getPath(), conf);
+				final Text key = new Text();
+				final BytesWritable value = new BytesWritable();
+				try {
+					while (r.next(key, value)) {
+						String s = key.toString();
+						if (marks.contains(s))
+							continue;
+						ASTRoot p = ASTRoot
+								.parseFrom(CodedInputStream.newInstance(value.getBytes(), 0, value.getLength()));
+						if (p.getNamespacesCount() > 0)
+							marks.add(s);
+						sources.put(s, name);
+					}
+				} catch (Exception e) {
+					System.err.println(name);
+					e.printStackTrace();
+				}
+				r.close();
+			}
 		}
-		SequenceFile.Writer w = SequenceFile.createWriter(fileSystem, conf, new Path(base + "repcache/2015-07/projects.seq"), Text.class, BytesWritable.class);
+		SequenceFile.Writer w = SequenceFile.createWriter(fileSystem, conf, new Path(base + "/projects.seq"),
+				Text.class, BytesWritable.class);
+		SequenceFile.Writer astWriter = SequenceFile.createWriter(fileSystem, conf, new Path(base + "/ast.seq"),
+				Text.class, BytesWritable.class);
 		for (int i = 0; i < files.length; i++) {
 			FileStatus file = files[i];
 			String name = file.getPath().getName();
-			if (name.startsWith("projects-") && name.endsWith(".seq")) {
-				System.out.println("Reading file " + i + " in " + files.length + ": " + name);
+			if (name.contains("projects") && name.endsWith(".seq")) {
 				SequenceFile.Reader r = new SequenceFile.Reader(fileSystem, file.getPath(), conf);
 				final Text key = new Text();
 				final BytesWritable value = new BytesWritable();
@@ -92,11 +128,38 @@ public class SeqProjectCombiner {
 					e.printStackTrace();
 				}
 				r.close();
+			} 
+			else if (name.contains("ast") && name.endsWith(".seq")) {
+				SequenceFile.Reader r = new SequenceFile.Reader(fileSystem, file.getPath(), conf);
+				final Text key = new Text();
+				final BytesWritable value = new BytesWritable();
+				try {
+					while (r.next(key, value)) {
+						String s = key.toString();
+						if (sources.get(s).equals(name))
+							astWriter.append(key, value);
+					}
+				} catch (Exception e) {
+					System.err.println(name);
+					e.printStackTrace();
+				}
+				r.close();
 			}
 		}
+		astWriter.close();
 		w.close();
-		
+
 		fileSystem.close();
+		clean(DefaultProperties.GH_JSON_CACHE_PATH);
 	}
 
+	public static void clean(String path){
+		File dir = new File(path);
+		for(File file :  dir.listFiles()){
+			if((!"ast.seq".equals(file.getName())) && (!"projects.seq".equals(file.getName()))){
+				file.delete();
+			}
+		}
+	}
+	
 }

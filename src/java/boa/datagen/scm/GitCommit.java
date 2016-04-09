@@ -203,6 +203,11 @@ public class GitCommit extends AbstractCommit {
 			if (debug)
 				System.err.println("Git Error getting commit diffs: " + e.getMessage());
 		}
-		df.close();
+		try {
+			df.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		};
 	}
 }

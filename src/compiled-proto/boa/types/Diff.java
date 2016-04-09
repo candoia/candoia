@@ -89,45 +89,55 @@ public final class Diff {
      */
     boa.types.Ast.CommentsRootOrBuilder getCommentsOrBuilder();
 
-    // repeated .boa.types.ChangeKind changes = 7;
+    // optional int32 loc = 7;
     /**
-     * <code>repeated .boa.types.ChangeKind changes = 7;</code>
+     * <code>optional int32 loc = 7;</code>
+     */
+    boolean hasLoc();
+    /**
+     * <code>optional int32 loc = 7;</code>
+     */
+    int getLoc();
+
+    // repeated .boa.types.ChangeKind changes = 8;
+    /**
+     * <code>repeated .boa.types.ChangeKind changes = 8;</code>
      */
     java.util.List<boa.types.Shared.ChangeKind> getChangesList();
     /**
-     * <code>repeated .boa.types.ChangeKind changes = 7;</code>
+     * <code>repeated .boa.types.ChangeKind changes = 8;</code>
      */
     int getChangesCount();
     /**
-     * <code>repeated .boa.types.ChangeKind changes = 7;</code>
+     * <code>repeated .boa.types.ChangeKind changes = 8;</code>
      */
     boa.types.Shared.ChangeKind getChanges(int index);
 
-    // repeated int32 previous_versions = 8;
+    // repeated int32 previous_versions = 9;
     /**
-     * <code>repeated int32 previous_versions = 8;</code>
+     * <code>repeated int32 previous_versions = 9;</code>
      */
     java.util.List<java.lang.Integer> getPreviousVersionsList();
     /**
-     * <code>repeated int32 previous_versions = 8;</code>
+     * <code>repeated int32 previous_versions = 9;</code>
      */
     int getPreviousVersionsCount();
     /**
-     * <code>repeated int32 previous_versions = 8;</code>
+     * <code>repeated int32 previous_versions = 9;</code>
      */
     int getPreviousVersions(int index);
 
-    // repeated int32 previous_index = 9;
+    // repeated int32 previous_index = 10;
     /**
-     * <code>repeated int32 previous_index = 9;</code>
+     * <code>repeated int32 previous_index = 10;</code>
      */
     java.util.List<java.lang.Integer> getPreviousIndexList();
     /**
-     * <code>repeated int32 previous_index = 9;</code>
+     * <code>repeated int32 previous_index = 10;</code>
      */
     int getPreviousIndexCount();
     /**
-     * <code>repeated int32 previous_index = 9;</code>
+     * <code>repeated int32 previous_index = 10;</code>
      */
     int getPreviousIndex(int index);
   }
@@ -241,31 +251,36 @@ public final class Diff {
               break;
             }
             case 56: {
+              bitField0_ |= 0x00000040;
+              loc_ = input.readInt32();
+              break;
+            }
+            case 64: {
               int rawValue = input.readEnum();
               boa.types.Shared.ChangeKind value = boa.types.Shared.ChangeKind.valueOf(rawValue);
               if (value == null) {
-                unknownFields.mergeVarintField(7, rawValue);
+                unknownFields.mergeVarintField(8, rawValue);
               } else {
-                if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+                if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
                   changes_ = new java.util.ArrayList<boa.types.Shared.ChangeKind>();
-                  mutable_bitField0_ |= 0x00000040;
+                  mutable_bitField0_ |= 0x00000080;
                 }
                 changes_.add(value);
               }
               break;
             }
-            case 58: {
+            case 66: {
               int length = input.readRawVarint32();
               int oldLimit = input.pushLimit(length);
               while(input.getBytesUntilLimit() > 0) {
                 int rawValue = input.readEnum();
                 boa.types.Shared.ChangeKind value = boa.types.Shared.ChangeKind.valueOf(rawValue);
                 if (value == null) {
-                  unknownFields.mergeVarintField(7, rawValue);
+                  unknownFields.mergeVarintField(8, rawValue);
                 } else {
-                  if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+                  if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
                     changes_ = new java.util.ArrayList<boa.types.Shared.ChangeKind>();
-                    mutable_bitField0_ |= 0x00000040;
+                    mutable_bitField0_ |= 0x00000080;
                   }
                   changes_.add(value);
                 }
@@ -273,20 +288,20 @@ public final class Diff {
               input.popLimit(oldLimit);
               break;
             }
-            case 64: {
-              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+            case 72: {
+              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
                 previousVersions_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000080;
+                mutable_bitField0_ |= 0x00000100;
               }
               previousVersions_.add(input.readInt32());
               break;
             }
-            case 66: {
+            case 74: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080) && input.getBytesUntilLimit() > 0) {
+              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100) && input.getBytesUntilLimit() > 0) {
                 previousVersions_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000080;
+                mutable_bitField0_ |= 0x00000100;
               }
               while (input.getBytesUntilLimit() > 0) {
                 previousVersions_.add(input.readInt32());
@@ -294,20 +309,20 @@ public final class Diff {
               input.popLimit(limit);
               break;
             }
-            case 72: {
-              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+            case 80: {
+              if (!((mutable_bitField0_ & 0x00000200) == 0x00000200)) {
                 previousIndex_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000100;
+                mutable_bitField0_ |= 0x00000200;
               }
               previousIndex_.add(input.readInt32());
               break;
             }
-            case 74: {
+            case 82: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100) && input.getBytesUntilLimit() > 0) {
+              if (!((mutable_bitField0_ & 0x00000200) == 0x00000200) && input.getBytesUntilLimit() > 0) {
                 previousIndex_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000100;
+                mutable_bitField0_ |= 0x00000200;
               }
               while (input.getBytesUntilLimit() > 0) {
                 previousIndex_.add(input.readInt32());
@@ -323,13 +338,13 @@ public final class Diff {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+        if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
           changes_ = java.util.Collections.unmodifiableList(changes_);
         }
-        if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+        if (((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
           previousVersions_ = java.util.Collections.unmodifiableList(previousVersions_);
         }
-        if (((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+        if (((mutable_bitField0_ & 0x00000200) == 0x00000200)) {
           previousIndex_ = java.util.Collections.unmodifiableList(previousIndex_);
         }
         this.unknownFields = unknownFields.build();
@@ -815,69 +830,85 @@ public final class Diff {
       return comments_;
     }
 
-    // repeated .boa.types.ChangeKind changes = 7;
-    public static final int CHANGES_FIELD_NUMBER = 7;
+    // optional int32 loc = 7;
+    public static final int LOC_FIELD_NUMBER = 7;
+    private int loc_;
+    /**
+     * <code>optional int32 loc = 7;</code>
+     */
+    public boolean hasLoc() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    /**
+     * <code>optional int32 loc = 7;</code>
+     */
+    public int getLoc() {
+      return loc_;
+    }
+
+    // repeated .boa.types.ChangeKind changes = 8;
+    public static final int CHANGES_FIELD_NUMBER = 8;
     private java.util.List<boa.types.Shared.ChangeKind> changes_;
     /**
-     * <code>repeated .boa.types.ChangeKind changes = 7;</code>
+     * <code>repeated .boa.types.ChangeKind changes = 8;</code>
      */
     public java.util.List<boa.types.Shared.ChangeKind> getChangesList() {
       return changes_;
     }
     /**
-     * <code>repeated .boa.types.ChangeKind changes = 7;</code>
+     * <code>repeated .boa.types.ChangeKind changes = 8;</code>
      */
     public int getChangesCount() {
       return changes_.size();
     }
     /**
-     * <code>repeated .boa.types.ChangeKind changes = 7;</code>
+     * <code>repeated .boa.types.ChangeKind changes = 8;</code>
      */
     public boa.types.Shared.ChangeKind getChanges(int index) {
       return changes_.get(index);
     }
 
-    // repeated int32 previous_versions = 8;
-    public static final int PREVIOUS_VERSIONS_FIELD_NUMBER = 8;
+    // repeated int32 previous_versions = 9;
+    public static final int PREVIOUS_VERSIONS_FIELD_NUMBER = 9;
     private java.util.List<java.lang.Integer> previousVersions_;
     /**
-     * <code>repeated int32 previous_versions = 8;</code>
+     * <code>repeated int32 previous_versions = 9;</code>
      */
     public java.util.List<java.lang.Integer>
         getPreviousVersionsList() {
       return previousVersions_;
     }
     /**
-     * <code>repeated int32 previous_versions = 8;</code>
+     * <code>repeated int32 previous_versions = 9;</code>
      */
     public int getPreviousVersionsCount() {
       return previousVersions_.size();
     }
     /**
-     * <code>repeated int32 previous_versions = 8;</code>
+     * <code>repeated int32 previous_versions = 9;</code>
      */
     public int getPreviousVersions(int index) {
       return previousVersions_.get(index);
     }
 
-    // repeated int32 previous_index = 9;
-    public static final int PREVIOUS_INDEX_FIELD_NUMBER = 9;
+    // repeated int32 previous_index = 10;
+    public static final int PREVIOUS_INDEX_FIELD_NUMBER = 10;
     private java.util.List<java.lang.Integer> previousIndex_;
     /**
-     * <code>repeated int32 previous_index = 9;</code>
+     * <code>repeated int32 previous_index = 10;</code>
      */
     public java.util.List<java.lang.Integer>
         getPreviousIndexList() {
       return previousIndex_;
     }
     /**
-     * <code>repeated int32 previous_index = 9;</code>
+     * <code>repeated int32 previous_index = 10;</code>
      */
     public int getPreviousIndexCount() {
       return previousIndex_.size();
     }
     /**
-     * <code>repeated int32 previous_index = 9;</code>
+     * <code>repeated int32 previous_index = 10;</code>
      */
     public int getPreviousIndex(int index) {
       return previousIndex_.get(index);
@@ -890,6 +921,7 @@ public final class Diff {
       key_ = "";
       ast_ = boa.types.Ast.ASTRoot.getDefaultInstance();
       comments_ = boa.types.Ast.CommentsRoot.getDefaultInstance();
+      loc_ = 0;
       changes_ = java.util.Collections.emptyList();
       previousVersions_ = java.util.Collections.emptyList();
       previousIndex_ = java.util.Collections.emptyList();
@@ -952,14 +984,17 @@ public final class Diff {
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeMessage(6, comments_);
       }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeInt32(7, loc_);
+      }
       for (int i = 0; i < changes_.size(); i++) {
-        output.writeEnum(7, changes_.get(i).getNumber());
+        output.writeEnum(8, changes_.get(i).getNumber());
       }
       for (int i = 0; i < previousVersions_.size(); i++) {
-        output.writeInt32(8, previousVersions_.get(i));
+        output.writeInt32(9, previousVersions_.get(i));
       }
       for (int i = 0; i < previousIndex_.size(); i++) {
-        output.writeInt32(9, previousIndex_.get(i));
+        output.writeInt32(10, previousIndex_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -993,6 +1028,10 @@ public final class Diff {
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(6, comments_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(7, loc_);
       }
       {
         int dataSize = 0;
@@ -1159,12 +1198,14 @@ public final class Diff {
           commentsBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000020);
-        changes_ = java.util.Collections.emptyList();
+        loc_ = 0;
         bitField0_ = (bitField0_ & ~0x00000040);
-        previousVersions_ = java.util.Collections.emptyList();
+        changes_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000080);
-        previousIndex_ = java.util.Collections.emptyList();
+        previousVersions_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000100);
+        previousIndex_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000200);
         return this;
       }
 
@@ -1225,19 +1266,23 @@ public final class Diff {
         } else {
           result.comments_ = commentsBuilder_.build();
         }
-        if (((bitField0_ & 0x00000040) == 0x00000040)) {
-          changes_ = java.util.Collections.unmodifiableList(changes_);
-          bitField0_ = (bitField0_ & ~0x00000040);
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
         }
-        result.changes_ = changes_;
+        result.loc_ = loc_;
         if (((bitField0_ & 0x00000080) == 0x00000080)) {
-          previousVersions_ = java.util.Collections.unmodifiableList(previousVersions_);
+          changes_ = java.util.Collections.unmodifiableList(changes_);
           bitField0_ = (bitField0_ & ~0x00000080);
         }
-        result.previousVersions_ = previousVersions_;
+        result.changes_ = changes_;
         if (((bitField0_ & 0x00000100) == 0x00000100)) {
-          previousIndex_ = java.util.Collections.unmodifiableList(previousIndex_);
+          previousVersions_ = java.util.Collections.unmodifiableList(previousVersions_);
           bitField0_ = (bitField0_ & ~0x00000100);
+        }
+        result.previousVersions_ = previousVersions_;
+        if (((bitField0_ & 0x00000200) == 0x00000200)) {
+          previousIndex_ = java.util.Collections.unmodifiableList(previousIndex_);
+          bitField0_ = (bitField0_ & ~0x00000200);
         }
         result.previousIndex_ = previousIndex_;
         result.bitField0_ = to_bitField0_;
@@ -1278,10 +1323,13 @@ public final class Diff {
         if (other.hasComments()) {
           mergeComments(other.getComments());
         }
+        if (other.hasLoc()) {
+          setLoc(other.getLoc());
+        }
         if (!other.changes_.isEmpty()) {
           if (changes_.isEmpty()) {
             changes_ = other.changes_;
-            bitField0_ = (bitField0_ & ~0x00000040);
+            bitField0_ = (bitField0_ & ~0x00000080);
           } else {
             ensureChangesIsMutable();
             changes_.addAll(other.changes_);
@@ -1291,7 +1339,7 @@ public final class Diff {
         if (!other.previousVersions_.isEmpty()) {
           if (previousVersions_.isEmpty()) {
             previousVersions_ = other.previousVersions_;
-            bitField0_ = (bitField0_ & ~0x00000080);
+            bitField0_ = (bitField0_ & ~0x00000100);
           } else {
             ensurePreviousVersionsIsMutable();
             previousVersions_.addAll(other.previousVersions_);
@@ -1301,7 +1349,7 @@ public final class Diff {
         if (!other.previousIndex_.isEmpty()) {
           if (previousIndex_.isEmpty()) {
             previousIndex_ = other.previousIndex_;
-            bitField0_ = (bitField0_ & ~0x00000100);
+            bitField0_ = (bitField0_ & ~0x00000200);
           } else {
             ensurePreviousIndexIsMutable();
             previousIndex_.addAll(other.previousIndex_);
@@ -1817,35 +1865,68 @@ public final class Diff {
         return commentsBuilder_;
       }
 
-      // repeated .boa.types.ChangeKind changes = 7;
+      // optional int32 loc = 7;
+      private int loc_ ;
+      /**
+       * <code>optional int32 loc = 7;</code>
+       */
+      public boolean hasLoc() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>optional int32 loc = 7;</code>
+       */
+      public int getLoc() {
+        return loc_;
+      }
+      /**
+       * <code>optional int32 loc = 7;</code>
+       */
+      public Builder setLoc(int value) {
+        bitField0_ |= 0x00000040;
+        loc_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 loc = 7;</code>
+       */
+      public Builder clearLoc() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        loc_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // repeated .boa.types.ChangeKind changes = 8;
       private java.util.List<boa.types.Shared.ChangeKind> changes_ =
         java.util.Collections.emptyList();
       private void ensureChangesIsMutable() {
-        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
+        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
           changes_ = new java.util.ArrayList<boa.types.Shared.ChangeKind>(changes_);
-          bitField0_ |= 0x00000040;
+          bitField0_ |= 0x00000080;
         }
       }
       /**
-       * <code>repeated .boa.types.ChangeKind changes = 7;</code>
+       * <code>repeated .boa.types.ChangeKind changes = 8;</code>
        */
       public java.util.List<boa.types.Shared.ChangeKind> getChangesList() {
         return java.util.Collections.unmodifiableList(changes_);
       }
       /**
-       * <code>repeated .boa.types.ChangeKind changes = 7;</code>
+       * <code>repeated .boa.types.ChangeKind changes = 8;</code>
        */
       public int getChangesCount() {
         return changes_.size();
       }
       /**
-       * <code>repeated .boa.types.ChangeKind changes = 7;</code>
+       * <code>repeated .boa.types.ChangeKind changes = 8;</code>
        */
       public boa.types.Shared.ChangeKind getChanges(int index) {
         return changes_.get(index);
       }
       /**
-       * <code>repeated .boa.types.ChangeKind changes = 7;</code>
+       * <code>repeated .boa.types.ChangeKind changes = 8;</code>
        */
       public Builder setChanges(
           int index, boa.types.Shared.ChangeKind value) {
@@ -1858,7 +1939,7 @@ public final class Diff {
         return this;
       }
       /**
-       * <code>repeated .boa.types.ChangeKind changes = 7;</code>
+       * <code>repeated .boa.types.ChangeKind changes = 8;</code>
        */
       public Builder addChanges(boa.types.Shared.ChangeKind value) {
         if (value == null) {
@@ -1870,7 +1951,7 @@ public final class Diff {
         return this;
       }
       /**
-       * <code>repeated .boa.types.ChangeKind changes = 7;</code>
+       * <code>repeated .boa.types.ChangeKind changes = 8;</code>
        */
       public Builder addAllChanges(
           java.lang.Iterable<? extends boa.types.Shared.ChangeKind> values) {
@@ -1880,44 +1961,44 @@ public final class Diff {
         return this;
       }
       /**
-       * <code>repeated .boa.types.ChangeKind changes = 7;</code>
+       * <code>repeated .boa.types.ChangeKind changes = 8;</code>
        */
       public Builder clearChanges() {
         changes_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000080);
         onChanged();
         return this;
       }
 
-      // repeated int32 previous_versions = 8;
+      // repeated int32 previous_versions = 9;
       private java.util.List<java.lang.Integer> previousVersions_ = java.util.Collections.emptyList();
       private void ensurePreviousVersionsIsMutable() {
-        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
+        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
           previousVersions_ = new java.util.ArrayList<java.lang.Integer>(previousVersions_);
-          bitField0_ |= 0x00000080;
+          bitField0_ |= 0x00000100;
          }
       }
       /**
-       * <code>repeated int32 previous_versions = 8;</code>
+       * <code>repeated int32 previous_versions = 9;</code>
        */
       public java.util.List<java.lang.Integer>
           getPreviousVersionsList() {
         return java.util.Collections.unmodifiableList(previousVersions_);
       }
       /**
-       * <code>repeated int32 previous_versions = 8;</code>
+       * <code>repeated int32 previous_versions = 9;</code>
        */
       public int getPreviousVersionsCount() {
         return previousVersions_.size();
       }
       /**
-       * <code>repeated int32 previous_versions = 8;</code>
+       * <code>repeated int32 previous_versions = 9;</code>
        */
       public int getPreviousVersions(int index) {
         return previousVersions_.get(index);
       }
       /**
-       * <code>repeated int32 previous_versions = 8;</code>
+       * <code>repeated int32 previous_versions = 9;</code>
        */
       public Builder setPreviousVersions(
           int index, int value) {
@@ -1927,7 +2008,7 @@ public final class Diff {
         return this;
       }
       /**
-       * <code>repeated int32 previous_versions = 8;</code>
+       * <code>repeated int32 previous_versions = 9;</code>
        */
       public Builder addPreviousVersions(int value) {
         ensurePreviousVersionsIsMutable();
@@ -1936,7 +2017,7 @@ public final class Diff {
         return this;
       }
       /**
-       * <code>repeated int32 previous_versions = 8;</code>
+       * <code>repeated int32 previous_versions = 9;</code>
        */
       public Builder addAllPreviousVersions(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -1946,44 +2027,44 @@ public final class Diff {
         return this;
       }
       /**
-       * <code>repeated int32 previous_versions = 8;</code>
+       * <code>repeated int32 previous_versions = 9;</code>
        */
       public Builder clearPreviousVersions() {
         previousVersions_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000100);
         onChanged();
         return this;
       }
 
-      // repeated int32 previous_index = 9;
+      // repeated int32 previous_index = 10;
       private java.util.List<java.lang.Integer> previousIndex_ = java.util.Collections.emptyList();
       private void ensurePreviousIndexIsMutable() {
-        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
+        if (!((bitField0_ & 0x00000200) == 0x00000200)) {
           previousIndex_ = new java.util.ArrayList<java.lang.Integer>(previousIndex_);
-          bitField0_ |= 0x00000100;
+          bitField0_ |= 0x00000200;
          }
       }
       /**
-       * <code>repeated int32 previous_index = 9;</code>
+       * <code>repeated int32 previous_index = 10;</code>
        */
       public java.util.List<java.lang.Integer>
           getPreviousIndexList() {
         return java.util.Collections.unmodifiableList(previousIndex_);
       }
       /**
-       * <code>repeated int32 previous_index = 9;</code>
+       * <code>repeated int32 previous_index = 10;</code>
        */
       public int getPreviousIndexCount() {
         return previousIndex_.size();
       }
       /**
-       * <code>repeated int32 previous_index = 9;</code>
+       * <code>repeated int32 previous_index = 10;</code>
        */
       public int getPreviousIndex(int index) {
         return previousIndex_.get(index);
       }
       /**
-       * <code>repeated int32 previous_index = 9;</code>
+       * <code>repeated int32 previous_index = 10;</code>
        */
       public Builder setPreviousIndex(
           int index, int value) {
@@ -1993,7 +2074,7 @@ public final class Diff {
         return this;
       }
       /**
-       * <code>repeated int32 previous_index = 9;</code>
+       * <code>repeated int32 previous_index = 10;</code>
        */
       public Builder addPreviousIndex(int value) {
         ensurePreviousIndexIsMutable();
@@ -2002,7 +2083,7 @@ public final class Diff {
         return this;
       }
       /**
-       * <code>repeated int32 previous_index = 9;</code>
+       * <code>repeated int32 previous_index = 10;</code>
        */
       public Builder addAllPreviousIndex(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -2012,11 +2093,11 @@ public final class Diff {
         return this;
       }
       /**
-       * <code>repeated int32 previous_index = 9;</code>
+       * <code>repeated int32 previous_index = 10;</code>
        */
       public Builder clearPreviousIndex() {
         previousIndex_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000200);
         onChanged();
         return this;
       }
@@ -2047,25 +2128,25 @@ public final class Diff {
   static {
     java.lang.String[] descriptorData = {
       "\n\ndiff.proto\022\tboa.types\032\014shared.proto\032\ta" +
-      "st.proto\"\302\005\n\013ChangedFile\022%\n\006change\030\001 \002(\016" +
+      "st.proto\"\317\005\n\013ChangedFile\022%\n\006change\030\001 \002(\016" +
       "2\025.boa.types.ChangeKind\022-\n\004kind\030\002 \002(\0162\037." +
       "boa.types.ChangedFile.FileKind\022\014\n\004name\030\003" +
       " \002(\t\022\013\n\003key\030\004 \002(\t\022\037\n\003ast\030\005 \001(\0132\022.boa.typ" +
       "es.ASTRoot\022)\n\010comments\030\006 \001(\0132\027.boa.types" +
-      ".CommentsRoot\022&\n\007changes\030\007 \003(\0162\025.boa.typ" +
-      "es.ChangeKind\022\031\n\021previous_versions\030\010 \003(\005" +
-      "\022\026\n\016previous_index\030\t \003(\005\"\232\003\n\010FileKind\022\t\n" +
-      "\005OTHER\020\000\022\n\n\006BINARY\020\001\022\010\n\004TEXT\020\002\022\007\n\003XML\020\003\022",
-      "\025\n\021SOURCE_JAVA_ERROR\020d\022\024\n\020SOURCE_JAVA_JL" +
-      "S2\020e\022\024\n\020SOURCE_JAVA_JLS3\020f\022\024\n\020SOURCE_JAV" +
-      "A_JLS4\020g\022\024\n\020SOURCE_JAVA_JLS5\020h\022\016\n\nJAVA_E" +
-      "RROR\020d\022\010\n\004JLS2\020e\022\010\n\004JLS3\020f\022\010\n\004JLS4\020g\022\010\n\004" +
-      "JLS5\020h\022\024\n\017SOURCE_CS_ERROR\020\310\001\022\022\n\rSOURCE_C" +
-      "S_CS1\020\311\001\022\022\n\rSOURCE_CS_CS2\020\312\001\022\022\n\rSOURCE_C" +
-      "S_CS3\020\313\001\022\022\n\rSOURCE_CS_CS4\020\314\001\022\022\n\rSOURCE_C" +
-      "S_CS5\020\315\001\022\r\n\010CS_ERROR\020\310\001\022\010\n\003CS1\020\311\001\022\010\n\003CS2" +
-      "\020\312\001\022\010\n\003CS3\020\313\001\022\010\n\003CS4\020\314\001\022\010\n\003CS5\020\315\001\032\002\020\001B\002H" +
-      "\001"
+      ".CommentsRoot\022\013\n\003loc\030\007 \001(\005\022&\n\007changes\030\010 " +
+      "\003(\0162\025.boa.types.ChangeKind\022\031\n\021previous_v" +
+      "ersions\030\t \003(\005\022\026\n\016previous_index\030\n \003(\005\"\232\003" +
+      "\n\010FileKind\022\t\n\005OTHER\020\000\022\n\n\006BINARY\020\001\022\010\n\004TEX",
+      "T\020\002\022\007\n\003XML\020\003\022\025\n\021SOURCE_JAVA_ERROR\020d\022\024\n\020S" +
+      "OURCE_JAVA_JLS2\020e\022\024\n\020SOURCE_JAVA_JLS3\020f\022" +
+      "\024\n\020SOURCE_JAVA_JLS4\020g\022\024\n\020SOURCE_JAVA_JLS" +
+      "5\020h\022\016\n\nJAVA_ERROR\020d\022\010\n\004JLS2\020e\022\010\n\004JLS3\020f\022" +
+      "\010\n\004JLS4\020g\022\010\n\004JLS5\020h\022\024\n\017SOURCE_CS_ERROR\020\310" +
+      "\001\022\022\n\rSOURCE_CS_CS1\020\311\001\022\022\n\rSOURCE_CS_CS2\020\312" +
+      "\001\022\022\n\rSOURCE_CS_CS3\020\313\001\022\022\n\rSOURCE_CS_CS4\020\314" +
+      "\001\022\022\n\rSOURCE_CS_CS5\020\315\001\022\r\n\010CS_ERROR\020\310\001\022\010\n\003" +
+      "CS1\020\311\001\022\010\n\003CS2\020\312\001\022\010\n\003CS3\020\313\001\022\010\n\003CS4\020\314\001\022\010\n\003" +
+      "CS5\020\315\001\032\002\020\001B\002H\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -2077,7 +2158,7 @@ public final class Diff {
           internal_static_boa_types_ChangedFile_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_boa_types_ChangedFile_descriptor,
-              new java.lang.String[] { "Change", "Kind", "Name", "Key", "Ast", "Comments", "Changes", "PreviousVersions", "PreviousIndex", });
+              new java.lang.String[] { "Change", "Kind", "Name", "Key", "Ast", "Comments", "Loc", "Changes", "PreviousVersions", "PreviousIndex", });
           return null;
         }
       };

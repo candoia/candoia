@@ -24,29 +24,9 @@ public final class Shared {
     /**
      * <code>MODIFIED = 3;</code>
      */
-    MODIFIED(3, 3),
-    /**
-     * <code>RENAMED = 4;</code>
-     */
-    RENAMED(5, 4),
-    /**
-     * <code>COPIED = 5;</code>
-     */
-    COPIED(7, 5),
+    MODIFIED(2, 3),
     ;
 
-    /**
-     * <code>REMOVED = 2;</code>
-     */
-    public static final ChangeKind REMOVED = DELETED;
-    /**
-     * <code>CHANGED = 3;</code>
-     */
-    public static final ChangeKind CHANGED = MODIFIED;
-    /**
-     * <code>MOVED = 4;</code>
-     */
-    public static final ChangeKind MOVED = RENAMED;
     /**
      * <code>ADDED = 1;</code>
      */
@@ -56,29 +36,9 @@ public final class Shared {
      */
     public static final int DELETED_VALUE = 2;
     /**
-     * <code>REMOVED = 2;</code>
-     */
-    public static final int REMOVED_VALUE = 2;
-    /**
      * <code>MODIFIED = 3;</code>
      */
     public static final int MODIFIED_VALUE = 3;
-    /**
-     * <code>CHANGED = 3;</code>
-     */
-    public static final int CHANGED_VALUE = 3;
-    /**
-     * <code>RENAMED = 4;</code>
-     */
-    public static final int RENAMED_VALUE = 4;
-    /**
-     * <code>MOVED = 4;</code>
-     */
-    public static final int MOVED_VALUE = 4;
-    /**
-     * <code>COPIED = 5;</code>
-     */
-    public static final int COPIED_VALUE = 5;
 
 
     public final int getNumber() { return value; }
@@ -88,8 +48,6 @@ public final class Shared {
         case 1: return ADDED;
         case 2: return DELETED;
         case 3: return MODIFIED;
-        case 4: return RENAMED;
-        case 5: return COPIED;
         default: return null;
       }
     }
@@ -119,9 +77,7 @@ public final class Shared {
       return boa.types.Shared.getDescriptor().getEnumTypes().get(0);
     }
 
-    private static final ChangeKind[] VALUES = {
-      ADDED, DELETED, REMOVED, MODIFIED, CHANGED, RENAMED, MOVED, COPIED, 
-    };
+    private static final ChangeKind[] VALUES = values();
 
     public static ChangeKind valueOf(
         com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
@@ -190,6 +146,76 @@ public final class Shared {
      */
     com.google.protobuf.ByteString
         getEmailBytes();
+
+    // repeated .boa.types.Person followers = 4;
+    /**
+     * <code>repeated .boa.types.Person followers = 4;</code>
+     */
+    java.util.List<boa.types.Shared.Person> 
+        getFollowersList();
+    /**
+     * <code>repeated .boa.types.Person followers = 4;</code>
+     */
+    boa.types.Shared.Person getFollowers(int index);
+    /**
+     * <code>repeated .boa.types.Person followers = 4;</code>
+     */
+    int getFollowersCount();
+    /**
+     * <code>repeated .boa.types.Person followers = 4;</code>
+     */
+    java.util.List<? extends boa.types.Shared.PersonOrBuilder> 
+        getFollowersOrBuilderList();
+    /**
+     * <code>repeated .boa.types.Person followers = 4;</code>
+     */
+    boa.types.Shared.PersonOrBuilder getFollowersOrBuilder(
+        int index);
+
+    // repeated .boa.types.Person followings = 5;
+    /**
+     * <code>repeated .boa.types.Person followings = 5;</code>
+     */
+    java.util.List<boa.types.Shared.Person> 
+        getFollowingsList();
+    /**
+     * <code>repeated .boa.types.Person followings = 5;</code>
+     */
+    boa.types.Shared.Person getFollowings(int index);
+    /**
+     * <code>repeated .boa.types.Person followings = 5;</code>
+     */
+    int getFollowingsCount();
+    /**
+     * <code>repeated .boa.types.Person followings = 5;</code>
+     */
+    java.util.List<? extends boa.types.Shared.PersonOrBuilder> 
+        getFollowingsOrBuilderList();
+    /**
+     * <code>repeated .boa.types.Person followings = 5;</code>
+     */
+    boa.types.Shared.PersonOrBuilder getFollowingsOrBuilder(
+        int index);
+
+    // repeated string organizations = 6;
+    /**
+     * <code>repeated string organizations = 6;</code>
+     */
+    java.util.List<java.lang.String>
+    getOrganizationsList();
+    /**
+     * <code>repeated string organizations = 6;</code>
+     */
+    int getOrganizationsCount();
+    /**
+     * <code>repeated string organizations = 6;</code>
+     */
+    java.lang.String getOrganizations(int index);
+    /**
+     * <code>repeated string organizations = 6;</code>
+     */
+    com.google.protobuf.ByteString
+        getOrganizationsBytes(int index);
   }
   /**
    * Protobuf type {@code boa.types.Person}
@@ -257,6 +283,30 @@ public final class Shared {
               email_ = input.readBytes();
               break;
             }
+            case 34: {
+              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+                followers_ = new java.util.ArrayList<boa.types.Shared.Person>();
+                mutable_bitField0_ |= 0x00000008;
+              }
+              followers_.add(input.readMessage(boa.types.Shared.Person.PARSER, extensionRegistry));
+              break;
+            }
+            case 42: {
+              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+                followings_ = new java.util.ArrayList<boa.types.Shared.Person>();
+                mutable_bitField0_ |= 0x00000010;
+              }
+              followings_.add(input.readMessage(boa.types.Shared.Person.PARSER, extensionRegistry));
+              break;
+            }
+            case 50: {
+              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+                organizations_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000020;
+              }
+              organizations_.add(input.readBytes());
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -265,6 +315,15 @@ public final class Shared {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+          followers_ = java.util.Collections.unmodifiableList(followers_);
+        }
+        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+          followings_ = java.util.Collections.unmodifiableList(followings_);
+        }
+        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+          organizations_ = new com.google.protobuf.UnmodifiableLazyStringList(organizations_);
+        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
@@ -426,10 +485,115 @@ public final class Shared {
       }
     }
 
+    // repeated .boa.types.Person followers = 4;
+    public static final int FOLLOWERS_FIELD_NUMBER = 4;
+    private java.util.List<boa.types.Shared.Person> followers_;
+    /**
+     * <code>repeated .boa.types.Person followers = 4;</code>
+     */
+    public java.util.List<boa.types.Shared.Person> getFollowersList() {
+      return followers_;
+    }
+    /**
+     * <code>repeated .boa.types.Person followers = 4;</code>
+     */
+    public java.util.List<? extends boa.types.Shared.PersonOrBuilder> 
+        getFollowersOrBuilderList() {
+      return followers_;
+    }
+    /**
+     * <code>repeated .boa.types.Person followers = 4;</code>
+     */
+    public int getFollowersCount() {
+      return followers_.size();
+    }
+    /**
+     * <code>repeated .boa.types.Person followers = 4;</code>
+     */
+    public boa.types.Shared.Person getFollowers(int index) {
+      return followers_.get(index);
+    }
+    /**
+     * <code>repeated .boa.types.Person followers = 4;</code>
+     */
+    public boa.types.Shared.PersonOrBuilder getFollowersOrBuilder(
+        int index) {
+      return followers_.get(index);
+    }
+
+    // repeated .boa.types.Person followings = 5;
+    public static final int FOLLOWINGS_FIELD_NUMBER = 5;
+    private java.util.List<boa.types.Shared.Person> followings_;
+    /**
+     * <code>repeated .boa.types.Person followings = 5;</code>
+     */
+    public java.util.List<boa.types.Shared.Person> getFollowingsList() {
+      return followings_;
+    }
+    /**
+     * <code>repeated .boa.types.Person followings = 5;</code>
+     */
+    public java.util.List<? extends boa.types.Shared.PersonOrBuilder> 
+        getFollowingsOrBuilderList() {
+      return followings_;
+    }
+    /**
+     * <code>repeated .boa.types.Person followings = 5;</code>
+     */
+    public int getFollowingsCount() {
+      return followings_.size();
+    }
+    /**
+     * <code>repeated .boa.types.Person followings = 5;</code>
+     */
+    public boa.types.Shared.Person getFollowings(int index) {
+      return followings_.get(index);
+    }
+    /**
+     * <code>repeated .boa.types.Person followings = 5;</code>
+     */
+    public boa.types.Shared.PersonOrBuilder getFollowingsOrBuilder(
+        int index) {
+      return followings_.get(index);
+    }
+
+    // repeated string organizations = 6;
+    public static final int ORGANIZATIONS_FIELD_NUMBER = 6;
+    private com.google.protobuf.LazyStringList organizations_;
+    /**
+     * <code>repeated string organizations = 6;</code>
+     */
+    public java.util.List<java.lang.String>
+        getOrganizationsList() {
+      return organizations_;
+    }
+    /**
+     * <code>repeated string organizations = 6;</code>
+     */
+    public int getOrganizationsCount() {
+      return organizations_.size();
+    }
+    /**
+     * <code>repeated string organizations = 6;</code>
+     */
+    public java.lang.String getOrganizations(int index) {
+      return organizations_.get(index);
+    }
+    /**
+     * <code>repeated string organizations = 6;</code>
+     */
+    public com.google.protobuf.ByteString
+        getOrganizationsBytes(int index) {
+      return organizations_.getByteString(index);
+    }
+
     private void initFields() {
       username_ = "";
       realName_ = "";
       email_ = "";
+      followers_ = java.util.Collections.emptyList();
+      followings_ = java.util.Collections.emptyList();
+      organizations_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -448,6 +612,18 @@ public final class Shared {
         memoizedIsInitialized = 0;
         return false;
       }
+      for (int i = 0; i < getFollowersCount(); i++) {
+        if (!getFollowers(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getFollowingsCount(); i++) {
+        if (!getFollowings(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -463,6 +639,15 @@ public final class Shared {
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeBytes(3, getEmailBytes());
+      }
+      for (int i = 0; i < followers_.size(); i++) {
+        output.writeMessage(4, followers_.get(i));
+      }
+      for (int i = 0; i < followings_.size(); i++) {
+        output.writeMessage(5, followings_.get(i));
+      }
+      for (int i = 0; i < organizations_.size(); i++) {
+        output.writeBytes(6, organizations_.getByteString(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -484,6 +669,23 @@ public final class Shared {
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(3, getEmailBytes());
+      }
+      for (int i = 0; i < followers_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, followers_.get(i));
+      }
+      for (int i = 0; i < followings_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, followings_.get(i));
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < organizations_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeBytesSizeNoTag(organizations_.getByteString(i));
+        }
+        size += dataSize;
+        size += 1 * getOrganizationsList().size();
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -593,6 +795,8 @@ public final class Shared {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getFollowersFieldBuilder();
+          getFollowingsFieldBuilder();
         }
       }
       private static Builder create() {
@@ -607,6 +811,20 @@ public final class Shared {
         bitField0_ = (bitField0_ & ~0x00000002);
         email_ = "";
         bitField0_ = (bitField0_ & ~0x00000004);
+        if (followersBuilder_ == null) {
+          followers_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000008);
+        } else {
+          followersBuilder_.clear();
+        }
+        if (followingsBuilder_ == null) {
+          followings_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+        } else {
+          followingsBuilder_.clear();
+        }
+        organizations_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -647,6 +865,30 @@ public final class Shared {
           to_bitField0_ |= 0x00000004;
         }
         result.email_ = email_;
+        if (followersBuilder_ == null) {
+          if (((bitField0_ & 0x00000008) == 0x00000008)) {
+            followers_ = java.util.Collections.unmodifiableList(followers_);
+            bitField0_ = (bitField0_ & ~0x00000008);
+          }
+          result.followers_ = followers_;
+        } else {
+          result.followers_ = followersBuilder_.build();
+        }
+        if (followingsBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) == 0x00000010)) {
+            followings_ = java.util.Collections.unmodifiableList(followings_);
+            bitField0_ = (bitField0_ & ~0x00000010);
+          }
+          result.followings_ = followings_;
+        } else {
+          result.followings_ = followingsBuilder_.build();
+        }
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          organizations_ = new com.google.protobuf.UnmodifiableLazyStringList(
+              organizations_);
+          bitField0_ = (bitField0_ & ~0x00000020);
+        }
+        result.organizations_ = organizations_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -678,6 +920,68 @@ public final class Shared {
           email_ = other.email_;
           onChanged();
         }
+        if (followersBuilder_ == null) {
+          if (!other.followers_.isEmpty()) {
+            if (followers_.isEmpty()) {
+              followers_ = other.followers_;
+              bitField0_ = (bitField0_ & ~0x00000008);
+            } else {
+              ensureFollowersIsMutable();
+              followers_.addAll(other.followers_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.followers_.isEmpty()) {
+            if (followersBuilder_.isEmpty()) {
+              followersBuilder_.dispose();
+              followersBuilder_ = null;
+              followers_ = other.followers_;
+              bitField0_ = (bitField0_ & ~0x00000008);
+              followersBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getFollowersFieldBuilder() : null;
+            } else {
+              followersBuilder_.addAllMessages(other.followers_);
+            }
+          }
+        }
+        if (followingsBuilder_ == null) {
+          if (!other.followings_.isEmpty()) {
+            if (followings_.isEmpty()) {
+              followings_ = other.followings_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+            } else {
+              ensureFollowingsIsMutable();
+              followings_.addAll(other.followings_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.followings_.isEmpty()) {
+            if (followingsBuilder_.isEmpty()) {
+              followingsBuilder_.dispose();
+              followingsBuilder_ = null;
+              followings_ = other.followings_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+              followingsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getFollowingsFieldBuilder() : null;
+            } else {
+              followingsBuilder_.addAllMessages(other.followings_);
+            }
+          }
+        }
+        if (!other.organizations_.isEmpty()) {
+          if (organizations_.isEmpty()) {
+            organizations_ = other.organizations_;
+            bitField0_ = (bitField0_ & ~0x00000020);
+          } else {
+            ensureOrganizationsIsMutable();
+            organizations_.addAll(other.organizations_);
+          }
+          onChanged();
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -694,6 +998,18 @@ public final class Shared {
         if (!hasEmail()) {
           
           return false;
+        }
+        for (int i = 0; i < getFollowersCount(); i++) {
+          if (!getFollowers(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getFollowingsCount(); i++) {
+          if (!getFollowings(i).isInitialized()) {
+            
+            return false;
+          }
         }
         return true;
       }
@@ -939,6 +1255,579 @@ public final class Shared {
         return this;
       }
 
+      // repeated .boa.types.Person followers = 4;
+      private java.util.List<boa.types.Shared.Person> followers_ =
+        java.util.Collections.emptyList();
+      private void ensureFollowersIsMutable() {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+          followers_ = new java.util.ArrayList<boa.types.Shared.Person>(followers_);
+          bitField0_ |= 0x00000008;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          boa.types.Shared.Person, boa.types.Shared.Person.Builder, boa.types.Shared.PersonOrBuilder> followersBuilder_;
+
+      /**
+       * <code>repeated .boa.types.Person followers = 4;</code>
+       */
+      public java.util.List<boa.types.Shared.Person> getFollowersList() {
+        if (followersBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(followers_);
+        } else {
+          return followersBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .boa.types.Person followers = 4;</code>
+       */
+      public int getFollowersCount() {
+        if (followersBuilder_ == null) {
+          return followers_.size();
+        } else {
+          return followersBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .boa.types.Person followers = 4;</code>
+       */
+      public boa.types.Shared.Person getFollowers(int index) {
+        if (followersBuilder_ == null) {
+          return followers_.get(index);
+        } else {
+          return followersBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .boa.types.Person followers = 4;</code>
+       */
+      public Builder setFollowers(
+          int index, boa.types.Shared.Person value) {
+        if (followersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureFollowersIsMutable();
+          followers_.set(index, value);
+          onChanged();
+        } else {
+          followersBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .boa.types.Person followers = 4;</code>
+       */
+      public Builder setFollowers(
+          int index, boa.types.Shared.Person.Builder builderForValue) {
+        if (followersBuilder_ == null) {
+          ensureFollowersIsMutable();
+          followers_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          followersBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .boa.types.Person followers = 4;</code>
+       */
+      public Builder addFollowers(boa.types.Shared.Person value) {
+        if (followersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureFollowersIsMutable();
+          followers_.add(value);
+          onChanged();
+        } else {
+          followersBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .boa.types.Person followers = 4;</code>
+       */
+      public Builder addFollowers(
+          int index, boa.types.Shared.Person value) {
+        if (followersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureFollowersIsMutable();
+          followers_.add(index, value);
+          onChanged();
+        } else {
+          followersBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .boa.types.Person followers = 4;</code>
+       */
+      public Builder addFollowers(
+          boa.types.Shared.Person.Builder builderForValue) {
+        if (followersBuilder_ == null) {
+          ensureFollowersIsMutable();
+          followers_.add(builderForValue.build());
+          onChanged();
+        } else {
+          followersBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .boa.types.Person followers = 4;</code>
+       */
+      public Builder addFollowers(
+          int index, boa.types.Shared.Person.Builder builderForValue) {
+        if (followersBuilder_ == null) {
+          ensureFollowersIsMutable();
+          followers_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          followersBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .boa.types.Person followers = 4;</code>
+       */
+      public Builder addAllFollowers(
+          java.lang.Iterable<? extends boa.types.Shared.Person> values) {
+        if (followersBuilder_ == null) {
+          ensureFollowersIsMutable();
+          super.addAll(values, followers_);
+          onChanged();
+        } else {
+          followersBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .boa.types.Person followers = 4;</code>
+       */
+      public Builder clearFollowers() {
+        if (followersBuilder_ == null) {
+          followers_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000008);
+          onChanged();
+        } else {
+          followersBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .boa.types.Person followers = 4;</code>
+       */
+      public Builder removeFollowers(int index) {
+        if (followersBuilder_ == null) {
+          ensureFollowersIsMutable();
+          followers_.remove(index);
+          onChanged();
+        } else {
+          followersBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .boa.types.Person followers = 4;</code>
+       */
+      public boa.types.Shared.Person.Builder getFollowersBuilder(
+          int index) {
+        return getFollowersFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .boa.types.Person followers = 4;</code>
+       */
+      public boa.types.Shared.PersonOrBuilder getFollowersOrBuilder(
+          int index) {
+        if (followersBuilder_ == null) {
+          return followers_.get(index);  } else {
+          return followersBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .boa.types.Person followers = 4;</code>
+       */
+      public java.util.List<? extends boa.types.Shared.PersonOrBuilder> 
+           getFollowersOrBuilderList() {
+        if (followersBuilder_ != null) {
+          return followersBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(followers_);
+        }
+      }
+      /**
+       * <code>repeated .boa.types.Person followers = 4;</code>
+       */
+      public boa.types.Shared.Person.Builder addFollowersBuilder() {
+        return getFollowersFieldBuilder().addBuilder(
+            boa.types.Shared.Person.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .boa.types.Person followers = 4;</code>
+       */
+      public boa.types.Shared.Person.Builder addFollowersBuilder(
+          int index) {
+        return getFollowersFieldBuilder().addBuilder(
+            index, boa.types.Shared.Person.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .boa.types.Person followers = 4;</code>
+       */
+      public java.util.List<boa.types.Shared.Person.Builder> 
+           getFollowersBuilderList() {
+        return getFollowersFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          boa.types.Shared.Person, boa.types.Shared.Person.Builder, boa.types.Shared.PersonOrBuilder> 
+          getFollowersFieldBuilder() {
+        if (followersBuilder_ == null) {
+          followersBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              boa.types.Shared.Person, boa.types.Shared.Person.Builder, boa.types.Shared.PersonOrBuilder>(
+                  followers_,
+                  ((bitField0_ & 0x00000008) == 0x00000008),
+                  getParentForChildren(),
+                  isClean());
+          followers_ = null;
+        }
+        return followersBuilder_;
+      }
+
+      // repeated .boa.types.Person followings = 5;
+      private java.util.List<boa.types.Shared.Person> followings_ =
+        java.util.Collections.emptyList();
+      private void ensureFollowingsIsMutable() {
+        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+          followings_ = new java.util.ArrayList<boa.types.Shared.Person>(followings_);
+          bitField0_ |= 0x00000010;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          boa.types.Shared.Person, boa.types.Shared.Person.Builder, boa.types.Shared.PersonOrBuilder> followingsBuilder_;
+
+      /**
+       * <code>repeated .boa.types.Person followings = 5;</code>
+       */
+      public java.util.List<boa.types.Shared.Person> getFollowingsList() {
+        if (followingsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(followings_);
+        } else {
+          return followingsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .boa.types.Person followings = 5;</code>
+       */
+      public int getFollowingsCount() {
+        if (followingsBuilder_ == null) {
+          return followings_.size();
+        } else {
+          return followingsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .boa.types.Person followings = 5;</code>
+       */
+      public boa.types.Shared.Person getFollowings(int index) {
+        if (followingsBuilder_ == null) {
+          return followings_.get(index);
+        } else {
+          return followingsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .boa.types.Person followings = 5;</code>
+       */
+      public Builder setFollowings(
+          int index, boa.types.Shared.Person value) {
+        if (followingsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureFollowingsIsMutable();
+          followings_.set(index, value);
+          onChanged();
+        } else {
+          followingsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .boa.types.Person followings = 5;</code>
+       */
+      public Builder setFollowings(
+          int index, boa.types.Shared.Person.Builder builderForValue) {
+        if (followingsBuilder_ == null) {
+          ensureFollowingsIsMutable();
+          followings_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          followingsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .boa.types.Person followings = 5;</code>
+       */
+      public Builder addFollowings(boa.types.Shared.Person value) {
+        if (followingsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureFollowingsIsMutable();
+          followings_.add(value);
+          onChanged();
+        } else {
+          followingsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .boa.types.Person followings = 5;</code>
+       */
+      public Builder addFollowings(
+          int index, boa.types.Shared.Person value) {
+        if (followingsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureFollowingsIsMutable();
+          followings_.add(index, value);
+          onChanged();
+        } else {
+          followingsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .boa.types.Person followings = 5;</code>
+       */
+      public Builder addFollowings(
+          boa.types.Shared.Person.Builder builderForValue) {
+        if (followingsBuilder_ == null) {
+          ensureFollowingsIsMutable();
+          followings_.add(builderForValue.build());
+          onChanged();
+        } else {
+          followingsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .boa.types.Person followings = 5;</code>
+       */
+      public Builder addFollowings(
+          int index, boa.types.Shared.Person.Builder builderForValue) {
+        if (followingsBuilder_ == null) {
+          ensureFollowingsIsMutable();
+          followings_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          followingsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .boa.types.Person followings = 5;</code>
+       */
+      public Builder addAllFollowings(
+          java.lang.Iterable<? extends boa.types.Shared.Person> values) {
+        if (followingsBuilder_ == null) {
+          ensureFollowingsIsMutable();
+          super.addAll(values, followings_);
+          onChanged();
+        } else {
+          followingsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .boa.types.Person followings = 5;</code>
+       */
+      public Builder clearFollowings() {
+        if (followingsBuilder_ == null) {
+          followings_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+          onChanged();
+        } else {
+          followingsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .boa.types.Person followings = 5;</code>
+       */
+      public Builder removeFollowings(int index) {
+        if (followingsBuilder_ == null) {
+          ensureFollowingsIsMutable();
+          followings_.remove(index);
+          onChanged();
+        } else {
+          followingsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .boa.types.Person followings = 5;</code>
+       */
+      public boa.types.Shared.Person.Builder getFollowingsBuilder(
+          int index) {
+        return getFollowingsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .boa.types.Person followings = 5;</code>
+       */
+      public boa.types.Shared.PersonOrBuilder getFollowingsOrBuilder(
+          int index) {
+        if (followingsBuilder_ == null) {
+          return followings_.get(index);  } else {
+          return followingsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .boa.types.Person followings = 5;</code>
+       */
+      public java.util.List<? extends boa.types.Shared.PersonOrBuilder> 
+           getFollowingsOrBuilderList() {
+        if (followingsBuilder_ != null) {
+          return followingsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(followings_);
+        }
+      }
+      /**
+       * <code>repeated .boa.types.Person followings = 5;</code>
+       */
+      public boa.types.Shared.Person.Builder addFollowingsBuilder() {
+        return getFollowingsFieldBuilder().addBuilder(
+            boa.types.Shared.Person.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .boa.types.Person followings = 5;</code>
+       */
+      public boa.types.Shared.Person.Builder addFollowingsBuilder(
+          int index) {
+        return getFollowingsFieldBuilder().addBuilder(
+            index, boa.types.Shared.Person.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .boa.types.Person followings = 5;</code>
+       */
+      public java.util.List<boa.types.Shared.Person.Builder> 
+           getFollowingsBuilderList() {
+        return getFollowingsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          boa.types.Shared.Person, boa.types.Shared.Person.Builder, boa.types.Shared.PersonOrBuilder> 
+          getFollowingsFieldBuilder() {
+        if (followingsBuilder_ == null) {
+          followingsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              boa.types.Shared.Person, boa.types.Shared.Person.Builder, boa.types.Shared.PersonOrBuilder>(
+                  followings_,
+                  ((bitField0_ & 0x00000010) == 0x00000010),
+                  getParentForChildren(),
+                  isClean());
+          followings_ = null;
+        }
+        return followingsBuilder_;
+      }
+
+      // repeated string organizations = 6;
+      private com.google.protobuf.LazyStringList organizations_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureOrganizationsIsMutable() {
+        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
+          organizations_ = new com.google.protobuf.LazyStringArrayList(organizations_);
+          bitField0_ |= 0x00000020;
+         }
+      }
+      /**
+       * <code>repeated string organizations = 6;</code>
+       */
+      public java.util.List<java.lang.String>
+          getOrganizationsList() {
+        return java.util.Collections.unmodifiableList(organizations_);
+      }
+      /**
+       * <code>repeated string organizations = 6;</code>
+       */
+      public int getOrganizationsCount() {
+        return organizations_.size();
+      }
+      /**
+       * <code>repeated string organizations = 6;</code>
+       */
+      public java.lang.String getOrganizations(int index) {
+        return organizations_.get(index);
+      }
+      /**
+       * <code>repeated string organizations = 6;</code>
+       */
+      public com.google.protobuf.ByteString
+          getOrganizationsBytes(int index) {
+        return organizations_.getByteString(index);
+      }
+      /**
+       * <code>repeated string organizations = 6;</code>
+       */
+      public Builder setOrganizations(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureOrganizationsIsMutable();
+        organizations_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string organizations = 6;</code>
+       */
+      public Builder addOrganizations(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureOrganizationsIsMutable();
+        organizations_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string organizations = 6;</code>
+       */
+      public Builder addAllOrganizations(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureOrganizationsIsMutable();
+        super.addAll(values, organizations_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string organizations = 6;</code>
+       */
+      public Builder clearOrganizations() {
+        organizations_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string organizations = 6;</code>
+       */
+      public Builder addOrganizationsBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureOrganizationsIsMutable();
+        organizations_.add(value);
+        onChanged();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:boa.types.Person)
     }
 
@@ -964,12 +1853,13 @@ public final class Shared {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\014shared.proto\022\tboa.types\"<\n\006Person\022\020\n\010u" +
-      "sername\030\001 \002(\t\022\021\n\treal_name\030\002 \002(\t\022\r\n\005emai" +
-      "l\030\003 \002(\t*t\n\nChangeKind\022\t\n\005ADDED\020\001\022\013\n\007DELE" +
-      "TED\020\002\022\013\n\007REMOVED\020\002\022\014\n\010MODIFIED\020\003\022\013\n\007CHAN" +
-      "GED\020\003\022\013\n\007RENAMED\020\004\022\t\n\005MOVED\020\004\022\n\n\006COPIED\020" +
-      "\005\032\002\020\001B\002H\001"
+      "\n\014shared.proto\022\tboa.types\"\240\001\n\006Person\022\020\n\010" +
+      "username\030\001 \002(\t\022\021\n\treal_name\030\002 \002(\t\022\r\n\005ema" +
+      "il\030\003 \002(\t\022$\n\tfollowers\030\004 \003(\0132\021.boa.types." +
+      "Person\022%\n\nfollowings\030\005 \003(\0132\021.boa.types.P" +
+      "erson\022\025\n\rorganizations\030\006 \003(\t*2\n\nChangeKi" +
+      "nd\022\t\n\005ADDED\020\001\022\013\n\007DELETED\020\002\022\014\n\010MODIFIED\020\003" +
+      "B\002H\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -981,7 +1871,7 @@ public final class Shared {
           internal_static_boa_types_Person_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_boa_types_Person_descriptor,
-              new java.lang.String[] { "Username", "RealName", "Email", });
+              new java.lang.String[] { "Username", "RealName", "Email", "Followers", "Followings", "Organizations", });
           return null;
         }
       };

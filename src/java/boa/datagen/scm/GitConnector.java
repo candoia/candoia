@@ -37,7 +37,8 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
  * @author josephb
  */
 public class GitConnector extends AbstractConnector {
-	private static final boolean debug = boa.datagen.util.Properties.getBoolean("debug", boa.datagen.DefaultProperties.DEBUG);
+	private static final boolean debug = boa.datagen.util.Properties.getBoolean("debug",
+			boa.datagen.DefaultProperties.DEBUG);
 
 	private String path;
 
@@ -47,12 +48,14 @@ public class GitConnector extends AbstractConnector {
 
 	private String lastCommitId = null;
 
+	public GitConnector() {
+
+	}
+
 	public GitConnector(final String path) {
 		try {
 			this.path = path;
-			this.repository = new FileRepositoryBuilder()
-								.setGitDir(new File(path + "/.git"))
-								.build();
+			this.repository = new FileRepositoryBuilder().setGitDir(new File(path + "/.git")).build();
 			this.git = new Git(this.repository);
 			this.revwalk = new RevWalk(this.repository);
 		} catch (final IOException e) {
@@ -61,6 +64,28 @@ public class GitConnector extends AbstractConnector {
 		}
 	}
 
+	public boolean initialize(final String path){
+		try {
+			this.path = path;
+			this.repository = new FileRepositoryBuilder().setGitDir(new File(path + "/.git")).build();
+			this.git = new Git(this.repository);
+			this.revwalk = new RevWalk(this.repository);
+		} catch (final IOException e) {
+			if (debug)
+				System.err.println("Git Error connecting to " + path + ". " + e.getMessage());
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean clear(){
+			this.path = null;
+//			this.repository = null;
+			this.git = null;
+			this.revwalk = null;
+		return true;
+	}
+	
 	@Override
 	public void close() {
 		repository.close();
@@ -95,11 +120,11 @@ public class GitConnector extends AbstractConnector {
 			revwalk.sort(RevSort.TOPO, true);
 			revwalk.sort(RevSort.COMMIT_TIME_DESC, true);
 			revwalk.sort(RevSort.REVERSE, true);
-			
+
 			revisions.clear();
 			revisionMap = new HashMap<String, Integer>();
 
-			for (final RevCommit rc: revwalk) {
+			for (final RevCommit rc : revwalk) {
 				final GitCommit gc = new GitCommit(repository, this);
 
 				gc.setId(rc.getName());
@@ -107,7 +132,7 @@ public class GitConnector extends AbstractConnector {
 				gc.setCommitter(rc.getCommitterIdent().getName());
 				gc.setDate(new Date(((long) rc.getCommitTime()) * 1000));
 				gc.setMessage(rc.getFullMessage());
-				
+
 				gc.getChangeFiles(this.revisionMap, rc);
 
 				revisionMap.put(gc.id, revisions.size());
@@ -143,5 +168,10 @@ public class GitConnector extends AbstractConnector {
 			if (debug)
 				System.err.println("Git Error reading branches: " + e.getMessage());
 		}
+	}
+
+	@Override
+	public AbstractConnector getNewInstance() {
+		return new GitConnector();
 	}
 }

@@ -32,8 +32,15 @@ public abstract class AbstractConnector implements AutoCloseable {
 	protected List<AbstractCommit> revisions = null;
 	protected HashMap<String, Integer> nameIndices = new HashMap<String, Integer>();
 
+	public abstract boolean clear();
+
+	public abstract boolean initialize(String path);
+
 	public abstract String getLastCommitId();
+
 	public abstract void setLastSeenCommitId(final String id);
+	
+	public abstract AbstractConnector getNewInstance();
 
 	public List<Revision> getCommits(final boolean parse) {
 		if (revisions == null) {
@@ -55,7 +62,8 @@ public abstract class AbstractConnector implements AutoCloseable {
 
 	protected Map<String, Integer> revisionMap;
 
-	public List<Revision> getCommits(final boolean parse, final Writer astWriter, final String repoKey, final String keyDelim) {
+	public List<Revision> getCommits(final boolean parse, final Writer astWriter, final String repoKey,
+			final String keyDelim) {
 		if (revisions == null) {
 			revisions = new ArrayList<AbstractCommit>();
 			setRevisions();
@@ -68,4 +76,11 @@ public abstract class AbstractConnector implements AutoCloseable {
 		return revs;
 	}
 
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new InternalError(e.toString());
+		}
+	}
 }

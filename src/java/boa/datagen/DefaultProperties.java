@@ -22,9 +22,13 @@ package boa.datagen;
  */
 public class DefaultProperties {
 	public static final boolean DEBUG = false;
-	public static final String NUM_THREADS = "8";
+	public static String NUM_THREADS = "1";
 	public static final String MAX_COMMITS = "10000";
 
+	public static  String CLONE_DIR_NAME = "/__clonedByBoa";
+	public static  String JSON_DIR_NAME = "/__json";
+	public static  String BUG_DIR_NAME = "/issues";
+	
 	// HBase tables
 	public static final String HBASE_PROJECTS_TABLE = "projects";
 	public static final String HBASE_AST_TABLE = "ast";
@@ -56,8 +60,9 @@ public class DefaultProperties {
 	public static final String SF_TICKETS_PATH = "tickets";
 	
 	// GitHub paths
-	public static final String GH_JSON_PATH = "repos-metadata-Boa-upto1213";
-	public static final String GH_JSON_CACHE_PATH = "json_cache";
-	public static final String GH_GIT_PATH = "github/repositories";
-	public static final String GH_TICKETS_PATH = "tickets";
+	public static  String GH_JSON_PATH = "repos-metadata-Boa-upto1213";
+	public static  String GH_JSON_CACHE_PATH = "json_cache";
+	public static  String GH_GIT_PATH = "github/repositories";
+	public static  String GH_TICKETS_PATH = "tickets";
+	
 }
