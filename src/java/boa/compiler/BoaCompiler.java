@@ -61,9 +61,13 @@ import boa.compiler.visitors.TaskClassifyingVisitor;
 import boa.compiler.visitors.TypeCheckingVisitor;
 import boa.datagen.BoaGenerator;
 import boa.datagen.DefaultProperties;
+import boa.debugger.Evaluator;
+import boa.debugger.value.Value;
 import boa.parser.BoaLexer;
 import boa.parser.BoaParser;
 
+
+import boa.debugger.Env.EmptyEnv;
 /**
  * The main entry point for the Boa compiler.
  *
@@ -133,6 +137,7 @@ public class BoaCompiler {
 			SymbolTable.initialize(libs);
 			for (int i = 0; i < inputFiles.size(); i++) {
 				final File f = inputFiles.get(i);
+				Start p = null;
 				try {
 					final BoaLexer lexer = new BoaLexer(new ANTLRFileStream(f.getAbsolutePath()));
 					lexer.removeErrorListeners();
@@ -151,7 +156,7 @@ public class BoaCompiler {
 					});
 
 					final BoaErrorListener parserErrorListener = new ParserErrorListener();
-					Start p = parse(tokens, parser, parserErrorListener);
+					p = parse(tokens, parser, parserErrorListener);
 					try {
 						if (!parserErrorListener.hasError) {
 							new TypeCheckingVisitor().start(p, new SymbolTable());
@@ -165,8 +170,12 @@ public class BoaCompiler {
 					e.printStackTrace();
 				}
 				BoaGenerator generator = new BoaGenerator();
-				if (!isCompleteDataSet(DefaultProperties.GH_JSON_CACHE_PATH))
+				if (!isCompleteDataSet(DefaultProperties.GH_JSON_CACHE_PATH)){
 					generator.generate(cloneRepos, localRepos);
+				}
+				
+				Evaluator evaluator = new Evaluator();
+				(evaluator).start(p.getProgram(), new EmptyEnv<Value>());
 			}
 		} finally {
 			o.close();

@@ -67,7 +67,7 @@ message Issue {
     optional Person created_by = 10;
     optional Person closed_by = 11;
     required int64 created_at = 12;
-    required int64 updated_at = 13;
+    optional int64 updated_at = 13;
     optional int64 closed_at = 14;
     optional PullRequest pull_request = 15;
     optional Milestone milestone = 16;
