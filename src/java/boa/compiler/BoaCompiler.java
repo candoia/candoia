@@ -173,7 +173,7 @@ public class BoaCompiler {
 				if (!isCompleteDataSet(DefaultProperties.GH_JSON_CACHE_PATH)){
 					generator.generate(cloneRepos, localRepos);
 				}
-				
+				Evaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH);
 				Evaluator evaluator = new Evaluator();
 				(evaluator).start(p.getProgram(), new EmptyEnv<Value>());
 			}

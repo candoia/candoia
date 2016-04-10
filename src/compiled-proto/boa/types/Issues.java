@@ -1243,13 +1243,13 @@ public final class Issues {
      */
     long getCreatedAt();
 
-    // required int64 updated_at = 13;
+    // optional int64 updated_at = 13;
     /**
-     * <code>required int64 updated_at = 13;</code>
+     * <code>optional int64 updated_at = 13;</code>
      */
     boolean hasUpdatedAt();
     /**
-     * <code>required int64 updated_at = 13;</code>
+     * <code>optional int64 updated_at = 13;</code>
      */
     long getUpdatedAt();
 
@@ -2347,17 +2347,17 @@ public final class Issues {
       return createdAt_;
     }
 
-    // required int64 updated_at = 13;
+    // optional int64 updated_at = 13;
     public static final int UPDATED_AT_FIELD_NUMBER = 13;
     private long updatedAt_;
     /**
-     * <code>required int64 updated_at = 13;</code>
+     * <code>optional int64 updated_at = 13;</code>
      */
     public boolean hasUpdatedAt() {
       return ((bitField0_ & 0x00000400) == 0x00000400);
     }
     /**
-     * <code>required int64 updated_at = 13;</code>
+     * <code>optional int64 updated_at = 13;</code>
      */
     public long getUpdatedAt() {
       return updatedAt_;
@@ -2463,10 +2463,6 @@ public final class Issues {
         return false;
       }
       if (!hasCreatedAt()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasUpdatedAt()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -3081,10 +3077,6 @@ public final class Issues {
           return false;
         }
         if (!hasCreatedAt()) {
-          
-          return false;
-        }
-        if (!hasUpdatedAt()) {
           
           return false;
         }
@@ -4302,22 +4294,22 @@ public final class Issues {
         return this;
       }
 
-      // required int64 updated_at = 13;
+      // optional int64 updated_at = 13;
       private long updatedAt_ ;
       /**
-       * <code>required int64 updated_at = 13;</code>
+       * <code>optional int64 updated_at = 13;</code>
        */
       public boolean hasUpdatedAt() {
         return ((bitField0_ & 0x00001000) == 0x00001000);
       }
       /**
-       * <code>required int64 updated_at = 13;</code>
+       * <code>optional int64 updated_at = 13;</code>
        */
       public long getUpdatedAt() {
         return updatedAt_;
       }
       /**
-       * <code>required int64 updated_at = 13;</code>
+       * <code>optional int64 updated_at = 13;</code>
        */
       public Builder setUpdatedAt(long value) {
         bitField0_ |= 0x00001000;
@@ -4326,7 +4318,7 @@ public final class Issues {
         return this;
       }
       /**
-       * <code>required int64 updated_at = 13;</code>
+       * <code>optional int64 updated_at = 13;</code>
        */
       public Builder clearUpdatedAt() {
         bitField0_ = (bitField0_ & ~0x00001000);
@@ -10130,7 +10122,7 @@ public final class Issues {
       "oa.types.Person\022%\n\ncreated_by\030\n \001(\0132\021.bo" +
       "a.types.Person\022$\n\tclosed_by\030\013 \001(\0132\021.boa." +
       "types.Person\022\022\n\ncreated_at\030\014 \002(\003\022\022\n\nupda" +
-      "ted_at\030\r \002(\003\022\021\n\tclosed_at\030\016 \001(\003\022,\n\014pull_" +
+      "ted_at\030\r \001(\003\022\021\n\tclosed_at\030\016 \001(\003\022,\n\014pull_" +
       "request\030\017 \001(\0132\026.boa.types.PullRequest\022\'\n" +
       "\tmilestone\030\020 \001(\0132\024.boa.types.Milestone\"\244" +
       "\001\n\tIssueKind\022\013\n\007UNKNOWN\020\001\022\007\n\003BUG\020\002\022\r\n\tDU",

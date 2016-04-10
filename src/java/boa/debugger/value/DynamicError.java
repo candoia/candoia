@@ -45,4 +45,9 @@ public class DynamicError extends BoaType implements Value {
 		return message;
 	}
 
+	@Override
+	public Value compute(Value rhs, String op) {
+		throw new UnsupportedOperationException();
+	}
+
 }

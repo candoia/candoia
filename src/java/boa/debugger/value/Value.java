@@ -14,4 +14,5 @@ public interface Value {
 
 	public long size();
 
+	public Value compute(Value rhs, String op);
 }

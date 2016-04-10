@@ -56,4 +56,50 @@ public class DoubleVal extends BoaType implements Value {
 		return num + "";
 	}
 
+	@Override
+	public Value compute(Value rhs, String op) {
+		switch (op) {
+		case "==":
+			return new BoolVal(rhs.equals(rhs));
+		case "!=":
+			return new BoolVal(!rhs.equals(rhs));
+		case "<":
+			return new BoolVal(rhs.isLessThan(rhs));
+		case "<=":
+			return new BoolVal(rhs.isLessThanOrEqualTo(rhs));
+		case ">":
+			return new BoolVal(!rhs.isLessThanOrEqualTo(rhs));
+		case ">=":
+			return new BoolVal(rhs.isLessThan(rhs));
+		case "&&":
+			throw new UnsupportedOperationException();
+		case "||":
+			throw new UnsupportedOperationException();
+		case "*":
+			return new DoubleVal(this.v() * ((DoubleVal)rhs).v());
+		case "+":
+			return new DoubleVal(this.v() + ((DoubleVal)rhs).v());
+		case "-":
+			return new DoubleVal(this.v() - ((DoubleVal)rhs).v());
+		case "!":
+			throw new UnsupportedOperationException();
+		case "~":
+			throw new UnsupportedOperationException();
+		case "not":
+			throw new UnsupportedOperationException();			
+		case "/":
+			return new DoubleVal(this.v() / ((DoubleVal)rhs).v());
+		case "%":
+			return new DoubleVal(this.v() % ((DoubleVal)rhs).v());
+		case "&":
+			throw new UnsupportedOperationException();
+		case "<<":
+			throw new UnsupportedOperationException();
+		case ">>":
+			throw new UnsupportedOperationException();	
+		default:
+			throw new UnsupportedOperationException();
+		}
+	}
+
 }

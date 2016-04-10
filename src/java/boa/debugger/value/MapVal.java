@@ -77,4 +77,9 @@ public class MapVal<T, V> implements Value {
 		return false;
 	}
 
+	@Override
+	public Value compute(Value rhs, String op) {
+		throw new UnsupportedOperationException();
+	}
+
 }

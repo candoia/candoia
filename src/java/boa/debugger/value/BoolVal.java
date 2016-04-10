@@ -45,4 +45,32 @@ public class BoolVal extends BoaType implements Value {
 		return this._val + "";
 	}
 
+	@Override
+	public Value compute(Value rhs, String op) {
+		switch (op) {
+		case "==":
+			return new BoolVal(rhs.equals(rhs));
+		case "!=":
+			return new BoolVal(!rhs.equals(rhs));
+		case "<":
+			return new BoolVal(rhs.isLessThan(rhs));
+		case "<=":
+			return new BoolVal(rhs.isLessThanOrEqualTo(rhs));
+		case ">":
+			return new BoolVal(!rhs.isLessThanOrEqualTo(rhs));
+		case ">=":
+			return new BoolVal(rhs.isLessThan(rhs));
+		case "&&":
+			return new BoolVal((this.v()) && (((BoolVal) rhs).v()));
+		case "||":
+			return new BoolVal((this.v()) || (((BoolVal) rhs).v()));
+		case "!":
+			return new BoolVal(!this.v());
+		case "not":
+			return new BoolVal(!this.v());			
+		default:
+			throw new UnsupportedOperationException();
+		}
+	}
+
 }

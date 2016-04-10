@@ -79,7 +79,7 @@ public class SetVal<V, T> extends BoaType implements Value {
 	}
 
 	public boolean equals(Value v) {
-		return false;
+		throw new UnsupportedOperationException();
 	}
 
 	public boolean isLessThan(Value v) {
@@ -98,6 +98,11 @@ public class SetVal<V, T> extends BoaType implements Value {
 			str += ele.toString();
 		}
 		return str;
+	}
+
+	@Override
+	public Value compute(Value rhs, String op) {
+		throw new UnsupportedOperationException();
 	}
 
 }

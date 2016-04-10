@@ -71,4 +71,9 @@ public class StackVal<T> extends BoaType implements Value {
 		return str;
 	}
 
+	@Override
+	public Value compute(Value rhs, String op) {
+		throw new UnsupportedOperationException();
+	}
+
 }

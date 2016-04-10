@@ -55,4 +55,30 @@ public class StringVal extends BoaType implements Value {
 	public String toString() {
 		return _val;
 	}
+
+	@Override
+	public Value compute(Value rhs, String op) {
+		switch (op) {
+		case "==":
+			return new BoolVal(rhs.equals(rhs));
+		case "!=":
+			return new BoolVal(!rhs.equals(rhs));
+		case "<":
+			return new BoolVal(rhs.isLessThan(rhs));
+		case "<=":
+			return new BoolVal(rhs.isLessThanOrEqualTo(rhs));
+		case ">":
+			return new BoolVal(!rhs.isLessThanOrEqualTo(rhs));
+		case ">=":
+			return new BoolVal(rhs.isLessThan(rhs));
+		case "&&":
+			throw new UnsupportedOperationException();
+		case "||":
+			throw new UnsupportedOperationException();
+		case "+":
+			return new StringVal(this.v() + ((StringVal)rhs).v());
+		default:
+			throw new UnsupportedOperationException();
+		}
+	}
 }

@@ -12,6 +12,10 @@ public class CharVal extends BoaType implements Value {
 	public CharVal(char character) {
 		this.character = character;
 	}
+	
+	public CharVal(String character) {
+		this.character = character.charAt(0);
+	}
 
 	public char v() {
 		return character;
@@ -54,6 +58,52 @@ public class CharVal extends BoaType implements Value {
 	@Override
 	public String toString() {
 		return character + ""; 
+	}
+
+	@Override
+	public Value compute(Value rhs, String op) {
+		switch (op) {
+		case "==":
+			return new BoolVal(rhs.equals(rhs));
+		case "!=":
+			return new BoolVal(!rhs.equals(rhs));
+		case "<":
+			return new BoolVal(rhs.isLessThan(rhs));
+		case "<=":
+			return new BoolVal(rhs.isLessThanOrEqualTo(rhs));
+		case ">":
+			return new BoolVal(!rhs.isLessThanOrEqualTo(rhs));
+		case ">=":
+			return new BoolVal(rhs.isLessThan(rhs));
+		case "&&":
+			throw new UnsupportedOperationException();
+		case "||":
+			throw new UnsupportedOperationException();
+		case "*":
+			throw new UnsupportedOperationException();
+		case "+":
+			throw new UnsupportedOperationException();
+		case "-":
+			throw new UnsupportedOperationException();
+		case "!":
+			throw new UnsupportedOperationException();
+		case "~":
+			throw new UnsupportedOperationException();
+		case "not":
+			throw new UnsupportedOperationException();			
+		case "/":
+			throw new UnsupportedOperationException();
+		case "%":
+			throw new UnsupportedOperationException();
+		case "&":
+			throw new UnsupportedOperationException();
+		case "<<":
+			throw new UnsupportedOperationException();
+		case ">>":
+			throw new UnsupportedOperationException();	
+		default:
+			throw new UnsupportedOperationException();
+		}
 	}
 
 }
