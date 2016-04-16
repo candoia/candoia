@@ -59,7 +59,10 @@ import boa.compiler.ast.types.VisitorType;
 import boa.compiler.visitors.AbstractVisitor;
 import boa.debugger.Env.EmptyEnv;
 import boa.debugger.Env.ExtendEnv;
+import boa.debugger.Env.LookupException;
 import boa.debugger.value.aggregators.AggregatorVal;
+import boa.debugger.value.aggregators.IntSumAggregatorVal;
+import boa.debugger.value.aggregators.TopAggregatorVal;
 import boa.debugger.value.*;
 
 /**
@@ -108,8 +111,6 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 
 	@Override
 	public Value visit(Start n, Env<Value> env) {
-		if (DEBUG)
-			System.out.println("start()");
 		return n.getProgram().accept(this, env);
 	}
 
@@ -139,28 +140,26 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 				_input = boa.types.Toplevel.Project.parseFrom(
 						com.google.protobuf.CodedInputStream.newInstance(keyValue.getBytes(), 0, keyValue.getLength()));
 				env = new ExtendEnv<Value>(env, "input", new AnyVal(_input));
-				for (int i = 0; i < n.getStatementsSize(); i++) {
-					value = n.getStatement(i).accept(this, env);
-					// some variable is declared which is not of output type
-					// then extend the environment else skip this definition
-					if (value instanceof BindingVal
-							&& (!(((BindingVal) value).getInitializer() instanceof AggregatorVal))) {
+				for (Statement s : n.getStatements()) {
+					if (s instanceof VarDeclStatement && ((VarDeclStatement) s).getType() instanceof OutputType) {
+						continue; // aggregators have already been declared
+					}
+					value = s.accept(this, env);
+					if (value instanceof BindingVal) {
 						BindingVal declaration = (BindingVal) value;
 						env = new ExtendEnv<Value>(env, declaration.getID(), declaration.getInitializer());
 					}
-					env = (Env<Value>) baseEnv.clone();
-					iteration++;
 				}
+				env = baseEnv;
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 			this.close(sequenceFileReader);
 			return new DynamicError("Error occured in parsing project");
 		}
-		
-		
-		for(String name : aggregators){
-			AggregatorVal v = (AggregatorVal) baseEnv.get(name);
+
+		for (String name : aggregators) {
+			AggregatorVal v = (AggregatorVal) ((BindingVal) baseEnv.get(name)).getInitializer();
 			v.finish();
 		}
 
@@ -226,14 +225,32 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final Factor n, Env<Value> env) {
-		return n.getOperand().accept(this, env);
+		Value operand = n.getOperand().accept(this, env);
+		for (Node o : n.getOps()) {
+			Value op = o.accept(this, env);
+			if (o instanceof Selector) { // tuple val
+				if (operand instanceof TupleVal) {
+					operand = ((TupleVal) operand).get(op.toString());
+				}
+			} else if (o instanceof Index) { // must be map or array
+				throw new UnsupportedOperationException();
+			} else { // this must be call
+				operand = FunctionCall.executeFunction(operand.toString(), (ListVal) op, env, this);
+			}
+		}
+		return operand;
 	}
 
 	public Value visit(final Identifier n, Env<Value> env) {
 		if ("true".equalsIgnoreCase(n.getToken()) || "false".equalsIgnoreCase(n.getToken())) {
 			throw new UnsupportedOperationException();
 		}
-		return new StringVal(n.getToken());
+		try {
+			return env.get(n.getToken());
+		} catch (LookupException e) {
+			return new StringVal(n.getToken());
+		}
+
 	}
 
 	public Value visit(final Index n, Env<Value> env) {
@@ -284,7 +301,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 		for (Statement s : n.getStatements()) {
 			value = s.accept(this, env);
 			if (s instanceof ReturnStatement) {
-				break;
+				return s.accept(this, env);
 			}
 		}
 		return value;
@@ -307,7 +324,19 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final EmitStatement n, Env<Value> env) {
-		throw new UnsupportedOperationException();
+		BindingVal b = (BindingVal) n.getId().accept(this, env);
+		AggregatorVal ag = (AggregatorVal) b.getInitializer();
+		String value = n.getValue().accept(this, env).toString();
+		String weight = "";
+		if (n.hasWeight()) {
+			weight = n.getWeight().accept(this, env).toString();
+		}
+		String key = " ";
+		for (Expression ind : n.getIndices()) {
+			key += ind.accept(this, env).toString();
+		}
+		ag.aggregate(weight.toString(), key, value.toString(), n.getId().getToken());
+		return UnitVal.v;
 	}
 
 	public Value visit(final ExistsStatement n, Env<Value> env) {
@@ -315,7 +344,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final ExprStatement n, Env<Value> env) {
-		throw new UnsupportedOperationException();
+		return n.getExpr().accept(this, env);
 	}
 
 	public Value visit(final ForeachStatement n, Env<Value> env) {
@@ -323,7 +352,25 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final ForStatement n, Env<Value> env) {
-		throw new UnsupportedOperationException();
+		BindingVal init = (BindingVal) n.getInit().accept(this, env);
+		Env<Value> localEnv = env;
+		localEnv = new ExtendEnv<Value>(env, init.getID(), init.getInitializer());
+		BoolVal cond = (BoolVal) n.getCondition().accept(this, localEnv);
+		while (cond.v()) {
+			for (Statement stmt : n.getBody().getStatements()) {
+				if (stmt instanceof ContinueStatement) {
+					continue;
+				} else if (stmt instanceof BreakStatement) {
+					break;
+				} else if (stmt instanceof ReturnStatement) {
+					return stmt.accept(this, localEnv);
+				} else {
+					stmt.accept(this, localEnv);
+				}
+			}
+			n.getUpdate().accept(this, localEnv);
+		}
+		return UnitVal.v;
 	}
 
 	public Value visit(final IfAllStatement n, Env<Value> env) {
@@ -331,7 +378,15 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final IfStatement n, Env<Value> env) {
-		throw new UnsupportedOperationException();
+		BoolVal cond = (BoolVal) n.getCondition().accept(this, env);
+		if (cond.v()) {
+			return n.getBody().accept(this, env);
+		} else {
+			if (n.hasElse()) {
+				return n.getElse().accept(this, env);
+			}
+		}
+		return UnitVal.v;
 	}
 
 	public Value visit(final PostfixStatement n, Env<Value> env) {
@@ -339,7 +394,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final ReturnStatement n, Env<Value> env) {
-		throw new UnsupportedOperationException();
+		return n.getExpr().accept(this, env);
 	}
 
 	public Value visit(final StopStatement n, Env<Value> env) {
@@ -358,10 +413,15 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 		String name = ((StringVal) n.getId().accept(this, env)).v();
 		AbstractType type = null;
 		Value intial = null;
-		if (n.hasType())
+		if (n.hasType()) {
 			type = n.getType();
-		if (n.hasInitializer())
+			if (type instanceof OutputType) {
+				intial = n.getType().accept(this, env);
+			}
+		}
+		if (n.hasInitializer()) {
 			intial = n.getInitializer().accept(this, env);
+		}
 		return new BindingVal(name, type, intial);
 	}
 
@@ -400,7 +460,13 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final SimpleExpr n, Env<Value> env) {
-		throw new UnsupportedOperationException();
+		Value lhs = n.getLhs().accept(this, env);
+		int i = 0;
+		for (String op : n.getOps()) {
+			Value rhs = n.getRhs(i).accept(this, env);
+			lhs = lhs.compute(rhs, op);
+		}
+		return lhs;
 	}
 
 	public Value visit(final VisitorExpression n, Env<Value> env) {
@@ -450,7 +516,73 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final OutputType n, Env<Value> env) {
-		throw new UnsupportedOperationException();
+		ArrayList<PairVal> index = new ArrayList<PairVal>();
+		StringVal name = (StringVal) n.getId().accept(this, env);
+		Value typeVal = n.getType().accept(this, env);
+		String type = ((PairVal) typeVal).snd().toString();
+		Value weight = null;
+		ArrayList<Value> args = new ArrayList<>();
+		if (n.hasWeight()) {
+			weight = n.getWeight().accept(this, env);
+		}
+		for (Expression e : n.getArgs()) {
+			args.add(e.accept(this, env));
+		}
+		for (Component i : n.getIndices()) {
+			index.add((PairVal) i.accept(this, env));
+		}
+
+		switch (name.toString()) {
+		case "sum": {
+			switch (type) {
+			case "int":
+				return new IntSumAggregatorVal();
+			default:
+				throw new UnsupportedOperationException();
+			}
+		}
+		case "top": {
+			switch (type) {
+			default:
+				return new TopAggregatorVal(((NumVal) args.get(0)).v());
+			}
+		}
+		case "max": {
+			switch (type) {
+			case "int":
+				throw new UnsupportedOperationException();
+			default:
+				throw new UnsupportedOperationException();
+			}
+		}
+		case "min": {
+			switch (type) {
+			case "int":
+				throw new UnsupportedOperationException();
+			default:
+				throw new UnsupportedOperationException();
+			}
+		}
+		case "mean": {
+			switch (type) {
+			case "int":
+				throw new UnsupportedOperationException();
+			default:
+				throw new UnsupportedOperationException();
+			}
+		}
+		case "collection": {
+			switch (type) {
+			case "int":
+				throw new UnsupportedOperationException();
+			default:
+				throw new UnsupportedOperationException();
+			}
+		}
+		default:
+			throw new UnsupportedOperationException();
+		}
+
 	}
 
 	public Value visit(final StackType n, Env<Value> env) {

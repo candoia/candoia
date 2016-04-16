@@ -1,5 +1,6 @@
 package boa.debugger;
 
+import boa.debugger.value.StringVal;
 import boa.debugger.value.Value;
 
 /**
@@ -11,6 +12,7 @@ import boa.debugger.value.Value;
 @SuppressWarnings("unchecked")
 public interface Env<T> extends Cloneable{
 	T get(String search_var);
+	T get(Value search_var);
 	boolean isEmpty();
 	Object clone();
 	void updateValue(String search_var,T v);
@@ -40,6 +42,12 @@ public interface Env<T> extends Cloneable{
 		
 		public void updateValue(String search_var,T val){
 			throw new LookupException("No binding found for name: "+ search_var);
+		}
+
+		@Override
+		public T get(Value search_var) {
+			throw new LookupException("No binding found for name: "
+					+ search_var);
 		}
 	}
 
@@ -95,6 +103,19 @@ public interface Env<T> extends Cloneable{
 		public Object clone(){
 			Env<Value>  e = new ExtendEnv(this._saved_env, this._var, this._val);
 			return e;
+		}
+
+		@Override
+		public T get(Value search_var) {
+			if(search_var instanceof StringVal){
+				try{
+					return this.get(search_var.toString());
+				}catch(LookupException e){
+					return (T) search_var;
+				}
+			}else{
+				return (T) search_var;
+			}
 		}
 	}
 

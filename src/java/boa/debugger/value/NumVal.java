@@ -7,11 +7,15 @@ public class NumVal implements Value {
 		this.num = num;
 	}
 
+	public NumVal(double d) {
+		// TODO Auto-generated constructor stub
+	}
+
 	public long v() {
 		return num;
 	}
 
-	public String tostring() {
+	public String toString() {
 		return "" + num;
 	}
 
@@ -34,8 +38,6 @@ public class NumVal implements Value {
 	@Override
 	public boolean isLessThanOrEqualTo(Value v) {
 		if (v instanceof NumVal) {
-			if (boa.debugger.Evaluator.DEBUG)
-				System.out.println("isLessThanOrEqualTo" + (((NumVal) v).v() >= this.v()));
 			return ((NumVal) v).v() >= this.v();
 		}
 		throw new IllegalArgumentException("Compare operator has to have same types.");
@@ -56,37 +58,54 @@ public class NumVal implements Value {
 		case "<":
 			return new BoolVal(rhs.isLessThan(rhs));
 		case "<=":
-			return new BoolVal(rhs.isLessThanOrEqualTo(rhs));
-		case ">":
 			return new BoolVal(!rhs.isLessThanOrEqualTo(rhs));
+		case ">":
+			return new BoolVal(rhs.isLessThanOrEqualTo(rhs));
 		case ">=":
 			return new BoolVal(rhs.isLessThan(rhs));
 		case "&&":
 			throw new UnsupportedOperationException();
 		case "||":
 			throw new UnsupportedOperationException();
-		case "*":
-			return new NumVal(this.v() * ((NumVal)rhs).v());
-		case "+":
-			return new NumVal(this.v() + ((NumVal)rhs).v());
-		case "-":
-			return new NumVal(this.v() - ((NumVal)rhs).v());
+		case "*": {
+			if (rhs instanceof NumVal)
+				return new NumVal(this.v() * ((NumVal) rhs).v());
+			else if (rhs instanceof DoubleVal)
+				return new NumVal(this.v() * ((DoubleVal) rhs).v());
+		}
+		case "+": {
+			if (rhs instanceof NumVal)
+				return new NumVal(this.v() + ((NumVal) rhs).v());
+			else if (rhs instanceof DoubleVal)
+				return new NumVal(this.v() + ((DoubleVal) rhs).v());
+		}
+
+		case "-": {
+			if (rhs instanceof NumVal)
+				return new NumVal(this.v() - ((NumVal) rhs).v());
+			else if (rhs instanceof DoubleVal)
+				return new NumVal(this.v() - ((DoubleVal) rhs).v());
+		}
 		case "!":
 			throw new UnsupportedOperationException();
 		case "~":
 			throw new UnsupportedOperationException();
 		case "not":
-			throw new UnsupportedOperationException();			
-		case "/":
-			return new NumVal(this.v() / ((NumVal)rhs).v());
+			throw new UnsupportedOperationException();
+		case "/": {
+			if (rhs instanceof NumVal)
+				return new NumVal(this.v() / ((NumVal) rhs).v());
+			else if (rhs instanceof DoubleVal)
+				return new NumVal(this.v() / ((DoubleVal) rhs).v());
+		}
 		case "%":
-			return new NumVal(this.v() % ((NumVal)rhs).v());
+			return new NumVal(this.v() % ((NumVal) rhs).v());
 		case "&":
-			return new NumVal(this.v() & ((NumVal)rhs).v());
+			return new NumVal(this.v() & ((NumVal) rhs).v());
 		case "<<":
-			return new NumVal(this.v() << ((NumVal)rhs).v());
+			return new NumVal(this.v() << ((NumVal) rhs).v());
 		case ">>":
-			return new NumVal(this.v() >> ((NumVal)rhs).v());
+			return new NumVal(this.v() >> ((NumVal) rhs).v());
 		default:
 			throw new UnsupportedOperationException();
 		}

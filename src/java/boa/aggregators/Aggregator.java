@@ -71,13 +71,15 @@ public abstract class Aggregator {
 		this.setKey(key);
 	}
 
-	public abstract void aggregate(String data, String metadata) throws IOException, InterruptedException, FinishedException;
+	public abstract void aggregate(String data, String metadata)
+			throws IOException, InterruptedException, FinishedException;
 
 	public void aggregate(final String data) throws IOException, InterruptedException, FinishedException {
 		this.aggregate(data, null);
 	}
 
-	public void aggregate(final long data, final String metadata) throws IOException, InterruptedException, FinishedException {
+	public void aggregate(final long data, final String metadata)
+			throws IOException, InterruptedException, FinishedException {
 		this.aggregate(BoaCasts.longToString(data), metadata);
 	}
 
@@ -85,7 +87,8 @@ public abstract class Aggregator {
 		this.aggregate(BoaCasts.longToString(data), null);
 	}
 
-	public void aggregate(final double data, final String metadata) throws IOException, InterruptedException, FinishedException {
+	public void aggregate(final double data, final String metadata)
+			throws IOException, InterruptedException, FinishedException {
 		this.aggregate(BoaCasts.doubleToString(data), metadata);
 	}
 
@@ -99,8 +102,13 @@ public abstract class Aggregator {
 			this.getContext().write(this.getKey(), new EmitValue(data, metadata));
 		else if (metadata != null)
 			this.getContext().write(new Text(this.getKey() + " = " + data + " weight " + metadata), NullWritable.get());
-		else
-			this.getContext().write(new Text(this.getKey() + " = " + data), NullWritable.get());
+		else {
+			// this.getContext().write(new Text(this.getKey() + " = " + data),
+			// NullWritable.get());
+			System.out.println(
+					new Text(this.getKey().getName() + "[" + this.getKey().getIndex().substring(1) + "]  = " + data));
+		}
+			
 	}
 
 	protected void collect(final String data) throws IOException, InterruptedException {
