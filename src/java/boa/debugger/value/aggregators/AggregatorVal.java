@@ -1,10 +1,10 @@
 package boa.debugger.value.aggregators;
 
-import java.util.HashMap;
-
 import boa.aggregators.Aggregator;
 import boa.debugger.value.Value;
 import boa.io.EmitKey;
+
+import java.util.HashMap;
 
 /**
  * @author nmtiwari

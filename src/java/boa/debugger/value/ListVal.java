@@ -1,9 +1,8 @@
 package boa.debugger.value;
 
-import java.util.ArrayList;
-
-import boa.debugger.Evaluator;
 import boa.types.BoaType;
+
+import java.util.ArrayList;
 
 /**
  * @author nmtiwari
@@ -28,13 +27,13 @@ public class ListVal extends BoaType implements Value {
 		return values.isEmpty();
 	}
 
-	public Object get(int index) {
+	public Object get(long index) {
 		if (index >= 0 && (index <= values.size() - 1))
-			return values.get(index);
+			return values.get((int) index);
 		else
 			throw new IllegalArgumentException();
 	}
-
+	
 	public void add(Value v) {
 		values.add(v);
 	}
@@ -76,6 +75,11 @@ public class ListVal extends BoaType implements Value {
 	@Override
 	public Value compute(Value rhs, String op) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Object get() {
+		return this.values;
 	}
 
 }

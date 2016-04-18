@@ -1,9 +1,9 @@
 package boa.debugger.value;
 
+import boa.types.BoaType;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import boa.types.BoaType;
 
 /**
  * @author nmtiwari
@@ -103,6 +103,11 @@ public class SetVal<V, T> extends BoaType implements Value {
 	@Override
 	public Value compute(Value rhs, String op) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Object get() {
+		return this.set;
 	}
 
 }

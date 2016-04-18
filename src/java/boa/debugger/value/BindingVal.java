@@ -88,5 +88,10 @@ public class BindingVal extends BoaType implements Value {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public Object get() {
+		return this;
+	}
+
 
 }

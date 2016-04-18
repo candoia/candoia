@@ -1,17 +1,7 @@
 package boa.debugger;
 
-import java.util.ArrayList;
-
-import boa.compiler.ast.statements.Block;
-import boa.debugger.Env.ExtendEnv;
 import boa.debugger.Env.LookupException;
-import boa.debugger.value.DynamicError;
-import boa.debugger.value.ListVal;
-import boa.debugger.value.NumVal;
-import boa.debugger.value.PairVal;
-import boa.debugger.value.StringVal;
-import boa.debugger.value.UnitVal;
-import boa.debugger.value.Value;
+import boa.debugger.value.*;
 import boa.types.Ast.Comment.CommentKind;
 import boa.types.Ast.Expression.ExpressionKind;
 import boa.types.Ast.Modifier.ModifierKind;

@@ -47,7 +47,6 @@ public class StringVal extends BoaType implements Value {
 
 	@Override
 	public long size() {
-		// TODO Auto-generated method stub
 		return _val.length();
 	}
 
@@ -80,5 +79,10 @@ public class StringVal extends BoaType implements Value {
 		default:
 			throw new UnsupportedOperationException();
 		}
+	}
+
+	@Override
+	public Object get() {
+		return this._val;
 	}
 }

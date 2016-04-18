@@ -46,4 +46,9 @@ public class UnitVal extends BoaType implements Value {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public Object get() {
+		return UnitVal.v;
+	}
+
 }

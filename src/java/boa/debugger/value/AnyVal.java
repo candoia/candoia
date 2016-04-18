@@ -1,12 +1,7 @@
 package boa.debugger.value;
 
 import boa.debugger.Evaluator;
-import boa.types.Ast.ASTRoot;
-import boa.types.Ast.Declaration;
-import boa.types.Ast.Expression;
-import boa.types.Ast.Modifier;
-import boa.types.Ast.Namespace;
-import boa.types.Ast.Type;
+import boa.types.Ast.*;
 import boa.types.Code.CodeRepository;
 import boa.types.Code.Revision;
 import boa.types.Diff.ChangedFile;
@@ -988,5 +983,10 @@ public class AnyVal extends TupleVal implements Value {
 	@Override
 	public Value compute(Value rhs, String op) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Object get() {
+		return this.value;
 	}
 }

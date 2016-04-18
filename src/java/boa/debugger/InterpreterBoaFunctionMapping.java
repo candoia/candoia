@@ -1,31 +1,15 @@
 package boa.debugger;
 
-import java.util.HashSet;
-
 import boa.debugger.Env.LookupException;
-import boa.debugger.value.AnyVal;
-import boa.debugger.value.BoolVal;
-import boa.debugger.value.DoubleVal;
-import boa.debugger.value.DynamicError;
-import boa.debugger.value.ListVal;
-import boa.debugger.value.MapVal;
-import boa.debugger.value.NumVal;
-import boa.debugger.value.PairVal;
-import boa.debugger.value.SetVal;
-import boa.debugger.value.StackVal;
-import boa.debugger.value.StringVal;
-import boa.debugger.value.UnitVal;
-import boa.debugger.value.Value;
-import boa.types.Ast.ASTRoot;
-import boa.types.Ast.Declaration;
-import boa.types.Ast.Method;
+import boa.debugger.value.*;
+import boa.types.Ast.*;
 import boa.types.Ast.Modifier.ModifierKind;
 import boa.types.Ast.Modifier.Visibility;
-import boa.types.Ast.Namespace;
-import boa.types.Ast.Variable;
 import boa.types.Code.CodeRepository;
 import boa.types.Code.Revision;
 import boa.types.Diff.ChangedFile;
+
+import java.util.HashSet;
 
 public class InterpreterBoaFunctionMapping {
 

@@ -3,10 +3,20 @@
  */
 package boa.debugger;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
+import boa.compiler.ast.*;
+import boa.compiler.ast.expressions.*;
+import boa.compiler.ast.literals.*;
+import boa.compiler.ast.statements.*;
+import boa.compiler.ast.types.*;
+import boa.compiler.visitors.AbstractVisitor;
+import boa.debugger.Env.EmptyEnv;
+import boa.debugger.Env.ExtendEnv;
+import boa.debugger.Env.LookupException;
+import boa.debugger.value.*;
+import boa.debugger.value.aggregators.AggregatorVal;
+import boa.debugger.value.aggregators.IntSumAggregatorVal;
+import boa.debugger.value.aggregators.TopAggregatorVal;
+import boa.types.BoaType;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -14,56 +24,11 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.util.ReflectionUtils;
 import org.apache.log4j.Logger;
-import boa.compiler.ast.*;
-import boa.compiler.ast.expressions.Expression;
-import boa.compiler.ast.expressions.FunctionExpression;
-import boa.compiler.ast.expressions.ParenExpression;
-import boa.compiler.ast.expressions.SimpleExpr;
-import boa.compiler.ast.expressions.VisitorExpression;
-import boa.compiler.ast.literals.CharLiteral;
-import boa.compiler.ast.literals.FloatLiteral;
-import boa.compiler.ast.literals.IntegerLiteral;
-import boa.compiler.ast.literals.StringLiteral;
-import boa.compiler.ast.literals.TimeLiteral;
-import boa.compiler.ast.statements.AssignmentStatement;
-import boa.compiler.ast.statements.Block;
-import boa.compiler.ast.statements.BreakStatement;
-import boa.compiler.ast.statements.ContinueStatement;
-import boa.compiler.ast.statements.DoStatement;
-import boa.compiler.ast.statements.EmitStatement;
-import boa.compiler.ast.statements.ExistsStatement;
-import boa.compiler.ast.statements.ExprStatement;
-import boa.compiler.ast.statements.ForStatement;
-import boa.compiler.ast.statements.ForeachStatement;
-import boa.compiler.ast.statements.IfAllStatement;
-import boa.compiler.ast.statements.IfStatement;
-import boa.compiler.ast.statements.PostfixStatement;
-import boa.compiler.ast.statements.ReturnStatement;
-import boa.compiler.ast.statements.Statement;
-import boa.compiler.ast.statements.StopStatement;
-import boa.compiler.ast.statements.SwitchCase;
-import boa.compiler.ast.statements.SwitchStatement;
-import boa.compiler.ast.statements.TypeDecl;
-import boa.compiler.ast.statements.VarDeclStatement;
-import boa.compiler.ast.statements.VisitStatement;
-import boa.compiler.ast.statements.WhileStatement;
-import boa.compiler.ast.types.AbstractType;
-import boa.compiler.ast.types.ArrayType;
-import boa.compiler.ast.types.FunctionType;
-import boa.compiler.ast.types.MapType;
-import boa.compiler.ast.types.OutputType;
-import boa.compiler.ast.types.SetType;
-import boa.compiler.ast.types.StackType;
-import boa.compiler.ast.types.TupleType;
-import boa.compiler.ast.types.VisitorType;
-import boa.compiler.visitors.AbstractVisitor;
-import boa.debugger.Env.EmptyEnv;
-import boa.debugger.Env.ExtendEnv;
-import boa.debugger.Env.LookupException;
-import boa.debugger.value.aggregators.AggregatorVal;
-import boa.debugger.value.aggregators.IntSumAggregatorVal;
-import boa.debugger.value.aggregators.TopAggregatorVal;
-import boa.debugger.value.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
 
 /**
  * @author nmtiwari
@@ -79,7 +44,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	ArrayList<String> aggregators = new ArrayList<>();
 
 	public Evaluator() {
-		// TODO Auto-generated constructor stub
+
 	}
 
 	protected Env<Value> initEnv() {
@@ -233,7 +198,11 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 					operand = ((TupleVal) operand).get(op.toString());
 				}
 			} else if (o instanceof Index) { // must be map or array
-				throw new UnsupportedOperationException();
+				if (operand instanceof MapVal) {
+					operand = (Value) ((MapVal) operand).get(op.get());
+				} else if (operand instanceof ListVal) {
+					operand = (Value) ((ListVal) operand).get((long) op.get());
+				}
 			} else { // this must be call
 				operand = FunctionCall.executeFunction(operand.toString(), (ListVal) op, env, this);
 			}
@@ -254,8 +223,8 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final Index n, Env<Value> env) {
-		NumVal begin = (NumVal) n.getStart().accept(this, env);
-		if (n.hasEnd()) {
+		Value begin = n.getStart().accept(this, env);
+		if (n.hasEnd()) { // TODO : should not be this case for array index?
 			NumVal end = (NumVal) n.getEnd().accept(this, env);
 			return new PairVal(begin, end);
 		}
@@ -293,7 +262,18 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	// statements
 	//
 	public Value visit(final AssignmentStatement n, Env<Value> env) {
-		throw new UnsupportedOperationException();
+		Factor op = n.getLhs();
+		String name = op.getOperand().toString();
+		Value operand = env.get(name);
+		Value rhs = n.getRhs().accept(this, env);
+		if (operand instanceof MapVal) {
+			Node ind = op.getOp(0);
+			Value index = ind.accept(this, env);
+			((MapVal<Object, Value>) operand).put(index.get(), rhs);
+		} else {
+			env.updateValue(name, rhs);
+		}
+		return UnitVal.v;
 	}
 
 	public Value visit(final Block n, Env<Value> env) {
@@ -356,19 +336,23 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 		Env<Value> localEnv = env;
 		localEnv = new ExtendEnv<Value>(env, init.getID(), init.getInitializer());
 		BoolVal cond = (BoolVal) n.getCondition().accept(this, localEnv);
-		while (cond.v()) {
-			for (Statement stmt : n.getBody().getStatements()) {
-				if (stmt instanceof ContinueStatement) {
-					continue;
-				} else if (stmt instanceof BreakStatement) {
-					break;
-				} else if (stmt instanceof ReturnStatement) {
-					return stmt.accept(this, localEnv);
-				} else {
-					stmt.accept(this, localEnv);
+		try {
+			while (cond.v()) {
+				for (Statement stmt : n.getBody().getStatements()) {
+					if (stmt instanceof ContinueStatement) {
+						continue;
+					} else if (stmt instanceof BreakStatement) {
+						break;
+					} else if (stmt instanceof ReturnStatement) {
+						return stmt.accept(this, localEnv);
+					} else {
+						stmt.accept(this, localEnv);
+					}
 				}
+				n.getUpdate().accept(this, localEnv);
 			}
-			n.getUpdate().accept(this, localEnv);
+		} catch (IllegalArgumentException e) {
+			return UnitVal.v;
 		}
 		return UnitVal.v;
 	}
@@ -390,7 +374,11 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final PostfixStatement n, Env<Value> env) {
-		throw new UnsupportedOperationException();
+		String name = ((Identifier) n.getExpr().getLhs().getLhs().getLhs().getLhs().getLhs().getOperand()).getToken();
+		String op = n.getOp();
+		Value val = env.get(name);
+		env.updateValue(name, val.compute(null, op));
+		return val;
 	}
 
 	public Value visit(final ReturnStatement n, Env<Value> env) {
@@ -512,7 +500,9 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final MapType n, Env<Value> env) {
-		throw new UnsupportedOperationException();
+		Component ind = n.getIndex();
+		Component val = n.getValue();
+		return new MapVal<>();
 	}
 
 	public Value visit(final OutputType n, Env<Value> env) {

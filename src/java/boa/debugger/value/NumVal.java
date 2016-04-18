@@ -38,7 +38,7 @@ public class NumVal implements Value {
 	@Override
 	public boolean isLessThanOrEqualTo(Value v) {
 		if (v instanceof NumVal) {
-			return ((NumVal) v).v() >= this.v();
+			return ((NumVal) v).v() > this.v();
 		}
 		throw new IllegalArgumentException("Compare operator has to have same types.");
 	}
@@ -58,7 +58,7 @@ public class NumVal implements Value {
 		case "<":
 			return new BoolVal(rhs.isLessThan(rhs));
 		case "<=":
-			return new BoolVal(!rhs.isLessThanOrEqualTo(rhs));
+			return new BoolVal(this.isLessThanOrEqualTo(rhs));
 		case ">":
 			return new BoolVal(rhs.isLessThanOrEqualTo(rhs));
 		case ">=":
@@ -106,9 +106,20 @@ public class NumVal implements Value {
 			return new NumVal(this.v() << ((NumVal) rhs).v());
 		case ">>":
 			return new NumVal(this.v() >> ((NumVal) rhs).v());
+		case "++": {
+			return new NumVal(this.v() + 1);
+		}
+		case "--": {
+			return new NumVal(this.v() - 1);
+		}
 		default:
 			throw new UnsupportedOperationException();
 		}
+	}
+
+	@Override
+	public Object get() {
+		return this.num;
 	}
 
 }

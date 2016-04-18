@@ -51,7 +51,6 @@ public class CharVal extends BoaType implements Value {
 
 	@Override
 	public long size() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -104,6 +103,11 @@ public class CharVal extends BoaType implements Value {
 		default:
 			throw new UnsupportedOperationException();
 		}
+	}
+
+	@Override
+	public Object get() {
+		return this.character;
 	}
 
 }

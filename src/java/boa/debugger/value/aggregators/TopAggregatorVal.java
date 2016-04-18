@@ -1,14 +1,14 @@
 package boa.debugger.value.aggregators;
 
-import java.io.IOException;
-import java.util.HashMap;
-
 import boa.aggregators.Aggregator;
 import boa.aggregators.FinishedException;
 import boa.aggregators.TopAggregator;
 import boa.debugger.value.UnitVal;
 import boa.debugger.value.Value;
 import boa.io.EmitKey;
+
+import java.io.IOException;
+import java.util.HashMap;
 
 public class TopAggregatorVal extends AggregatorVal {
 	protected long top;
@@ -47,21 +47,22 @@ public class TopAggregatorVal extends AggregatorVal {
 		try {
 			aggregator.aggregate(value, weight);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FinishedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} // metadata is null
 		return UnitVal.v;
 	}
 
 	@Override
+	public Object get() {
+		return this;
+	}
+
+	@Override
 	public void aggregate(String data, String metadata) throws IOException, InterruptedException, FinishedException {
-		// TODO Auto-generated method stub
 		
 	}
 

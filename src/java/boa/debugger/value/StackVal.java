@@ -1,9 +1,9 @@
 package boa.debugger.value;
 
-import java.util.Stack;
-
 import boa.debugger.Evaluator;
 import boa.types.BoaType;
+
+import java.util.Stack;
 
 /**
  * @author nmtiwari
@@ -74,6 +74,11 @@ public class StackVal<T> extends BoaType implements Value {
 	@Override
 	public Value compute(Value rhs, String op) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Object get() {
+		return this.stack;
 	}
 
 }

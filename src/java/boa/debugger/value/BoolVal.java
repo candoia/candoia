@@ -73,4 +73,9 @@ public class BoolVal extends BoaType implements Value {
 		}
 	}
 
+	@Override
+	public Object get() {
+		return this._val;
+	}
+
 }

@@ -17,4 +17,6 @@ public interface Value {
 	public Value compute(Value rhs, String op);
 	
 	public String toString();
+	
+	public Object get();
 }

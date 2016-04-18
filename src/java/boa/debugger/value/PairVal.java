@@ -103,4 +103,9 @@ public class PairVal extends BoaType implements Value {
 		}
 	}
 
+	@Override
+	public Object get() {
+		return this;
+	}
+
 }

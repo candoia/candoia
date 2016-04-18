@@ -82,4 +82,9 @@ public class MapVal<T, V> implements Value {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public Object get() {
+		return this.map;
+	}
+
 }

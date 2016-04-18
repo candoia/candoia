@@ -1,16 +1,14 @@
 package boa.debugger.value.aggregators;
 
-import java.io.IOException;
-import java.util.HashMap;
-
-import org.apache.hadoop.mapreduce.Reducer.Context;
-
 import boa.aggregators.Aggregator;
 import boa.aggregators.FinishedException;
 import boa.aggregators.IntSumAggregator;
 import boa.debugger.value.UnitVal;
 import boa.debugger.value.Value;
 import boa.io.EmitKey;
+
+import java.io.IOException;
+import java.util.HashMap;
 
 public class IntSumAggregatorVal extends AggregatorVal {
 
@@ -41,20 +39,22 @@ public class IntSumAggregatorVal extends AggregatorVal {
 		try {
 			aggregator.aggregate(value, null);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FinishedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} // metadata is null
+		}
 		return UnitVal.v;
 	}
 
 	@Override
 	public void aggregate(String data, String metadata) throws IOException, InterruptedException, FinishedException {
-		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Object get() {
+		return this.aggregators;
 	}
 }
