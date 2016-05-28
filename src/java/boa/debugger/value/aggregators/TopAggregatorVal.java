@@ -40,7 +40,7 @@ public class TopAggregatorVal extends AggregatorVal {
 	public Value aggregate(String weight, String key, String value, String name) {
 		Aggregator aggregator = (Aggregator) aggregators.get(key);
 		if (aggregator == null) {
-			aggregator = new TopAggregator(3);
+			aggregator = new TopAggregator(this.top);
 			aggregators.put(key, aggregator);
 			aggregator.start(new EmitKey(key, name, 0));
 		}
