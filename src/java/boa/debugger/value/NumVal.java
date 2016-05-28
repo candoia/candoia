@@ -56,13 +56,13 @@ public class NumVal implements Value {
 		case "!=":
 			return new BoolVal(!rhs.equals(rhs));
 		case "<":
-			return new BoolVal(rhs.isLessThan(rhs));
+			return new BoolVal(this.isLessThan(rhs));
 		case "<=":
 			return new BoolVal(this.isLessThanOrEqualTo(rhs));
 		case ">":
-			return new BoolVal(rhs.isLessThanOrEqualTo(rhs));
+			return new BoolVal(rhs.isLessThanOrEqualTo(this));
 		case ">=":
-			return new BoolVal(rhs.isLessThan(rhs));
+			return new BoolVal(rhs.isLessThan(this));
 		case "&&":
 			throw new UnsupportedOperationException();
 		case "||":
