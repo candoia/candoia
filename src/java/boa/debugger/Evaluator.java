@@ -90,8 +90,11 @@ import boa.debugger.value.StringVal;
 import boa.debugger.value.TupleVal;
 import boa.debugger.value.UnitVal;
 import boa.debugger.value.Value;
+import boa.debugger.value.VisitorVal;
 import boa.debugger.value.aggregators.AggregatorVal;
 import boa.debugger.value.aggregators.IntSumAggregatorVal;
+import boa.debugger.value.aggregators.MaxAggregatorVal;
+import boa.debugger.value.aggregators.MinAggregatorVal;
 import boa.debugger.value.aggregators.TopAggregatorVal;
 
 /**
@@ -106,6 +109,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	PrintStream ps = new PrintStream(op);
 	PrintStream old = System.out;
 	ArrayList<String> aggregators = new ArrayList<>();
+	public static String visitorVar = "_$declaredVisitor$";
 
 	public Evaluator() {
 
@@ -203,9 +207,10 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 
 	public Value visit(final Call n, Env<Value> env) {
 		Value v = UnitVal.v;
-		ListVal args = new ListVal();
+		ListVal<Object> args = new ListVal<>();
 		for (final Expression e : n.getArgs()) {
 			v = e.accept(this, env);
+			// args.add(v.get());
 			args.add(v);
 		}
 		return args;
@@ -252,6 +257,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 		return lhs;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Value visit(final Factor n, Env<Value> env) {
 		Value operand = n.getOperand().accept(this, env);
 		for (Node o : n.getOps()) {
@@ -262,16 +268,16 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 				}
 			} else if (o instanceof Index) { // must be map or array
 				if (operand instanceof MapVal) {
-					operand = (Value) ((MapVal) operand).get(op.get());
+					operand = (Value) ((MapVal<Object, ?>) operand).get(op.get());
 				} else if (operand instanceof ListVal) {
 					PairVal opIndex = (PairVal) op;
 					if (opIndex.snd() == null) {
 						long ind = (long) opIndex.fst().get();
-						operand = (Value) ((ListVal) operand).get(ind);
+						operand = (Value) ((ListVal<Value>) operand).get(ind);
 					}
 				}
 			} else { // this must be call
-				operand = FunctionCall.executeFunction(operand.toString(), (ListVal) op, env, this);
+				operand = FunctionCall.executeFunction(operand.toString(), (ArrayList<Value>) op.get(), env, this);
 			}
 		}
 		return operand;
@@ -322,7 +328,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 
 	public Value visit(final UnaryFactor n, Env<Value> env) {
 		Value factor = n.getFactor().accept(this, env);
-		return factor.compute(factor, "");
+		return factor.compute(factor, n.getOp());
 	}
 
 	//
@@ -348,9 +354,14 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 		Value value = null;
 		for (Statement s : n.getStatements()) {
 			value = s.accept(this, env);
-			if (s instanceof ReturnStatement || s instanceof ContinueStatement || s instanceof BreakStatement) {
+			if (s instanceof ReturnStatement || s instanceof ContinueStatement || s instanceof BreakStatement || s instanceof StopStatement) {
 				// return s.accept(this, env);
 				return value;
+			} else if (s instanceof VarDeclStatement) {
+				BindingVal val = (BindingVal) value;
+				env = new ExtendEnv<Value>(env, val.getID(), val.getInitializer());
+			}else if(value instanceof ReturnVal){
+				return (Value) value.get();
 			}
 		}
 		return UnitVal.v;
@@ -527,7 +538,8 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final StopStatement n, Env<Value> env) {
-		return null;
+//		return null;
+		return new ReturnVal(new ReturnVal(new ReturnVal(UnitVal.v)));
 	}
 
 	public Value visit(final SwitchCase n, Env<Value> env) {
@@ -555,7 +567,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final VisitStatement n, Env<Value> env) {
-		throw new UnsupportedOperationException();
+		return visit(n.getBody(), env);
 	}
 
 	public Value visit(final WhileStatement n, Env<Value> env) {
@@ -605,6 +617,10 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final VisitorExpression n, Env<Value> env) {
+		VisitorType type = n.getType();
+		if (type instanceof VisitorType) {
+			return new VisitorVal(n.getBody(), env, this);
+		}
 		throw new UnsupportedOperationException();
 	}
 
@@ -688,7 +704,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 		case "max": {
 			switch (type) {
 			case "int":
-				throw new UnsupportedOperationException();
+				return new MaxAggregatorVal(((NumVal) args.get(0)).v());
 			default:
 				throw new UnsupportedOperationException();
 			}
@@ -696,7 +712,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 		case "min": {
 			switch (type) {
 			case "int":
-				throw new UnsupportedOperationException();
+				return new MinAggregatorVal(((NumVal) args.get(0)).v());
 			default:
 				throw new UnsupportedOperationException();
 			}
@@ -736,6 +752,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final VisitorType n, Env<Value> env) {
+		System.out.println("visitro reached");
 		return null;
 	}
 
@@ -781,13 +798,19 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 			} catch (ArrayIndexOutOfBoundsException ex) {
 				// do nothing as this is accessing more elements
 				// return results;
+				return results;
 			} catch (IllegalArgumentException ex) {
 				// do nothing as this is accessing more elements
 				// return results;
+				return results;
+//			} catch (java.lang.UnsupportedOperationException ex) {
+//				// do nothing
+//				// return results;
+//				return results;
 			} catch (Exception ex) {
 				ex.printStackTrace();
+				return results;
 			}
-			break;
 		default:
 			break;
 		}

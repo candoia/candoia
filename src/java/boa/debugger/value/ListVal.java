@@ -1,25 +1,31 @@
 package boa.debugger.value;
 
 import boa.types.BoaType;
+import boa.types.Diff.ChangedFile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * @author nmtiwari
  *
  */
-public class ListVal extends BoaType implements Value {
-	ArrayList<Object> values;
+public class ListVal<T> extends BoaType implements Value {
+	ArrayList<T> values;
 
 	public ListVal() {
-		values = new ArrayList<Object>();
+		values =  new ArrayList<>();
+	}
+
+	public ListVal(T[] list) {
+		values = new ArrayList<T>(Arrays.asList(list));
 	}
 
 	public long size() {
 		return values.size();
 	}
 
-	public ArrayList<Object> v() {
+	public ArrayList<T> v() {
 		return values;
 	}
 
@@ -34,7 +40,7 @@ public class ListVal extends BoaType implements Value {
 			throw new IllegalArgumentException();
 	}
 	
-	public void add(Value v) {
+	public void add(T v) {
 		values.add(v);
 	}
 
@@ -42,13 +48,13 @@ public class ListVal extends BoaType implements Value {
 	public boolean equals(Value v) {
 		if (v instanceof ListVal) {
 			for (int i = 0; i < values.size() - 1; i++) {
-				if (!((ListVal) v).get(i).equals(this.get(i))) {
+				if (!((ListVal<?>) v).get(i).equals(this.get(i))) {
 					return false;
 				}
 			}
 			return true;
 		} else {
-			return false;
+			throw new IllegalArgumentException();
 		}
 
 	}

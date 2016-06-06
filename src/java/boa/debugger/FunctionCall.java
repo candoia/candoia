@@ -1,7 +1,12 @@
 package boa.debugger;
 
+import java.util.ArrayList;
+
 import boa.debugger.Env.LookupException;
-import boa.debugger.value.*;
+import boa.debugger.value.DynamicError;
+import boa.debugger.value.ListVal;
+import boa.debugger.value.NumVal;
+import boa.debugger.value.Value;
 import boa.types.Ast.Comment.CommentKind;
 import boa.types.Ast.Expression.ExpressionKind;
 import boa.types.Ast.Modifier.ModifierKind;
@@ -16,12 +21,20 @@ import boa.types.Shared.ChangeKind;
 
 public class FunctionCall {
 	protected enum functionList {
-		abs, acos, acosh, add, asin, asinh, atan, atan2, atanh, ceil, clear, cos, cosh, dayofyear, strcontains, now, exp, floor, sin, sinh, tan, formattime, tanh, def, format, getast, get_annotation, lookup, getcomments, get_metric_ca, get_metric_cbc, get_metric_dit, getLOC, get_metric_lcoo, get_metric_noa, get_metric_noc, get_metric_noo, get_metric_npm, get_metric_rfc, getsnapshot, has_annotation, hasfiletype, keys, contains, haskey, has_modifier, has_modifier_final, has_modifier_namespace, has_modifier_private, has_modifier_protected, has_modifier_public, has_modifier_static, has_modifier_synchronized, has_visibility, isfinte, isinfinte, isnormal, isnan, isfixingrevision, iskind, isliteral, len, log, log10, lowercase, max, min, match, matchposns, matchstrs, nrand, pop, pow, push, rand, remove, round, substring, split, splitall, splitn, strfind, string, strreplace, sqrt, trim, trunc, uppercase, visit, yearof
-
+		abs, acos, acosh, add, asin, asinh, atan, atan2, atanh, ceil, clear, cos, cosh, dayofyear, strcontains, now, exp, 
+		floor, sin, sinh, tan, formattime, tanh, def, format, getast, get_annotation, lookup, getcomments, get_metric_ca, 
+		get_metric_cbc, get_metric_dit, getLOC, get_metric_lcoo, get_metric_noa, get_metric_noc, get_metric_noo, 
+		get_metric_npm, get_metric_rfc, getsnapshot, has_annotation, hasfiletype, keys, contains, haskey, has_modifier, 
+		has_modifier_final, has_modifier_namespace, has_modifier_private, has_modifier_protected, has_modifier_public, 
+		has_modifier_static, has_modifier_synchronized, has_visibility, isfinte, isinfinte, isnormal, isnan, isfixingrevision, 
+		iskind, isliteral, len, log, log10, lowercase, max, min, match, matchposns, matchstrs, nrand, pop, pow, push, rand, 
+		remove, round, substring, split, splitall, splitn, strfind, string, strreplace, sqrt, trim, trunc, uppercase, visit, 
+		yearof
 	};
 
 	protected enum InbuiltEnumList {
-		TypeKind, StatementKind, ExpressionKind, ModifierKind, Visibility, CommentKind, RepositoryKind, FileKind, IssueKind, ChangeKind, Priority, Severity, State
+		TypeKind, StatementKind, ExpressionKind, ModifierKind, Visibility, CommentKind, RepositoryKind, FileKind, IssueKind, 
+		ChangeKind, Priority, Severity, State
 	};
 
 	public static boolean isInBuiltFunction(String str) {
@@ -150,12 +163,12 @@ public class FunctionCall {
 
 	}
 
-	public static Value executeFunction(String operand, ListVal operation, Env<Value> env, Evaluator evaluator) {
+	public static Value executeFunction(String operand, ArrayList<Value> operation, Env<Value> env, Evaluator evaluator) {
 		boolean isInbuiltOperation = isInBuiltFunction(operand);
 		if (isInbuiltOperation) {
 			return executeInBuiltFunctions(operand, operation, env);
 		}
-		return operation;
+		throw new UnsupportedOperationException();
 	}
 
 	public static boolean hasBeenOverloaded(String operand, Env<Value> env) {
@@ -167,7 +180,7 @@ public class FunctionCall {
 		}
 	}
 
-	public static Value executeInBuiltFunctions(String operand, ListVal operation, Env<Value> env) {
+	public static Value executeInBuiltFunctions(String operand, ArrayList<Value> operation, Env<Value> env) {
 		switch (functionList.valueOf(operand)) {
 		case abs:
 			return InterpreterBoaFunctionMapping.callCompilerAbs(operation, env);
@@ -225,9 +238,8 @@ public class FunctionCall {
 			return InterpreterBoaFunctionMapping.callCompilerTan(operation, env);
 		case tanh:
 			return InterpreterBoaFunctionMapping.callCompilerTanh(operation, env);
-
-		// case def:
-		// return InterpreterBoaFunctionMapping.callCompilerDef(operation, env);
+		 case def:
+		 return InterpreterBoaFunctionMapping.callCompilerDef(operation, env);
 		case format:
 			return InterpreterBoaFunctionMapping.callCompilerFormat(operation, env);
 		case getast:
@@ -237,7 +249,12 @@ public class FunctionCall {
 		case getcomments:
 			return InterpreterBoaFunctionMapping.callCompilerGetComments(operation, env);
 		case getsnapshot:
-			return InterpreterBoaFunctionMapping.callCompilerGetSnapShot(operation, env);
+			try {
+				return InterpreterBoaFunctionMapping.callCompilerGetSnapShot(operation, env);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		case has_annotation:
 			return InterpreterBoaFunctionMapping.callCompilerHasAnnotation(operation, env);
 		case hasfiletype:
@@ -357,9 +374,8 @@ public class FunctionCall {
 			return InterpreterBoaFunctionMapping.callCompilerTrunc(operation, env);
 		case uppercase:
 			return InterpreterBoaFunctionMapping.callCompilerUppercase(operation, env);
-		// case visit:
-		// return InterpreterBoaFunctionMapping.callCompilerVisit(operation,
-		// env);
+		case visit:
+			return InterpreterBoaFunctionMapping.callCompilerVisit(operation, env);
 		case yearof:
 			return InterpreterBoaFunctionMapping.callCompilerYearOf(operation, env);
 		default:
@@ -367,40 +383,4 @@ public class FunctionCall {
 		}
 
 	}
-
-	public static Value executeOperation(Value operand, Value operation, Env<Value> env) {
-		if (((operand) instanceof ListVal)) {
-			Value fst = ((PairVal) operation).fst();
-			Value snd = ((PairVal) operation).snd();
-
-			ListVal actualListVal = (ListVal) (operand);
-			// there is only one part (range is not selected)
-			if (snd instanceof UnitVal) {
-				// if the start is a NumVal we directly can look for the
-				// index
-				if (fst instanceof NumVal) {
-					operand = (Value) actualListVal.get((int) (((NumVal) fst).v()));
-				}
-				// if first index is StringVal we need to see its
-				// mapping from Env
-				else if (fst instanceof StringVal) {
-					Value orginalVal = (Value) env.get(((StringVal) fst).v());
-					// To fetch value from Record we need a NumVal else
-					// there is something wrong
-					if (orginalVal instanceof NumVal) {
-						operand = (Value) actualListVal.get((int) (((NumVal) orginalVal).v()));
-					}
-				}
-			}
-			// if the index operation has a range
-			else {
-				// range part is not handeled
-				throw new UnsupportedOperationException();
-			}
-			return operand;
-		}
-
-		return new DynamicError("No match is found in executeOperation from EvaluatorIntrinsics");
-	}
-
 }

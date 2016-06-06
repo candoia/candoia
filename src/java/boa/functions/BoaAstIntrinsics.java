@@ -31,6 +31,7 @@ import org.apache.hadoop.mapreduce.Mapper.Context;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import boa.datagen.DefaultProperties;
 import boa.types.Ast.*;
 import boa.types.Code.CodeRepository;
 import boa.types.Code.Revision;
@@ -84,7 +85,7 @@ public class BoaAstIntrinsics {
 				&& kind != ChangedFile.FileKind.SOURCE_JAVA_JLS4)
 			return emptyAst;
 
-		context.getCounter(AST_COUNTER.GETS_ATTEMPTED).increment(1);
+//		context.getCounter(AST_COUNTER.GETS_ATTEMPTED).increment(1);
 
 		final String rowName = f.getKey() + "!!" + f.getName();
 
@@ -93,32 +94,32 @@ public class BoaAstIntrinsics {
 
 		try {
 			final BytesWritable value = new BytesWritable();
-			if (map.get(new Text(rowName), value) == null) {
-				context.getCounter(AST_COUNTER.GETS_FAIL_MISSING).increment(1);
-			} else {
+//			if (map.get(new Text(rowName), value) == null) {
+//				context.getCounter(AST_COUNTER.GETS_FAIL_MISSING).increment(1);
+//			} else {
 				final CodedInputStream _stream = CodedInputStream.newInstance(value.getBytes(), 0, value.getLength());
 				// defaults to 64, really big ASTs require more
 				_stream.setRecursionLimit(Integer.MAX_VALUE);
 				final ASTRoot root = ASTRoot.parseFrom(_stream);
-				context.getCounter(AST_COUNTER.GETS_SUCCEED).increment(1);
+//				context.getCounter(AST_COUNTER.GETS_SUCCEED).increment(1);
 				return root;
-			}
+//			}
 		} catch (final InvalidProtocolBufferException e) {
 			e.printStackTrace();
-			context.getCounter(AST_COUNTER.GETS_FAIL_BADPROTOBUF).increment(1);
+//			context.getCounter(AST_COUNTER.GETS_FAIL_BADPROTOBUF).increment(1);
 		} catch (final IOException e) {
 			e.printStackTrace();
-			context.getCounter(AST_COUNTER.GETS_FAIL_MISSING).increment(1);
+//			context.getCounter(AST_COUNTER.GETS_FAIL_MISSING).increment(1);
 		} catch (final RuntimeException e) {
 			e.printStackTrace();
-			context.getCounter(AST_COUNTER.GETS_FAIL_MISSING).increment(1);
+//			context.getCounter(AST_COUNTER.GETS_FAIL_MISSING).increment(1);
 		} catch (final Error e) {
 			e.printStackTrace();
-			context.getCounter(AST_COUNTER.GETS_FAIL_BADPROTOBUF).increment(1);
+//			context.getCounter(AST_COUNTER.GETS_FAIL_BADPROTOBUF).increment(1);
 		}
 
 		System.err.println("error with ast: " + rowName);
-		context.getCounter(AST_COUNTER.GETS_FAILED).increment(1);
+//		context.getCounter(AST_COUNTER.GETS_FAILED).increment(1);
 		return emptyAst;
 	}
 
@@ -173,9 +174,7 @@ public class BoaAstIntrinsics {
 		final Configuration conf = new Configuration();
 		try {
 			final FileSystem fs = FileSystem.get(conf);
-			final Path p = new Path("hdfs://boa-njt/",
-								new Path(context.getConfiguration().get("boa.ast.dir", context.getConfiguration().get("boa.input.dir", "repcache/live")),
-								new Path("ast")));
+			final Path p = new Path(DefaultProperties.GH_JSON_CACHE_PATH);
 			map = new MapFile.Reader(fs, p.toString(), conf);
 		} catch (final Exception e) {
 			e.printStackTrace();

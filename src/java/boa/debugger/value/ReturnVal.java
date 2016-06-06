@@ -60,7 +60,7 @@ public class ReturnVal extends BoaType implements Value {
 
 	@Override
 	public Object get() {
-		return UnitVal.v;
+		return this.val;
 	}
 
 }
