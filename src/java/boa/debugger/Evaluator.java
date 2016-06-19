@@ -75,6 +75,7 @@ import boa.compiler.visitors.AbstractVisitor;
 import boa.debugger.Env.EmptyEnv;
 import boa.debugger.Env.ExtendEnv;
 import boa.debugger.Env.LookupException;
+import boa.debugger.FunctionCall.InbuiltEnumList;
 import boa.debugger.value.AnyVal;
 import boa.debugger.value.BindingVal;
 import boa.debugger.value.BoolVal;
@@ -266,6 +267,8 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 			if (o instanceof Selector) { // tuple val
 				if (operand instanceof TupleVal) {
 					operand = ((TupleVal) operand).get(op.toString());
+				} else if (FunctionCall.isInBuiltEnum(operand.toString())) {
+					operand = FunctionCall.getInbuildEnumFieldValue(operand.toString(), op.toString());
 				}
 			} else if (o instanceof Index) { // must be map or array
 				if (operand instanceof MapVal) {
@@ -285,17 +288,21 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final Identifier n, Env<Value> env) {
-		if ("true".equalsIgnoreCase(n.getToken())) {
+		String str = n.getToken();
+		if ("true".equalsIgnoreCase(str)) {
 			return new BoolVal(true);
-		} else if ("false".equalsIgnoreCase(n.getToken())) {
+		} else if ("false".equalsIgnoreCase(str)) {
 			return new BoolVal(false);
 		}
-		try {
-			return env.get(n.getToken());
-		} catch (LookupException e) {
-			return new StringVal(n.getToken());
+		if (FunctionCall.isInBuiltEnum(str) || FunctionCall.isInBuiltFunction(str)) {
+			return new StringVal(str);
+		} else {
+			try {
+				return env.get(n.getToken());
+			} catch (LookupException e) {
+				return new StringVal(n.getToken());
+			}
 		}
-
 	}
 
 	public Value visit(final Index n, Env<Value> env) {
@@ -396,6 +403,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final EmitStatement n, Env<Value> env) {
+		System.out.println("emitting now");
 		BindingVal b = (BindingVal) n.getId().accept(this, env);
 		AggregatorVal ag = (AggregatorVal) b.getInitializer();
 		String value = n.getValue().accept(this, env).toString();
@@ -435,7 +443,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 			int i = -1;
 			String var = n.getVar().getIdentifier().toString();
 			for (BoolVal bool : range) {
-				lmtdScope = new ExtendEnv<Value>(lmtdScope, var, new NumVal(++i));
+				lmtdScope = new ExtendEnv<Value>(env, var, new NumVal(++i));
 				if (bool.v()) {
 					n.getBody().accept(this, lmtdScope);
 				}
@@ -547,11 +555,35 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final SwitchCase n, Env<Value> env) {
-		throw new UnsupportedOperationException();
+		return n.getBody().accept(this, env);
 	}
 
 	public Value visit(final SwitchStatement n, Env<Value> env) {
-		throw new UnsupportedOperationException();
+		NumVal cond = (NumVal) n.getCondition().accept(this, env);
+		boolean foundCase = false;
+		int length = n.getCasesSize();
+		for (int i = 0; i < length; i++) {
+			SwitchCase sc = n.getCase(i);
+			for (Expression e : sc.getCases()) {
+				Value caseVal = e.accept(this, env);
+				if (caseVal instanceof NumVal) {
+					foundCase = foundCase || (caseVal.equals(cond));
+					if (foundCase) {
+						Value bdy = sc.accept(this, env);
+						if (bdy instanceof ReturnVal) {
+							return new ReturnVal(bdy);
+						}
+					}
+				}
+			}
+		}
+		if (!(foundCase)) {
+			Value bdy = n.getDefault().accept(this, env);
+			if (bdy instanceof ReturnVal)
+				return new ReturnVal(bdy);
+			return UnitVal.v;
+		}
+		return new DynamicError("Nothing happend in Switch case");
 	}
 
 	public Value visit(final VarDeclStatement n, Env<Value> env) {
@@ -560,7 +592,8 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 		Value intial = null;
 		if (n.hasType()) {
 			type = n.getType();
-			if (type instanceof OutputType || type instanceof MapType || type instanceof SetType || type instanceof StackType) {
+			if (type instanceof OutputType || type instanceof MapType || type instanceof SetType
+					|| type instanceof StackType) {
 				intial = n.getType().accept(this, env);
 			}
 		}
@@ -645,8 +678,8 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 
 	public Value visit(final StringLiteral n, Env<Value> env) {
 		String str = n.getLiteral();
-//		return new StringVal(n.getLiteral());
-		return new StringVal(str.subSequence(1, str.length()-1).toString());
+		// return new StringVal(n.getLiteral());
+		return new StringVal(str.subSequence(1, str.length() - 1).toString());
 	}
 
 	public Value visit(final TimeLiteral n, Env<Value> env) {
@@ -758,7 +791,6 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final VisitorType n, Env<Value> env) {
-		System.out.println("visitro reached");
 		return null;
 	}
 

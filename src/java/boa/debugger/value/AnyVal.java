@@ -257,8 +257,6 @@ public class AnyVal extends TupleVal implements Value {
 			ChangedFile file = (ChangedFile) value;
 			if (search.equals("name")) {
 				if (file.hasName()) {
-					if (boa.debugger.Evaluator.DEBUG)
-						System.out.println("ChangedFile:" + file.getName());
 					return new StringVal(file.getName());
 				} else {
 					return new DynamicError("No name found for this changedfile");

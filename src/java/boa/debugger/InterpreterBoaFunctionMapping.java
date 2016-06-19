@@ -149,29 +149,10 @@ public class InterpreterBoaFunctionMapping {
 	}
 
 	public static Value callCompilerHasKey(ArrayList<Value> operands, Env<Value> env) {
-		Value firstArgument = operands.get(0);
-		Value secondArgument = operands.get(1);
-
-		if (firstArgument instanceof MapVal) {
-			MapVal map = (MapVal) firstArgument;
-			if ((Value) secondArgument instanceof StringVal) {
-				if (secondArgument instanceof StringVal) {
-					String SecondArg = ((StringVal) secondArgument).v();
-					boolean result = map.hasKey(SecondArg);
-					if (boa.debugger.Evaluator.DEBUG)
-						System.out.println("has key returns" + result);
-					return new BoolVal(result);
-				} else {
-					throw new UnsupportedOperationException();
-				}
-
-			} else {
-				return new DynamicError("haskey Expects String as Second argument");
-
-			}
-
-		}
-		return new DynamicError("haskey Expects Map as First argument");
+		MapVal<?, ?> map = (MapVal<?, ?>) operands.get(0);
+		StringVal SecondArg = (StringVal) operands.get(1);
+		boolean result = map.hasKey(SecondArg);
+		return new BoolVal(result);
 	}
 
 	public static Value callCompilerHasModifierPublic(ArrayList<Value> operands, Env<Value> env) {
@@ -335,9 +316,6 @@ public class InterpreterBoaFunctionMapping {
 	}
 
 	public static Value callCompilerRemove(ArrayList<Value> operands, Env<Value> env) {
-
-		if (boa.debugger.Evaluator.DEBUG)
-			System.out.println("Remove reached");
 		Object firstArgument = operands.get(0);
 		Object secondArgument = operands.get(1);
 		if (firstArgument instanceof StringVal)
@@ -355,8 +333,6 @@ public class InterpreterBoaFunctionMapping {
 				if (secondArgument instanceof StringVal) {
 					String SecondArg = ((StringVal) secondArgument).v();
 					map.remove(SecondArg);
-					if (boa.debugger.Evaluator.DEBUG)
-						System.out.println("returning unitVal from here");
 				}
 				return UnitVal.v;
 			} else {
@@ -371,8 +347,6 @@ public class InterpreterBoaFunctionMapping {
 			if ((Value) secondArgument instanceof StringVal) {
 				String SecondArg = ((StringVal) secondArgument).v();
 				map.remove(SecondArg);
-				if (boa.debugger.Evaluator.DEBUG)
-					System.out.println("returning unitVal from here");
 				return UnitVal.v;
 			} else {
 				return new DynamicError("RemoveFunc Expects String as Second argument");
@@ -424,30 +398,10 @@ public class InterpreterBoaFunctionMapping {
 	}
 
 	public static Value callCompilerString(ArrayList<Value> operands, Env<Value> env) {
-
-		Object firstArgument = operands.get(0);
-		if (boa.debugger.Evaluator.DEBUG)
-			System.out.println("string func has received" + firstArgument.getClass());
-		if (firstArgument instanceof AnyVal) {
-			AnyVal arg = ((AnyVal) firstArgument);
-			Object actual = arg.getObject();
-			String result = boa.functions.BoaAstIntrinsics.changedfileToString((ChangedFile) actual);
-			if (boa.debugger.Evaluator.DEBUG)
-				System.out.println("String function has got the result" + result);
-			return new StringVal(result);
-		} else if (firstArgument instanceof StringVal) {
-
-			AnyVal arg = (AnyVal) env.get(((StringVal) firstArgument).v());
-			Object actual = arg.getObject();
-			if (actual instanceof ChangedFile) {
-				String result = boa.functions.BoaAstIntrinsics.changedfileToString((ChangedFile) actual);
-				if (boa.debugger.Evaluator.DEBUG)
-					System.out.println("String function has got the result" + result);
-				return new StringVal(result);
-			}
-		}
-		return new DynamicError("pop Expects either String or Stack as First argument");
-
+		AnyVal arg = (AnyVal) operands.get(0);
+		ChangedFile actual = (ChangedFile) arg.getObject();
+		String result = boa.functions.BoaAstIntrinsics.changedfileToString(actual);
+		return new StringVal(result);
 	}
 
 	public static Value callCompilerGetAnnotation(ArrayList<Value> operands, Env<Value> env) {

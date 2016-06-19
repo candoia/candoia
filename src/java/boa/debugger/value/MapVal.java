@@ -38,9 +38,6 @@ public class MapVal<T, V> implements Value {
 	}
 
 	public void remove(T index) {
-		if (boa.debugger.Evaluator.DEBUG) {
-			System.out.println("Request to delete:" + index + "from :" + map.size() + "elements");
-		}
 		map.remove(index);
 	}
 

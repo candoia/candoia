@@ -1,5 +1,6 @@
 package boa.debugger;
 
+
 import boa.debugger.value.StringVal;
 import boa.debugger.value.Value;
 
@@ -13,6 +14,8 @@ import boa.debugger.value.Value;
 public interface Env<T> extends Cloneable{
 	T get(String search_var);
 	T get(Value search_var);
+	int getLength();
+	String print();
 	boolean isEmpty();
 	Object clone();
 	void updateValue(String search_var,T v);
@@ -49,23 +52,38 @@ public interface Env<T> extends Cloneable{
 			throw new LookupException("No binding found for name: "
 					+ search_var);
 		}
+
+		@Override
+		public int getLength() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public String print() {
+			// TODO Auto-generated method stub
+			return "";
+		}
 	}
 
 	static public class ExtendEnv<T> implements Env<T>, Cloneable {
 		private Env<T> _saved_env;
 		private String _var;
 		private T _val;
+		int size = 0;
 
 		public ExtendEnv(Env<T> saved_env, String var, T val) {
 			_saved_env = saved_env;
 			_var = var;
 			_val = val;
+			this.size++;
 		}
 
 		public ExtendEnv(Object saved_env, String var, T val) {
 			_saved_env = (Env<T>) saved_env;
 			_var = var;
 			_val = val;
+			this.size++;
 		}
 		
 		public void updateValue(String search_var, T val){
@@ -116,6 +134,18 @@ public interface Env<T> extends Cloneable{
 			}else{
 				return (T) search_var;
 			}
+		}
+
+		@Override
+		public int getLength() {
+			// TODO Auto-generated method stub
+			return 1 + _saved_env.getLength();
+		}
+
+		@Override
+		public String print() {
+			// TODO Auto-generated method stub
+			return _var + ", " + _saved_env.print() ;
 		}
 	}
 
