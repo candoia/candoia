@@ -118,7 +118,35 @@ public class VisitorVal extends BoaAbstractVisitor implements Value {
 		this._env = new ExtendEnv<Value>(this._env, boa.debugger.Evaluator.visitorVar, this);
 		if (node instanceof Project) {
 			visit((Project) node);
-		}
+		}else if (node instanceof CodeRepository) {
+			visit((CodeRepository) node);
+		}else if (node instanceof ASTRoot) {
+			visit((ASTRoot) node);
+		}else if (node instanceof ChangedFile) {
+			visit((ChangedFile) node);
+		}else if (node instanceof Comment) {
+			visit((Comment) node);
+		}else if (node instanceof Declaration) {
+			visit((Declaration) node);
+		}else if (node instanceof Expression) {
+			visit((Expression) node);
+		}else if (node instanceof Method) {
+			visit((Method) node);
+		}else if (node instanceof Modifier) {
+			visit((Modifier) node);
+		}else if (node instanceof Namespace) {
+			visit((Namespace) node);
+		}else if (node instanceof Person) {
+			visit((Person) node);
+		}else if (node instanceof Revision) {
+			visit((Revision) node);
+		}else if (node instanceof Statement) {
+			visit((Statement) node);
+		}else if (node instanceof Type) {
+			visit((Type) node);
+		}else if (node instanceof Variable) {
+			visit((Variable) node);
+		} 
 	}
 
 	@Override
@@ -335,8 +363,8 @@ public class VisitorVal extends BoaAbstractVisitor implements Value {
 	@Override
 	protected boolean preVisit(final Statement node) throws Exception {
 		Value result = null;
-		if (_toBeVisit.containsKey("ASTRoot") && _toBeVisit.get("ASTRoot") == 0) {
-			VisitStatement stmt = _toBeExecuted.get("ASTRoot");
+		if (_toBeVisit.containsKey("Statement") && _toBeVisit.get("Statement") == 0) {
+			VisitStatement stmt = _toBeExecuted.get("Statement");
 			if (stmt.hasComponent()) {
 				_env = new ExtendEnv<Value>(_env, stmt.getComponent().getIdentifier().toString(), new AnyVal(node));
 			}

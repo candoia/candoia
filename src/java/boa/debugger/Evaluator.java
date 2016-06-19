@@ -284,8 +284,10 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final Identifier n, Env<Value> env) {
-		if ("true".equalsIgnoreCase(n.getToken()) || "false".equalsIgnoreCase(n.getToken())) {
-			throw new UnsupportedOperationException();
+		if ("true".equalsIgnoreCase(n.getToken())) {
+			return new BoolVal(true);
+		} else if ("false".equalsIgnoreCase(n.getToken())) {
+			return new BoolVal(false);
 		}
 		try {
 			return env.get(n.getToken());
@@ -354,13 +356,14 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 		Value value = null;
 		for (Statement s : n.getStatements()) {
 			value = s.accept(this, env);
-			if (s instanceof ReturnStatement || s instanceof ContinueStatement || s instanceof BreakStatement || s instanceof StopStatement) {
+			if (s instanceof ReturnStatement || s instanceof ContinueStatement || s instanceof BreakStatement
+					|| s instanceof StopStatement) {
 				// return s.accept(this, env);
 				return value;
 			} else if (s instanceof VarDeclStatement) {
 				BindingVal val = (BindingVal) value;
 				env = new ExtendEnv<Value>(env, val.getID(), val.getInitializer());
-			}else if(value instanceof ReturnVal){
+			} else if (value instanceof ReturnVal) {
 				return (Value) value.get();
 			}
 		}
@@ -538,7 +541,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final StopStatement n, Env<Value> env) {
-//		return null;
+		// return null;
 		return new ReturnVal(new ReturnVal(new ReturnVal(UnitVal.v)));
 	}
 
@@ -556,7 +559,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 		Value intial = null;
 		if (n.hasType()) {
 			type = n.getType();
-			if (type instanceof OutputType) {
+			if (type instanceof OutputType || type instanceof MapType) {
 				intial = n.getType().accept(this, env);
 			}
 		}
@@ -640,7 +643,9 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final StringLiteral n, Env<Value> env) {
-		return new StringVal(n.getLiteral());
+		String str = n.getLiteral();
+//		return new StringVal(n.getLiteral());
+		return new StringVal(str.subSequence(1, str.length()-1).toString());
 	}
 
 	public Value visit(final TimeLiteral n, Env<Value> env) {
@@ -803,10 +808,10 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 				// do nothing as this is accessing more elements
 				// return results;
 				return results;
-//			} catch (java.lang.UnsupportedOperationException ex) {
-//				// do nothing
-//				// return results;
-//				return results;
+				// } catch (java.lang.UnsupportedOperationException ex) {
+				// // do nothing
+				// // return results;
+				// return results;
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				return results;

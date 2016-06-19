@@ -18,7 +18,7 @@ public class StringVal extends BoaType implements Value {
 	}
 
 	public java.lang.String tostring() {
-		return "" + _val;
+		return _val;
 	}
 
 	@Override
