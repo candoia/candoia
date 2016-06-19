@@ -3,6 +3,8 @@ package boa.debugger;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+
 import boa.debugger.Env.LookupException;
 import boa.debugger.value.AnyVal;
 import boa.debugger.value.BoolVal;
@@ -96,14 +98,11 @@ public class InterpreterBoaFunctionMapping {
 	// }
 
 	public static Value callCompilerGetAst(ArrayList<Value> operands, Env<Value> env) {
-
 		Object firstArgument = operands.get(0);
-		if (firstArgument instanceof StringVal)
-			firstArgument = env.get(((StringVal) firstArgument).v());
 
 		if (firstArgument instanceof AnyVal) {
-			return new AnyVal(
-					boa.functions.BoaAstIntrinsics.getast((ChangedFile) (((AnyVal) firstArgument).getObject())));
+			ASTRoot test = boa.functions.BoaAstIntrinsics.getast((ChangedFile) (((AnyVal) firstArgument).getObject()));
+			return new AnyVal(test);
 		} else {
 			return new DynamicError("GetAstFunc Expects ChangedFile as First argument");
 		}
@@ -113,8 +112,6 @@ public class InterpreterBoaFunctionMapping {
 	public static Value callCompilerGetSnapShot(ArrayList<Value> operands, Env<Value> env) throws Exception {
 		CodeRepository cr = (CodeRepository) ((AnyVal) operands.get(0)).get();
 		switch (operands.size()) {
-		case 0:
-			throw new IllegalArgumentException();
 		case 1:
 			ChangedFile[] changeList_1 = boa.functions.BoaAstIntrinsics.getSnapshot(cr, Long.MAX_VALUE, new String[0]);
 			ListVal<AnyVal> list_1 = new ListVal<AnyVal>();
@@ -123,8 +120,15 @@ public class InterpreterBoaFunctionMapping {
 			}
 			return list_1;
 		case 2:
-			ChangedFile[] changeList_2 = boa.functions.BoaAstIntrinsics.getSnapshot(cr, ((NumVal) operands.get(1)).v(),
-					new String[0]);
+			ChangedFile[] changeList_2 = null;
+			if (operands.get(1) instanceof StringVal) {
+				String arg = ((StringVal) operands.get(1)).v();
+				changeList_2 = boa.functions.BoaAstIntrinsics.getSnapshot(cr, arg);
+			} else if (operands.get(1) instanceof NumVal) {
+				changeList_2 = boa.functions.BoaAstIntrinsics.getSnapshot(cr, ((NumVal) operands.get(1)).v(),
+						new String[0]);
+			}
+
 			ListVal<AnyVal> list_2 = new ListVal<AnyVal>();
 			for (ChangedFile c : changeList_2) {
 				list_2.add(new AnyVal(c));
@@ -436,26 +440,10 @@ public class InterpreterBoaFunctionMapping {
 	}
 
 	public static Value callCompilerStrFind(ArrayList<Value> operands, Env<Value> env) {
-		if (boa.debugger.Evaluator.DEBUG)
-			System.out.println("strfunc reached");
-		Object firstArgument = operands.get(0);
-		Object secondArgument = operands.get(1);
-		if (firstArgument instanceof StringVal) {
-			String firstArg = ((StringVal) firstArgument).v();
-			if ((Value) secondArgument instanceof StringVal) {
-				String SecondArg = ((StringVal) secondArgument).v();
-				if (boa.debugger.Evaluator.DEBUG)
-					System.out.println("options\t" + firstArg + "\t" + SecondArg);
-				long result = boa.functions.BoaStringIntrinsics.indexOf(firstArg, SecondArg);
-				if (boa.debugger.Evaluator.DEBUG)
-					System.out.println("StrFindFunc function is returning " + result);
-				return new NumVal(result);
-			} else {
-				return new DynamicError("StrFindFunc Expects String as Second argument");
-
-			}
-		}
-		return new DynamicError("StrFindFunc Expects String as First argument");
+		String firstArg = ((StringVal) operands.get(0)).v();
+		String SecondArg = ((StringVal) operands.get(1)).v();
+		long result = boa.functions.BoaStringIntrinsics.indexOf(firstArg, SecondArg);
+		return new NumVal(result);
 	}
 
 	public static Value callCompilerStrContains(ArrayList<Value> operands, Env<Value> env) {
@@ -1203,7 +1191,8 @@ public class InterpreterBoaFunctionMapping {
 	}
 
 	public static Value callCompilerDef(ArrayList<Value> operands, Env<Value> env) {
-		return new BoolVal(operands != null);
+		return new BoolVal(operands != null && !(operands.get(0) instanceof DynamicError)
+				&& !(operands.get(0) instanceof UnitVal));
 	}
 
 	public static Value callCompilerAcos(ArrayList<Value> operands, Env<Value> env) {
