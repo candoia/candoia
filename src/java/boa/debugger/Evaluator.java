@@ -86,6 +86,7 @@ import boa.debugger.value.MapVal;
 import boa.debugger.value.NumVal;
 import boa.debugger.value.PairVal;
 import boa.debugger.value.ReturnVal;
+import boa.debugger.value.StackVal;
 import boa.debugger.value.StringVal;
 import boa.debugger.value.TupleVal;
 import boa.debugger.value.UnitVal;
@@ -559,7 +560,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 		Value intial = null;
 		if (n.hasType()) {
 			type = n.getType();
-			if (type instanceof OutputType || type instanceof MapType) {
+			if (type instanceof OutputType || type instanceof MapType || type instanceof SetType || type instanceof StackType) {
 				intial = n.getType().accept(this, env);
 			}
 		}
@@ -745,7 +746,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final StackType n, Env<Value> env) {
-		throw new UnsupportedOperationException();
+		return new StackVal<>();
 	}
 
 	public Value visit(final SetType n, Env<Value> env) {

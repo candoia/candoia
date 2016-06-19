@@ -38,7 +38,7 @@ public class InterpreterBoaFunctionMapping {
 	}
 
 	public static Value callCompilerLen(ArrayList<Value> operands, Env<Value> env) {
-		Value argument = (Value) operands.get(0);
+		Value argument = operands.get(0);
 		return new NumVal(argument.size());
 	}
 
@@ -149,8 +149,8 @@ public class InterpreterBoaFunctionMapping {
 	}
 
 	public static Value callCompilerHasKey(ArrayList<Value> operands, Env<Value> env) {
-		Value firstArgument = (Value) operands.get(0);
-		Value secondArgument = (Value) operands.get(1);
+		Value firstArgument = operands.get(0);
+		Value secondArgument = operands.get(1);
 
 		if (firstArgument instanceof MapVal) {
 			MapVal map = (MapVal) firstArgument;
@@ -226,7 +226,7 @@ public class InterpreterBoaFunctionMapping {
 		long numberOfArgs = operands.size();
 		if (numberOfArgs == 2) {
 			StringVal fst = (StringVal) operands.get(0);
-			Value snd = (Value) operands.get(1);
+			Value snd = operands.get(1);
 			if (snd instanceof NumVal) {
 				String result = boa.functions.BoaTimeIntrinsics.formatTime(fst.v(), ((NumVal) snd).v());
 				return new StringVal(result);
@@ -289,88 +289,35 @@ public class InterpreterBoaFunctionMapping {
 	}
 
 	public static Value callCompilerPop(ArrayList<Value> operands, Env<Value> env) {
-
-		Object firstArgument = operands.get(0);
-
-		if (boa.debugger.Evaluator.DEBUG)
-			System.out.println("Reached in pop" + firstArgument.getClass());
-		if (firstArgument instanceof StringVal) {
-			String firstArg = ((StringVal) firstArgument).v();
-			Value stack = (Value) (env.get(firstArg));
-			if (stack instanceof StackVal) {
-				Object result = ((StackVal) stack).pop();
-				return (Value) result;
-			}
-		}
-
-		else if (firstArgument instanceof StackVal) {
-			Value stack = (Value) firstArgument;
-			if (stack instanceof StackVal) {
-				Object result = ((StackVal) stack).pop();
-				return (Value) result;
-			}
-		}
-		return new DynamicError("pop Expects either String or Stack as First argument");
-
+		StackVal<Value> stack = (StackVal<Value>) operands.get(0);
+		return stack.pop();
 	}
 
 	public static Value callCompilerClear(ArrayList<Value> operands, Env<Value> env) {
-		Value stack = (Value) operands.get(0);
+		Value stack = operands.get(0);
 		if (stack instanceof StackVal) {
-			((StackVal) stack).clearAll();
+			((StackVal<?>) stack).clearAll();
 			return UnitVal.v;
 		} else if (stack instanceof MapVal) {
-			((MapVal) stack).clearAll();
+			((MapVal<?, ?>) stack).clearAll();
 			return UnitVal.v;
 		} else if (stack instanceof SetVal) {
-			((SetVal) stack).clearAll();
+			((SetVal<?, ?>) stack).clearAll();
 			return UnitVal.v;
 		}
 		return new DynamicError("clear Expects either String or Stack/Map as First argument");
 	}
 
 	public static Value callCompilerPush(ArrayList<Value> operands, Env<Value> env) {
-
-		Object firstArgument = operands.get(0);
-		Object secondArgument = operands.get(1);
-
-		if (boa.debugger.Evaluator.DEBUG)
-			System.out.println("Reached in push" + firstArgument.getClass() + secondArgument.getClass());
-		if (firstArgument instanceof StringVal) {
-			String firstArg = ((StringVal) firstArgument).v();
-			Value stack = (Value) (env.get(firstArg));
-			if (stack instanceof StackVal) {
-				if (secondArgument instanceof StringVal) {
-					String secondArg = ((StringVal) secondArgument).v();
-					Value v = (Value) env.get(secondArg);
-					if (boa.debugger.Evaluator.DEBUG)
-						System.out.println("Class of second arg=" + v.getClass());
-					((StackVal) stack).push(v);
-					return v;
-				}
-			}
-		}
-
-		else if (firstArgument instanceof StackVal) {
-			Value stack = (Value) firstArgument;
-			if (stack instanceof StackVal) {
-				if (secondArgument instanceof StringVal) {
-					String secondArg = ((StringVal) secondArgument).v();
-					Value v = (Value) env.get(secondArg);
-					if (boa.debugger.Evaluator.DEBUG)
-						System.out.println("Class of second arg=" + v.getClass());
-					((StackVal) stack).push(v);
-					return v;
-				}
-			}
-		}
-		return new DynamicError("push Expects String as First argument");
-
+		StackVal<Value> stack = (StackVal<Value>) operands.get(0);
+		Value secondArgument = operands.get(1);
+		stack.push(secondArgument);
+		return UnitVal.v;
 	}
 
 	public static Value callCompilerContains(ArrayList<Value> operands, Env<Value> env) {
 		Object firstArgument = operands.get(0);
-		Value secondArgument = (Value) operands.get(1);
+		Value secondArgument = operands.get(1);
 
 		if (firstArgument instanceof SetVal) {
 			SetVal map = (SetVal) firstArgument;
@@ -948,12 +895,12 @@ public class InterpreterBoaFunctionMapping {
 		String format = (firstArgument).v();
 
 		for (int i = 1; i < (operands.size() - 1); i++) {
-			Value arg = (Value) operands.get(i);
+			Value arg = operands.get(i);
 			if (arg instanceof StringVal) {
 				try {
-					arg = (Value) env.get(((StringVal) arg).v());
+					arg = env.get(((StringVal) arg).v());
 				} catch (LookupException ex) {
-					arg = (Value) operands.get(1);
+					arg = operands.get(1);
 				}
 			}
 			if (arg instanceof AnyVal) {
@@ -974,7 +921,7 @@ public class InterpreterBoaFunctionMapping {
 		String fst = first.v();
 		String snd = second.v();
 		long[] list = boa.functions.BoaStringIntrinsics.matchPositions(fst, snd);
-		ListVal result = new ListVal();
+		ListVal<NumVal> result = new ListVal<NumVal>();
 		for (long x : list) {
 			result.add(new NumVal(x));
 		}
@@ -987,7 +934,7 @@ public class InterpreterBoaFunctionMapping {
 		String fst = first.v();
 		String snd = second.v();
 		String[] list = boa.functions.BoaStringIntrinsics.matchStrings(fst, snd);
-		ListVal result = new ListVal();
+		ListVal<StringVal> result = new ListVal<StringVal>();
 		for (String x : list) {
 			result.add(new StringVal(x));
 		}
@@ -1000,7 +947,7 @@ public class InterpreterBoaFunctionMapping {
 		String fst = first.v();
 		String snd = second.v();
 		String[] list = boa.functions.BoaStringIntrinsics.split(fst, snd);
-		ListVal result = new ListVal();
+		ListVal<StringVal> result = new ListVal<StringVal>();
 		for (String x : list) {
 			result.add(new StringVal(x));
 		}
@@ -1009,7 +956,7 @@ public class InterpreterBoaFunctionMapping {
 
 	public static Value callCompilerSplitAll(ArrayList<Value> operands, Env<Value> env) {
 
-		Value fst = (Value) operands.get(0);
+		Value fst = operands.get(0);
 		if (fst instanceof StringVal) {
 			StringVal first = (StringVal) operands.get(0);
 			StringVal second = (StringVal) operands.get(1);
@@ -1017,7 +964,7 @@ public class InterpreterBoaFunctionMapping {
 			String frst = first.v();
 			String snd = second.v();
 			String[] list = boa.functions.BoaStringIntrinsics.splitall(frst, snd);
-			ListVal result = new ListVal();
+			ListVal<StringVal> result = new ListVal<StringVal>();
 			for (String x : list) {
 				result.add(new StringVal(x));
 			}
@@ -1045,7 +992,7 @@ public class InterpreterBoaFunctionMapping {
 				String snd = second.v();
 				String first = ((StringVal) actualAgumentToSplit).v();
 				String[] list = boa.functions.BoaStringIntrinsics.splitall(first, snd);
-				ListVal result = new ListVal();
+				ListVal<StringVal> result = new ListVal<StringVal>();
 				for (String x : list) {
 					result.add(new StringVal(x));
 				}
@@ -1062,7 +1009,7 @@ public class InterpreterBoaFunctionMapping {
 		String fst = first.v();
 		String snd = second.v();
 		String[] list = boa.functions.BoaStringIntrinsics.splitn(fst, snd, third.v());
-		ListVal result = new ListVal();
+		ListVal<StringVal> result = new ListVal<StringVal>();
 		for (String x : list) {
 			result.add(new StringVal(x));
 		}
@@ -1119,8 +1066,8 @@ public class InterpreterBoaFunctionMapping {
 	}
 
 	public static Value callCompilerMax(ArrayList<Value> operands, Env<Value> env) {
-		Value first = (Value) operands.get(0);
-		Value second = (Value) operands.get(1);
+		Value first = operands.get(0);
+		Value second = operands.get(1);
 		if ((first instanceof DoubleVal) && (second instanceof DoubleVal)) {
 			double fst = ((DoubleVal) first).v();
 			double snd = ((DoubleVal) second).v();
@@ -1136,8 +1083,8 @@ public class InterpreterBoaFunctionMapping {
 	}
 
 	public static Value callCompilerMin(ArrayList<Value> operands, Env<Value> env) {
-		Value first = (Value) operands.get(0);
-		Value second = (Value) operands.get(1);
+		Value first = operands.get(0);
+		Value second = operands.get(1);
 		if ((first instanceof DoubleVal) && (second instanceof DoubleVal)) {
 			double fst = ((DoubleVal) first).v();
 			double snd = ((DoubleVal) second).v();
@@ -1173,8 +1120,8 @@ public class InterpreterBoaFunctionMapping {
 	}
 
 	public static Value callCompilerAdd(ArrayList<Value> operands, Env<Value> env) {
-		Value fst = (Value) operands.get(0);
-		Value snd = (Value) operands.get(1);
+		Value fst = operands.get(0);
+		Value snd = operands.get(1);
 		if (fst instanceof SetVal) {
 			HashSet set = (HashSet) ((SetVal) fst).getMap();
 			((SetVal) fst).add(snd.toString());
@@ -1265,7 +1212,7 @@ public class InterpreterBoaFunctionMapping {
 			long inputTime = (((NumVal) operands.get(0)).v());
 			return new NumVal(boa.functions.BoaTimeIntrinsics.dayOfYear(inputTime));
 		} else if (operands.get(0) instanceof StringVal) {
-			Value operator = (Value) env.get((((StringVal) operands.get(0)).v()));
+			Value operator = env.get((((StringVal) operands.get(0)).v()));
 			if (operator instanceof NumVal) {
 				long inputTime = (((NumVal) operator).v());
 				if (boa.debugger.Evaluator.DEBUG)

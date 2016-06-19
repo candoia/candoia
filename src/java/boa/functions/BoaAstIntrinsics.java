@@ -94,16 +94,16 @@ public class BoaAstIntrinsics {
 
 		try {
 			final BytesWritable value = new BytesWritable();
-//			if (map.get(new Text(rowName), value) == null) {
-//				context.getCounter(AST_COUNTER.GETS_FAIL_MISSING).increment(1);
-//			} else {
+			if (map.get(new Text(rowName), value) == null) {
+				context.getCounter(AST_COUNTER.GETS_FAIL_MISSING).increment(1);
+			} else {
 				final CodedInputStream _stream = CodedInputStream.newInstance(value.getBytes(), 0, value.getLength());
 				// defaults to 64, really big ASTs require more
 				_stream.setRecursionLimit(Integer.MAX_VALUE);
 				final ASTRoot root = ASTRoot.parseFrom(_stream);
 //				context.getCounter(AST_COUNTER.GETS_SUCCEED).increment(1);
 				return root;
-//			}
+			}
 		} catch (final InvalidProtocolBufferException e) {
 			e.printStackTrace();
 //			context.getCounter(AST_COUNTER.GETS_FAIL_BADPROTOBUF).increment(1);
