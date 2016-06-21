@@ -4,33 +4,41 @@ import java.util.ArrayList;
 
 import boa.compiler.ast.expressions.Expression;
 import boa.compiler.ast.statements.Block;
-import boa.debugger.Env;
-import boa.debugger.Evaluator;
+import boa.compiler.ast.types.FunctionType;
 
 public class FunVal implements Value {
 
 	private ArrayList<Expression> _formals;
 	private Block _body;
 	private Value returnType;
+	private FunctionType type;
 
-	public FunVal(ArrayList<Expression> formals, Block body, Value returnType) {
+	public FunVal(ArrayList<Expression> formals, Block body, Value returnType, FunctionType type) {
 		_formals = formals;
 		_body = body;
 		this.setReturnType(returnType);
+		this.type = type;
+	}
+	
+	public FunVal(Block body, FunctionType type) {
+		_body = body;
+		this.type = type;
 	}
 
-	public FunVal(ArrayList<Expression> formals, Block body) {
+	public FunVal(ArrayList<Expression> formals, Block body, FunctionType type) {
 		_formals = formals;
 		_body = body;
 		setReturnType(UnitVal.v);
+		this.type = type;
 	}
 	
-	public FunVal(Block body) {
-		_body = body;
-	}
 
 	public ArrayList<Expression> formals() {
 		return _formals;
+	}
+	
+	public FunctionType type() {
+		return type;
 	}
 
 	public Block body() {

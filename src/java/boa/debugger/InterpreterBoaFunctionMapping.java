@@ -234,39 +234,12 @@ public class InterpreterBoaFunctionMapping {
 
 	public static Value callCompilerMatch(ArrayList<Value> operands, Env<Value> env) {
 
-		Object firstArgument = operands.get(0);
-		Object secondArgument = operands.get(1);
-		if (firstArgument instanceof StringVal) {
-
-			try {
-				firstArgument = env.get((((StringVal) firstArgument).v()));
-			} catch (LookupException ex) {
-				firstArgument = operands.get(0);
-			}
-
-			String firstArg = ((StringVal) firstArgument).v();
-			if ((Value) secondArgument instanceof StringVal) {
-				try {
-					secondArgument = env.get((((StringVal) secondArgument).v()));
-				} catch (LookupException ex) {
-					secondArgument = operands.get(1);
-				}
-
-				String SecondArg = ((StringVal) secondArgument).v();
-				if (boa.debugger.Evaluator.DEBUG)
-					System.out.println("options\t" + firstArg + "\t" + SecondArg);
-				boolean result = boa.functions.BoaStringIntrinsics.match(firstArg, SecondArg);
-				if (boa.debugger.Evaluator.DEBUG)
-					System.out.println("match function is returning " + result);
-				return new BoolVal(result);
-			} else {
-				return new DynamicError("MatchFunction Expects String as Second argument");
-
-			}
-
-		}
-		return new DynamicError("MatchFunction Expects String as First argument");
-
+		StringVal firstArg = (StringVal) operands.get(0);
+		StringVal SecondArg = (StringVal) operands.get(1);
+		boolean result = boa.functions.BoaStringIntrinsics.match(firstArg.v(), SecondArg.v());
+		if (boa.debugger.Evaluator.DEBUG)
+			System.out.println("match function compairing"+ firstArg.v() + " and " +SecondArg.v() + "is returning " + result);
+		return new BoolVal(result);
 	}
 
 	public static Value callCompilerPop(ArrayList<Value> operands, Env<Value> env) {

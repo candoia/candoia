@@ -52,9 +52,9 @@ public class NumVal implements Value {
 	public Value compute(Value rhs, String op) {
 		switch (op) {
 		case "==":
-			return new BoolVal(rhs.equals(rhs));
+			return new BoolVal(this.equals(rhs));
 		case "!=":
-			return new BoolVal(!rhs.equals(rhs));
+			return new BoolVal(!this.equals(rhs));
 		case "<":
 			return new BoolVal(this.isLessThan(rhs));
 		case "<=":

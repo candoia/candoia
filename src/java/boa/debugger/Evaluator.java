@@ -82,6 +82,7 @@ import boa.debugger.value.BoolVal;
 import boa.debugger.value.BreakVal;
 import boa.debugger.value.CharVal;
 import boa.debugger.value.DynamicError;
+import boa.debugger.value.FunVal;
 import boa.debugger.value.ListVal;
 import boa.debugger.value.MapVal;
 import boa.debugger.value.NumVal;
@@ -94,6 +95,7 @@ import boa.debugger.value.UnitVal;
 import boa.debugger.value.Value;
 import boa.debugger.value.VisitorVal;
 import boa.debugger.value.aggregators.AggregatorVal;
+import boa.debugger.value.aggregators.CollectionAggregatorVal;
 import boa.debugger.value.aggregators.IntSumAggregatorVal;
 import boa.debugger.value.aggregators.MaxAggregatorVal;
 import boa.debugger.value.aggregators.MinAggregatorVal;
@@ -281,7 +283,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 					}
 				}
 			} else { // this must be call
-				operand = FunctionCall.executeFunction(operand.toString(), (ArrayList<Value>) op.get(), env, this);
+				operand = FunctionCall.executeFunction(operand, (ArrayList<Value>) op.get(), env, this);
 			}
 		}
 		return operand;
@@ -403,7 +405,6 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final EmitStatement n, Env<Value> env) {
-		System.out.println("emitting now");
 		BindingVal b = (BindingVal) n.getId().accept(this, env);
 		AggregatorVal ag = (AggregatorVal) b.getInitializer();
 		String value = n.getValue().accept(this, env).toString();
@@ -526,7 +527,14 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final IfStatement n, Env<Value> env) {
-		BoolVal cond = (BoolVal) n.getCondition().accept(this, env);
+		Value condition = n.getCondition().accept(this, env);
+		BoolVal cond = null;
+		if(condition instanceof BoolVal){
+			cond = (BoolVal) n.getCondition().accept(this, env);	
+		}else if(condition instanceof ReturnVal){
+			cond = (BoolVal) ((ReturnVal)condition).getVal();
+		}
+		
 		if (cond.v()) {
 			return n.getBody().accept(this, env);
 		} else {
@@ -636,7 +644,9 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final FunctionExpression n, Env<Value> env) {
-		throw new UnsupportedOperationException();
+//		FunctionType type = (FunctionType) n.getType().accept(this, env);
+		FunVal func = new FunVal(n.getBody(), (FunctionType) n.getType());
+		return func;
 	}
 
 	public Value visit(final ParenExpression n, Env<Value> env) {
@@ -767,7 +777,9 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 		case "collection": {
 			switch (type) {
 			case "int":
-				throw new UnsupportedOperationException();
+				return new CollectionAggregatorVal();
+			case "string":
+				return new CollectionAggregatorVal();
 			default:
 				throw new UnsupportedOperationException();
 			}
