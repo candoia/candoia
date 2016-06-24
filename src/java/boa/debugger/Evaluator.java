@@ -75,7 +75,6 @@ import boa.compiler.visitors.AbstractVisitor;
 import boa.debugger.Env.EmptyEnv;
 import boa.debugger.Env.ExtendEnv;
 import boa.debugger.Env.LookupException;
-import boa.debugger.FunctionCall.InbuiltEnumList;
 import boa.debugger.value.AnyVal;
 import boa.debugger.value.BindingVal;
 import boa.debugger.value.BoolVal;
@@ -252,10 +251,14 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	public Value visit(final Conjunction n, Env<Value> env) {
 		Value lhs = n.getLhs().accept(this, env);
 		int i = 0;
-		for (String str : n.getOps()) {
-			Value rhs = n.getRhs(i).accept(this, env);
-			if ("&&".equals(str) || "and".equals(str)) {
-				lhs = lhs.compute(rhs, "&&");
+		if (lhs instanceof BoolVal && ((BoolVal) lhs).v()) {
+			for (String str : n.getOps()) {
+				Value rhs = n.getRhs(i).accept(this, env);
+				if ("&&".equals(str) || "and".equals(str)) {
+					lhs = lhs.compute(rhs, "&&");
+					if (((BoolVal) lhs).v() == false)
+						break;
+				}
 			}
 		}
 		return lhs;
@@ -274,7 +277,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 				}
 			} else if (o instanceof Index) { // must be map or array
 				if (operand instanceof MapVal) {
-					operand = (Value) ((MapVal<Object, ?>) operand).get(op.get());
+					operand = (Value) ((MapVal<Object, ?>) operand).get(((PairVal) op).fst());
 				} else if (operand instanceof ListVal) {
 					PairVal opIndex = (PairVal) op;
 					if (opIndex.snd() == null) {
@@ -354,8 +357,8 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 		Value rhs = n.getRhs().accept(this, env);
 		if (operand instanceof MapVal) {
 			Node ind = op.getOp(0);
-			Value index = ind.accept(this, env);
-			((MapVal<Object, Value>) operand).put(index.get(), rhs);
+			PairVal index = (PairVal) ind.accept(this, env);
+			((MapVal<Object, Value>) operand).put(index.fst(), rhs);
 		} else {
 			env.updateValue(name, rhs);
 		}
@@ -529,12 +532,12 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	public Value visit(final IfStatement n, Env<Value> env) {
 		Value condition = n.getCondition().accept(this, env);
 		BoolVal cond = null;
-		if(condition instanceof BoolVal){
-			cond = (BoolVal) n.getCondition().accept(this, env);	
-		}else if(condition instanceof ReturnVal){
-			cond = (BoolVal) ((ReturnVal)condition).getVal();
+		if (condition instanceof BoolVal) {
+			cond = (BoolVal) condition;
+		} else if (condition instanceof ReturnVal) {
+			cond = (BoolVal) ((ReturnVal) condition).getVal();
 		}
-		
+
 		if (cond.v()) {
 			return n.getBody().accept(this, env);
 		} else {
@@ -644,7 +647,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final FunctionExpression n, Env<Value> env) {
-//		FunctionType type = (FunctionType) n.getType().accept(this, env);
+		// FunctionType type = (FunctionType) n.getType().accept(this, env);
 		FunVal func = new FunVal(n.getBody(), (FunctionType) n.getType());
 		return func;
 	}

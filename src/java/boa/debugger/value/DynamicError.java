@@ -54,5 +54,10 @@ public class DynamicError extends BoaType implements Value {
 	public Object get() {
 		return this.message;
 	}
+	
+	@Override
+	public int hashCode(){
+		return this.get().hashCode();
+	}
 
 }

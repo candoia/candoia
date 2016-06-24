@@ -71,5 +71,10 @@ public class StackVal<T> extends BoaType implements Value {
 	public Object get() {
 		return this.stack;
 	}
+	
+	@Override
+	public int hashCode(){
+		return this.get().hashCode();
+	}
 
 }

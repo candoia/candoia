@@ -77,5 +77,10 @@ public class BoolVal extends BoaType implements Value {
 	public Object get() {
 		return this._val;
 	}
+	
+	@Override
+	public int hashCode(){
+		return this.get().hashCode();
+	}
 
 }

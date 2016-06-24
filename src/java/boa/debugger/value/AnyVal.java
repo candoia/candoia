@@ -27,13 +27,13 @@ public class AnyVal extends TupleVal implements Value {
 		if (value instanceof Project) {
 			Project proj = (Project) value;
 			if (search.equals("programming_languages")) {
-				ListVal programlangs = new ListVal();
+				ListVal<Value> programlangs = new ListVal<Value>();
 				for (String s : proj.getProgrammingLanguagesList()) {
 					programlangs.add(new StringVal(s));
 				}
 				return programlangs;
 			} else if (search.equals("topics")) {
-				ListVal topics = new ListVal();
+				ListVal<Value> topics = new ListVal<Value>();
 				for (String s : proj.getTopicsList()) {
 					topics.add(new StringVal(s));
 				}
@@ -47,19 +47,19 @@ public class AnyVal extends TupleVal implements Value {
 					return actualDate;
 				}
 			} else if (search.equals("licenses")) {
-				ListVal licenses = new ListVal();
+				ListVal<Value> licenses = new ListVal<Value>();
 				for (String s : proj.getLicensesList()) {
 					licenses.add(new StringVal(s));
 				}
 				return licenses;
 			} else if (search.equals("operating_systems")) {
-				ListVal os = new ListVal();
+				ListVal<Value> os = new ListVal<Value>();
 				for (String s : proj.getOperatingSystemsList()) {
 					os.add(new StringVal(s));
 				}
 				return os;
 			} else if (search.equals("databases")) {
-				ListVal databases = new ListVal();
+				ListVal<Value> databases = new ListVal<Value>();
 				for (String s : proj.getDatabasesList()) {
 					databases.add(new StringVal(s));
 				}
@@ -74,7 +74,7 @@ public class AnyVal extends TupleVal implements Value {
 				StringVal project_url = new StringVal(proj.getProjectUrl());
 				return project_url;
 			} else if (search.equals("code_repositories")) {
-				ListVal rep = new ListVal();
+				ListVal<Value> rep = new ListVal<Value>();
 				for (boa.types.Code.CodeRepository s : proj.getCodeRepositoriesList()) {
 					rep.add(new AnyVal(s));
 				}
@@ -90,15 +90,13 @@ public class AnyVal extends TupleVal implements Value {
 				return new DynamicError("No kind field in this code repository");
 			} else if (search.equals("url")) {
 				if (repository.hasUrl()) {
-					if (Evaluator.DEBUG)
-						System.out.println("repository kind=" + repository.getUrl());
 					return new StringVal(repository.getUrl());
 				}
 				return new DynamicError("No Url field in this code repository");
 			}
 
 			else if (search.equals("revisions")) {
-				ListVal revisions = new ListVal();
+				ListVal<Value> revisions = new ListVal<Value>();
 				for (Revision v : repository.getRevisionsList()) {
 					revisions.add(new AnyVal(v));
 				}
@@ -123,7 +121,7 @@ public class AnyVal extends TupleVal implements Value {
 					return new DynamicError("No CommitDate was found for this revision");
 				}
 			} else if (search.equals("files")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (ChangedFile c : revision.getFilesList()) {
 					list.add(new AnyVal(c));
 				}
@@ -156,19 +154,19 @@ public class AnyVal extends TupleVal implements Value {
 				}
 				return new DynamicError("No kind for this Declaration is found");
 			} else if (search.equals("methods")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Method m : decl.getMethodsList()) {
 					list.add(new AnyVal(m));
 				}
 				return list;
 			} else if (search.equals("parents")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Type m : decl.getParentsList()) {
 					list.add(new AnyVal(m));
 				}
 				return list;
 			} else if (search.equals("comments")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Comment m : decl.getCommentsList()) {
 					list.add(new AnyVal(m));
 				}
@@ -184,25 +182,25 @@ public class AnyVal extends TupleVal implements Value {
 			}
 
 			else if (search.equals("fields")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Variable m : decl.getFieldsList()) {
 					list.add(new AnyVal(m));
 				}
 				return list;
 			} else if (search.equals("modifiers")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Modifier m : decl.getModifiersList()) {
 					list.add(new AnyVal(m));
 				}
 				return list;
 			} else if (search.equals("generic_parameters")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Type m : decl.getGenericParametersList()) {
 					list.add(new AnyVal(m));
 				}
 				return list;
 			} else if (search.equals("nested_declarations")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Declaration m : decl.getNestedDeclarationsList()) {
 					list.add(new AnyVal(m));
 				}
@@ -214,13 +212,13 @@ public class AnyVal extends TupleVal implements Value {
 		else if (value instanceof ASTRoot) {
 			ASTRoot ast = (ASTRoot) value;
 			if (search.equals("imports")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (String v : ast.getImportsList()) {
 					list.add(new StringVal(v));
 				}
 				return list;
 			} else if (search.equals("namespaces")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (Namespace v : ast.getNamespacesList()) {
 					list.add(new AnyVal(v));
 				}
@@ -233,13 +231,13 @@ public class AnyVal extends TupleVal implements Value {
 		else if (value instanceof Namespace) {
 			Namespace ast = (Namespace) value;
 			if (search.equals("decalrations")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (Declaration v : ast.getDeclarationsList()) {
 					list.add(new AnyVal(v));
 				}
 				return list;
 			} else if (search.equals("modifiers")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (Modifier v : ast.getModifiersList()) {
 					list.add(new AnyVal(v));
 				}
@@ -305,14 +303,14 @@ public class AnyVal extends TupleVal implements Value {
 		else if (value instanceof boa.types.Ast.Method) {
 			boa.types.Ast.Method m = (boa.types.Ast.Method) value;
 			if (search.equals("arguments")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Variable v : m.getArgumentsList()) {
 					list.add(new AnyVal(v));
 				}
 				return list;
 			}
 			if (search.equals("comments")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Comment v : m.getCommentsList()) {
 					list.add(new AnyVal(v));
 				}
@@ -328,13 +326,13 @@ public class AnyVal extends TupleVal implements Value {
 				}
 				return new DynamicError("No return type for this method found");
 			} else if (search.equals("generic_parameters")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Type v : m.getGenericParametersList()) {
 					list.add(new AnyVal(v));
 				}
 				return list;
 			} else if (search.equals("modifiers")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Modifier v : m.getModifiersList()) {
 					list.add(new AnyVal(v));
 				}
@@ -342,7 +340,7 @@ public class AnyVal extends TupleVal implements Value {
 			}
 
 			else if (search.equals("statements")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Statement v : m.getStatementsList()) {
 					list.add(new AnyVal(v));
 				}
@@ -350,7 +348,7 @@ public class AnyVal extends TupleVal implements Value {
 			}
 
 			else if (search.equals("exception_types")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Type v : m.getExceptionTypesList()) {
 					list.add(new AnyVal(v));
 				}
@@ -367,13 +365,13 @@ public class AnyVal extends TupleVal implements Value {
 				}
 				return new DynamicError("No variable type found for this variable");
 			} else if (search.equals("modifiers")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Modifier v : m.getModifiersList()) {
 					list.add(new AnyVal(v));
 				}
 				return list;
 			} else if (search.equals("comments")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Comment v : m.getCommentsList()) {
 					list.add(new AnyVal(v));
 				}
@@ -415,7 +413,7 @@ public class AnyVal extends TupleVal implements Value {
 		else if (value instanceof boa.types.Ast.Expression) {
 			boa.types.Ast.Expression m = (boa.types.Ast.Expression) value;
 			if (search.equals("expressions")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Expression v : m.getExpressionsList()) {
 					list.add(new AnyVal(v));
 				}
@@ -426,7 +424,7 @@ public class AnyVal extends TupleVal implements Value {
 				}
 				return new DynamicError("There was no kind information for this expressions");
 			} else if (search.equals("variable_declarations")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Variable v : m.getVariableDeclsList()) {
 					list.add(new AnyVal(v));
 				}
@@ -434,7 +432,7 @@ public class AnyVal extends TupleVal implements Value {
 			}
 
 			else if (search.equals("generic")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (Type v : m.getGenericParametersList()) {
 					list.add(new AnyVal(v));
 				}
@@ -442,7 +440,7 @@ public class AnyVal extends TupleVal implements Value {
 			}
 
 			else if (search.equals("method_args")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (Expression v : m.getMethodArgsList()) {
 					list.add(new AnyVal(v));
 				}
@@ -505,16 +503,14 @@ public class AnyVal extends TupleVal implements Value {
 				}
 				return new DynamicError("There is no field for visibility field for MOdifier");
 			} else if (search.equals("annotation_member")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (java.lang.String v : m.getAnnotationMembersList()) {
 					list.add(new StringVal(v));
 				}
 				return list;
 			} else if (search.equals("annotation_name")) {
-				if (Evaluator.DEBUG)
-					System.out.println("Returning annotation_name of Modifier" + m.getAnnotationName());
 			} else if (search.equals("annotation_value")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Expression v : m.getAnnotationValuesList()) {
 					list.add(new AnyVal(v));
 				}
@@ -553,51 +549,39 @@ public class AnyVal extends TupleVal implements Value {
 				}
 				return new DynamicError("No kind filed found for this statement");
 			} else if (search.equals("statements")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Statement v : p.getStatementsList()) {
 					list.add(new AnyVal(v));
 				}
 				return list;
 			} else if (search.equals("expression")) {
 				if (p.hasExpression()) {
-					if (Evaluator.DEBUG)
-						System.out.println("Returning Expression of statement" + p.getStatementsCount());
 					return new AnyVal(p.getExpression());
 				}
 				return new DynamicError("There is not field for expression in this statement");
 			} else if (search.equals("condition")) {
 				if (p.hasCondition()) {
-					if (Evaluator.DEBUG)
-						System.out.println("Returning condition of statement" + p.getStatementsCount());
 					return new AnyVal(p.getExpression());
 				}
 				return new DynamicError("No field called condition found in this statement");
 			} else if (search.equals("variable_declaration")) {
 				if (p.hasVariableDeclaration()) {
-					if (Evaluator.DEBUG)
-						System.out.println("Returning variable_declaration of statement" + p.getVariableDeclaration());
 					return new AnyVal(p.getVariableDeclaration());
 				}
 				return new DynamicError("No field called variable_declaration found in this statement");
 			} else if (search.equals("type_declaration")) {
 				if (p.hasTypeDeclaration()) {
-					if (Evaluator.DEBUG)
-						System.out.println("Returning type_declaration of statement" + p.getTypeDeclaration());
 					return new AnyVal(p.getTypeDeclaration());
 				}
 				return new DynamicError("No field called type_declaration found in this statement");
 			} else if (search.equals("comments")) {
-				if (Evaluator.DEBUG)
-					System.out.println("Returning comments  of declaration" + p.getCommentsCount());
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Comment m : p.getCommentsList()) {
 					list.add(new AnyVal(m));
 				}
 				return list;
 			} else if (search.equals("initialization")) {
-				if (Evaluator.DEBUG)
-					System.out.println("Returning initialization  of declaration" + p.getInitializationsCount());
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Ast.Expression m : p.getInitializationsList()) {
 					list.add(new AnyVal(m));
 				}
@@ -608,16 +592,12 @@ public class AnyVal extends TupleVal implements Value {
 		else if (value instanceof boa.types.Issues.IssueRepository) {
 			boa.types.Issues.IssueRepository p = (boa.types.Issues.IssueRepository) value;
 			if (search.equals("url")) {
-				if (Evaluator.DEBUG)
-					System.out.println("returning" + p.getUrl());
 				if (p.hasUrl())
 					return new StringVal(p.getUrl());
 				else
 					return new DynamicError("No url found for this issue");
 			} else if (search.equals("issues")) {
-				if (Evaluator.DEBUG)
-					System.out.println("Returning issues" + p.getIssuesCount());
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Issues.Issue m : p.getIssuesList()) {
 					list.add(new AnyVal(m));
 				}
@@ -629,8 +609,6 @@ public class AnyVal extends TupleVal implements Value {
 		else if (value instanceof boa.types.Issues.IssueAttachment) {
 			boa.types.Issues.IssueAttachment p = (boa.types.Issues.IssueAttachment) value;
 			if (search.equals("url")) {
-				if (Evaluator.DEBUG)
-					System.out.println("returning" + p.getUrl());
 				if (p.hasUrl())
 					return new StringVal(p.getUrl());
 				else
@@ -671,8 +649,6 @@ public class AnyVal extends TupleVal implements Value {
 		else if (value instanceof boa.types.Issues.Issue) {
 			boa.types.Issues.Issue p = (boa.types.Issues.Issue) value;
 			if (search.equals("id")) {
-				if (Evaluator.DEBUG)
-					System.out.println("returning" + p.getId());
 				if (p.hasId())
 					return new NumVal(p.getId());
 				else
@@ -689,7 +665,7 @@ public class AnyVal extends TupleVal implements Value {
 				int number = (p.getState()).getNumber();
 				return new NumVal(number);
 			} else if (search.equals("comments")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Issues.IssueComment m : p.getCommentsList()) {
 					list.add(new AnyVal(m));
 				}
@@ -697,7 +673,7 @@ public class AnyVal extends TupleVal implements Value {
 					System.out.println("issue has:" + list.size() + "comments");
 				return list;
 			} else if (search.equals("attachments")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (boa.types.Issues.IssueAttachment m : p.getAttachmentsList()) {
 					list.add(new AnyVal(m));
 				}
@@ -775,8 +751,6 @@ public class AnyVal extends TupleVal implements Value {
 		else if (value instanceof boa.types.Issues.IssueComment) {
 			boa.types.Issues.IssueComment p = (boa.types.Issues.IssueComment) value;
 			if (search.equals("id")) {
-				if (Evaluator.DEBUG)
-					System.out.println("returning" + p.getId());
 				if (p.hasId())
 					return new NumVal(p.getId());
 				else
@@ -806,7 +780,7 @@ public class AnyVal extends TupleVal implements Value {
 				else
 					return new DynamicError("No created at found for this issue");
 			} else if (search.equals("attachments")) {
-				ListVal list = new ListVal();
+				ListVal<Value> list = new ListVal<Value>();
 				for (String m : p.getAttachmentsList()) {
 					list.add(new StringVal(m));
 				}
@@ -817,8 +791,6 @@ public class AnyVal extends TupleVal implements Value {
 		else if (value instanceof boa.types.Issues.PullRequest) {
 			boa.types.Issues.PullRequest p = (boa.types.Issues.PullRequest) value;
 			if (search.equals("id")) {
-				if (Evaluator.DEBUG)
-					System.out.println("returning" + p.getId());
 				if (p.hasId())
 					return new NumVal(p.getId());
 				else
@@ -886,8 +858,6 @@ public class AnyVal extends TupleVal implements Value {
 		else if (value instanceof Milestone) {
 			Milestone p = (Milestone) value;
 			if (search.equals("id")) {
-				if (Evaluator.DEBUG)
-					System.out.println("returning" + p.getId());
 				if (p.hasId())
 					return new NumVal(p.getId());
 				else
@@ -986,5 +956,10 @@ public class AnyVal extends TupleVal implements Value {
 	@Override
 	public Object get() {
 		return this.value;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.get().hashCode();
 	}
 }

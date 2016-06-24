@@ -51,4 +51,8 @@ public class UnitVal extends BoaType implements Value {
 		return UnitVal.v;
 	}
 
+	@Override
+	public int hashCode() {
+		return this.get().hashCode();
+	}
 }

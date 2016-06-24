@@ -110,4 +110,12 @@ public class SetVal<V, T> extends BoaType implements Value {
 		return this.set;
 	}
 
+	@Override
+	public int hashCode() {
+		int result = 31;
+		for (Object ele : this.set.toArray()) {
+			result = 37 * result + ele.hashCode();
+		}
+		return result;
+	}
 }

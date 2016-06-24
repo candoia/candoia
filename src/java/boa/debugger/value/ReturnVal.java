@@ -63,4 +63,8 @@ public class ReturnVal extends BoaType implements Value {
 		return this.val;
 	}
 
+	@Override
+	public int hashCode(){
+		return this.get().hashCode();
+	}
 }

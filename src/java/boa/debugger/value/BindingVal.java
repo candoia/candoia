@@ -93,5 +93,16 @@ public class BindingVal extends BoaType implements Value {
 		return this;
 	}
 
+	@Override
+	public int hashCode(){
+		int result = 31; 
+		int c = this.id.hashCode();
+		result = 37 * result + c; 
+		c = this.type.hashCode(); 
+		result = 37 * result + c; 
+		c = this.initializer.hashCode();
+		result = 37 * result + c;
+		return result;
+	}
 
 }

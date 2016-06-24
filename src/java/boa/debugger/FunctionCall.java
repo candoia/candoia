@@ -169,7 +169,7 @@ public class FunctionCall {
 		if (isInbuiltOperation) {
 			return executeInBuiltFunctions(operand.toString(), operation, env);
 		}
-		return executeUserDefinedFunctions((FunVal)operand, operation, env, evaluator);
+		return executeUserDefinedFunctions((FunVal) operand, operation, env, evaluator);
 	}
 
 	public static boolean hasBeenOverloaded(String operand, Env<Value> env) {
@@ -288,9 +288,8 @@ public class FunctionCall {
 			return InterpreterBoaFunctionMapping.callCompilerIsKind(operation, env);
 		case has_visibility:
 			return InterpreterBoaFunctionMapping.callCompilerHasVisibility(operation, env);
-		// case isliteral:
-		// return InterpreterBoaFunctionMapping.callCompilerIsLiteral(operation,
-		// env);
+		case isliteral:
+			return InterpreterBoaFunctionMapping.callCompilerisLiteral(operation, env);
 		case isfinte:
 			return InterpreterBoaFunctionMapping.callCompilerIsFinte(operation, env);
 		case isinfinte:

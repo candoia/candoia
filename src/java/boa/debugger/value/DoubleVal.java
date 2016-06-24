@@ -107,4 +107,8 @@ public class DoubleVal extends BoaType implements Value {
 		return this.num;
 	}
 
+	@Override
+	public int hashCode(){
+		return this.get().hashCode();
+	}
 }

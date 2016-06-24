@@ -110,4 +110,8 @@ public class CharVal extends BoaType implements Value {
 		return this.character;
 	}
 
+	@Override
+	public int hashCode(){
+		return this.get().hashCode();
+	}
 }

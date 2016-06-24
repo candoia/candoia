@@ -19,7 +19,7 @@ public class FunVal implements Value {
 		this.setReturnType(returnType);
 		this.type = type;
 	}
-	
+
 	public FunVal(Block body, FunctionType type) {
 		_body = body;
 		this.type = type;
@@ -31,12 +31,11 @@ public class FunVal implements Value {
 		setReturnType(UnitVal.v);
 		this.type = type;
 	}
-	
 
 	public ArrayList<Expression> formals() {
 		return _formals;
 	}
-	
+
 	public FunctionType type() {
 		return type;
 	}
@@ -91,4 +90,15 @@ public class FunVal implements Value {
 		return this;
 	}
 
+	@Override
+	public int hashCode() {
+		int result = 31;
+		int c = _body.hashCode();
+		result = 37 * result + c;
+		c = returnType.hashCode();
+		result = 37 * result + c;
+		c = type.hashCode();
+		result = 37 * result + c;
+		return result;
+	}
 }

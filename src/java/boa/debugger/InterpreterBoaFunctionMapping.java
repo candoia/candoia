@@ -22,6 +22,7 @@ import boa.debugger.value.Value;
 import boa.debugger.value.VisitorVal;
 import boa.types.Ast.ASTRoot;
 import boa.types.Ast.Declaration;
+import boa.types.Ast.Expression;
 import boa.types.Ast.Method;
 import boa.types.Ast.Modifier.ModifierKind;
 import boa.types.Ast.Modifier.Visibility;
@@ -55,56 +56,30 @@ public class InterpreterBoaFunctionMapping {
 
 	}
 
-	// public static Value callCompilerisLiteral(ListVal operation, Env<Value>
-	// env) {
-	//
-	// Object firstArgument = operands.get(0);
-	// Object secondArgument = operands.get(1);
-	// if (firstArgument instanceof AnyVal) {
-	// if (boa.debugger.Evaluator.DEBUG)
-	// System.out.println("IsLiteralFunc" +
-	// boa.debugger.Evaluator.getInfo((Value) firstArgument)
-	// + boa.debugger.Evaluator.getInfo((Value) secondArgument));
-	// boa.types.Ast.Expression firstArg = (boa.types.Ast.Expression)
-	// ((AnyVal) firstArgument).getObject();
-	// if ((Value) secondArgument instanceof StringVal) {
-	// String SecondArg = ((StringVal) secondArgument).v();
-	// if (boa.debugger.Evaluator.DEBUG)
-	// System.out.println("options\t" + firstArg + "\t" + SecondArg + "f=" +
-	// firstArg.getClass() + "s="
-	// + SecondArg.getClass());
-	// try {
-	// SecondArg = SecondArg.substring(1, SecondArg.length() - 1);
-	// boolean result = boa.functions.BoaAstIntrinsics.isLiteral(firstArg,
-	// SecondArg);
-	// if (boa.debugger.Evaluator.DEBUG)
-	// System.out.println("IsLiteralFunc function is returning " + result);
-	// return new BoolVal(result);
-	// } catch (Exception e1) {
-	// // TODO Auto-generated catch block
-	// e1.printStackTrace();
-	// }
-	//
-	// } else {
-	// return new DynamicError("MatchFunction Expects String as Second
-	// argument");
-	//
-	// }
-	//
-	// }
-	// return new DynamicError("MatchFunction Expects boa.types.Ast.Expression
-	// as First argument");
-	//
-	// }
+	public static Value callCompilerisLiteral(ArrayList<Value> operation, Env<Value> env) {
+		AnyVal firstArgument = (AnyVal) operation.get(0);
+		String secondArgument = operation.get(1).toString();
+		boa.types.Ast.Expression firstArg = (Expression) firstArgument.get();
+		boolean result = false;
+		try {
+			result = boa.functions.BoaAstIntrinsics.isLiteral(firstArg, secondArgument);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return new BoolVal(result);
+	}
 
 	public static Value callCompilerGetAst(ArrayList<Value> operands, Env<Value> env) {
 		Object firstArgument = operands.get(0);
-
 		if (firstArgument instanceof AnyVal) {
 			ASTRoot test = boa.functions.BoaAstIntrinsics.getast((ChangedFile) (((AnyVal) firstArgument).getObject()));
 			return new AnyVal(test);
 		} else {
-			return new DynamicError("GetAstFunc Expects ChangedFile as First argument");
+			System.out.println("GetAstFunc Expects ChangedFile as First argument, found:"
+					+ ((AnyVal) firstArgument).getObject().getClass());
+			return new DynamicError("GetAstFunc Expects ChangedFile as First argument, found:"
+					+ ((AnyVal) firstArgument).getObject().getClass());
 		}
 
 	}
@@ -150,8 +125,8 @@ public class InterpreterBoaFunctionMapping {
 
 	public static Value callCompilerHasKey(ArrayList<Value> operands, Env<Value> env) {
 		MapVal<?, ?> map = (MapVal<?, ?>) operands.get(0);
-		StringVal SecondArg = (StringVal) operands.get(1);
-		boolean result = map.hasKey(SecondArg);
+		StringVal secondArg = (StringVal) operands.get(1);
+		boolean result = map.hasKey(secondArg);
 		return new BoolVal(result);
 	}
 
@@ -238,7 +213,8 @@ public class InterpreterBoaFunctionMapping {
 		StringVal SecondArg = (StringVal) operands.get(1);
 		boolean result = boa.functions.BoaStringIntrinsics.match(firstArg.v(), SecondArg.v());
 		if (boa.debugger.Evaluator.DEBUG)
-			System.out.println("match function compairing"+ firstArg.v() + " and " +SecondArg.v() + "is returning " + result);
+			System.out.println(
+					"match function compairing" + firstArg.v() + " and " + SecondArg.v() + "is returning " + result);
 		return new BoolVal(result);
 	}
 
@@ -279,58 +255,26 @@ public class InterpreterBoaFunctionMapping {
 			System.out.println("Searching:" + SecondArg + " in " + ((StringVal) firstArgument).v());
 			boolean result = map.contains(SecondArg);
 			return new BoolVal(result);
-		} else if (firstArgument instanceof StringVal) {
-			String SecondArg = (secondArgument).toString();
-			System.out.println("Searching:" + SecondArg + " in " + ((StringVal) firstArgument).v());
-			return new BoolVal(((StringVal) firstArgument).v().contains(SecondArg));
 		} else
-			return new DynamicError("RemoveFunc Expects Map as First argument");
+			return new DynamicError("contains Expects Map as First argument");
 
 	}
 
 	public static Value callCompilerRemove(ArrayList<Value> operands, Env<Value> env) {
 		Object firstArgument = operands.get(0);
-		Object secondArgument = operands.get(1);
-		if (firstArgument instanceof StringVal)
-			firstArgument = env.get(((StringVal) firstArgument).v());
+		String secondArgument = operands.get(1).toString();
 		if (firstArgument instanceof MapVal) {
 			MapVal map = (MapVal) firstArgument;
-			Value temp = (Value) secondArgument;
-			if ((Value) secondArgument instanceof StringVal) {
-				try {
-					secondArgument = env.get(((StringVal) secondArgument).v());
-				} catch (LookupException ex) {
-					secondArgument = temp;
-				}
+			map.remove(secondArgument);
+			return UnitVal.v;
 
-				if (secondArgument instanceof StringVal) {
-					String SecondArg = ((StringVal) secondArgument).v();
-					map.remove(SecondArg);
-				}
-				return UnitVal.v;
-			} else {
-				return new DynamicError("RemoveFunc Expects String as Second argument");
-
-			}
+		} else if (firstArgument instanceof SetVal) {
+			SetVal set = (SetVal) firstArgument;
+			set.remove(secondArgument);
+			return UnitVal.v;
 
 		}
-
-		else if (firstArgument instanceof SetVal) {
-			SetVal map = (SetVal) firstArgument;
-			if ((Value) secondArgument instanceof StringVal) {
-				String SecondArg = ((StringVal) secondArgument).v();
-				map.remove(SecondArg);
-				return UnitVal.v;
-			} else {
-				return new DynamicError("RemoveFunc Expects String as Second argument");
-
-			}
-
-		}
-
-		else
-			return new DynamicError("RemoveFunc Expects Map as First argument");
-
+		return UnitVal.v;
 	}
 
 	public static Value callCompilerStrFind(ArrayList<Value> operands, Env<Value> env) {

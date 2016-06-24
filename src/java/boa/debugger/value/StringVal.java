@@ -75,7 +75,7 @@ public class StringVal extends BoaType implements Value {
 		case "||":
 			throw new UnsupportedOperationException();
 		case "+":
-			return new StringVal(this.v() + ((StringVal)rhs).v());
+			return new StringVal(this.v() + ((StringVal) rhs).v());
 		default:
 			throw new UnsupportedOperationException();
 		}
@@ -84,5 +84,10 @@ public class StringVal extends BoaType implements Value {
 	@Override
 	public Object get() {
 		return this._val;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.get().hashCode();
 	}
 }

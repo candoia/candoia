@@ -48,5 +48,10 @@ public class BreakVal extends BoaType implements Value {
 	public Object get() {
 		return UnitVal.v;
 	}
+	
+	@Override
+	public int hashCode(){
+		return this.get().hashCode();
+	}
 
 }

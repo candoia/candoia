@@ -19,7 +19,6 @@ public class PairVal extends BoaType implements Value {
 		return _snd;
 	}
 
-
 	@Override
 	public boolean equals(Value v) {
 		if (v instanceof PairVal) {
@@ -54,7 +53,7 @@ public class PairVal extends BoaType implements Value {
 
 	@Override
 	public String toString() {
-		return "( " + _fst.toString() + "," + _snd.toString() + ")" ;
+		return "( " + _fst.toString() + ")";
 	}
 
 	@Override
@@ -87,7 +86,7 @@ public class PairVal extends BoaType implements Value {
 		case "~":
 			throw new UnsupportedOperationException();
 		case "not":
-			throw new UnsupportedOperationException();			
+			throw new UnsupportedOperationException();
 		case "/":
 			throw new UnsupportedOperationException();
 		case "%":
@@ -106,6 +105,16 @@ public class PairVal extends BoaType implements Value {
 	@Override
 	public Object get() {
 		return this;
+	}
+
+	@Override
+	public int hashCode(){
+		int fstHash = this.fst().hashCode();
+		if(this.snd() == null){
+			return fstHash;
+		}
+		int sndHash = this.snd().hashCode();
+		return  31 * fstHash + sndHash;
 	}
 
 }

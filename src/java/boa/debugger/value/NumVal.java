@@ -122,4 +122,8 @@ public class NumVal implements Value {
 		return this.num;
 	}
 
+	@Override
+	public int hashCode(){
+		return this.get().hashCode();
+	}
 }

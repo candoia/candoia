@@ -737,4 +737,9 @@ public class VisitorVal extends BoaAbstractVisitor implements Value {
 			}
 		}
 	}
+	
+	@Override
+	public int hashCode(){
+		return this.get().hashCode();
+	}
 }

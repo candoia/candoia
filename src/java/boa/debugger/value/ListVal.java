@@ -14,7 +14,7 @@ public class ListVal<T> extends BoaType implements Value {
 	ArrayList<T> values;
 
 	public ListVal() {
-		values =  new ArrayList<>();
+		values = new ArrayList<>();
 	}
 
 	public ListVal(T[] list) {
@@ -39,7 +39,7 @@ public class ListVal<T> extends BoaType implements Value {
 		else
 			throw new IllegalArgumentException();
 	}
-	
+
 	public void add(T v) {
 		values.add(v);
 	}
@@ -88,4 +88,12 @@ public class ListVal<T> extends BoaType implements Value {
 		return this.values;
 	}
 
+	@Override
+	public int hashCode() {
+		int result = 31;
+		for (T ele : this.values) {
+			result = 37 * result + ele.hashCode();
+		}
+		return result;
+	}
 }

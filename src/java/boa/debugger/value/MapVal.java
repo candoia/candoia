@@ -84,4 +84,12 @@ public class MapVal<T, V> implements Value {
 		return this.map;
 	}
 
+	@Override
+	public int hashCode(){
+		int result = 31;
+		for (T ele : this.map.keySet()) {
+			result = 37 * result + ele.hashCode();
+		}
+		return result;
+	}
 }

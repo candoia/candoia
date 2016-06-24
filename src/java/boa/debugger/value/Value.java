@@ -19,4 +19,6 @@ public interface Value {
 	public String toString();
 	
 	public Object get();
+	
+	public int hashCode();
 }
