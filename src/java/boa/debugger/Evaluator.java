@@ -1,5 +1,5 @@
 /**
-* 
+*
 */
 package boa.debugger;
 
@@ -653,7 +653,8 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final ParenExpression n, Env<Value> env) {
-		throw new UnsupportedOperationException();
+		return n.getExpression().accept(this, env);
+//		throw new UnsupportedOperationException();
 	}
 
 	public Value visit(final SimpleExpr n, Env<Value> env) {
