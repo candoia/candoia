@@ -263,9 +263,8 @@ public class FunctionCall {
 		case haskey:
 			return InterpreterBoaFunctionMapping.callCompilerHasKey(operation, env);
 
-		// case keys:
-		// return InterpreterBoaFunctionMapping.callCompilerKeys(operation,
-		// env);
+		case keys:
+			return InterpreterBoaFunctionMapping.callCompilerKeys(operation, env);
 		case has_modifier:
 			return InterpreterBoaFunctionMapping.callCompilerHasModifier(operation, env);
 		case has_modifier_final:

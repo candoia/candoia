@@ -12,15 +12,15 @@ import java.util.Set;
  *
  */
 public class SetVal<V, T> extends BoaType implements Value {
-	protected HashSet<V> set;
+	protected Set<V> set;
 	protected T prevIndex;
 
 	public SetVal() {
 		set = new HashSet<V>();
 	}
 
-	public SetVal(HashSet<V> m) {
-		this.set = m;
+	public SetVal(Set<V> set2) {
+		this.set = set2;
 	}
 
 	public String tostring() {

@@ -464,7 +464,7 @@ public class SeqRepoImporter {
 				}
 					
 				if (project.getIssueRepositoriesCount() > 0){
-					project = storeIsseuesFrom(project, project.getIssueRepositories(0).getUrl());
+//					project = storeIsseuesFrom(project, project.getIssueRepositories(0).getUrl());
 				}
 					
 				try {

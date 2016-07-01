@@ -143,7 +143,7 @@ public final class UrlBuilder {
 	 */
 	public String build() {
 		if(this.builder == null) 
-			throw new UnsupportedOperationException("Nenhum parametro de URL foi enviado!");
+			throw new UnsupportedOperationException("No parameter URL has been sent!");
 		String concat = isFirstParam() ? "?" : "&";
 		this.oauthToken = CandoiaConfiguration.getGithubAccessToken();
 		String result = this.builder.append(concat).append(oauthToken).toString();

@@ -129,6 +129,11 @@ public class InterpreterBoaFunctionMapping {
 		boolean result = map.hasKey(secondArg);
 		return new BoolVal(result);
 	}
+	
+	public static Value callCompilerKeys(ArrayList<Value> operands, Env<Value> env) {
+		MapVal<?, ?> map = (MapVal<?, ?>) operands.get(0);
+		return new SetVal(map.getMap().keySet());
+	}
 
 	public static Value callCompilerHasModifierPublic(ArrayList<Value> operands, Env<Value> env) {
 		Object firstArgument = operands.get(0);

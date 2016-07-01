@@ -38,10 +38,17 @@ public class ForgeGithub extends AbstractForge {
 			String userName = url.substring(0, url.indexOf('@'));
 			String temp[] = url.split("/");
 			String targetURL = "https://api.github.com/repos/" + temp[temp.length - 2] + "/" + temp[temp.length - 1];
-			System.out.println("ForgeGitHub has received target URL:" + targetURL);
-			// String password = readPassword();
-			String password = "candoiauser2016";
-			return new MetadataCacher(targetURL, userName, password);
+		    char[] pswrd = readPassword();
+		    if(pswrd == null){
+		    	String password = "candoiauser2016";
+		    	userName = "candoiaISU";
+		    	return new MetadataCacher(targetURL, userName, password);	
+		    }else{
+		    	String password = new String(pswrd);
+		    	return new MetadataCacher(targetURL, userName, password);	
+		    }
+//			String password = "candoiauser2016";
+			
 		}
 	}
 
@@ -60,7 +67,7 @@ public class ForgeGithub extends AbstractForge {
 		return false;
 	}
 
-	private String readPassword() {
+	private char[] readPassword() {
 		Console cnsl = null;
 		char[] pwd = null;
 		try {
@@ -71,7 +78,7 @@ public class ForgeGithub extends AbstractForge {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		return pwd.toString();
+		return pwd;
 	}
 
 	private boolean downloadJSON(MetadataCacher mc, String jsonPath) {
