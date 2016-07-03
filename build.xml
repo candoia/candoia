@@ -303,7 +303,6 @@
 			<zipfileset excludes="META-INF/" src="lib/datagen/org.eclipse.core.contenttype_3.4.100.dist.jar" />
 			<zipfileset excludes="META-INF/" src="lib/datagen/org.eclipse.core.jobs_3.5.101.dist.jar" />
 			<zipfileset excludes="META-INF/" src="lib/datagen/org.eclipse.core.resources_3.7.101.dist.jar" />
-			<zipfileset excludes="META-INF/" src="lib/datagen/runtime-3.10.0-v20140318-2214.jar" />
 			<zipfileset excludes="META-INF/" src="lib/datagen/org.eclipse.equinox.common_3.6.0.dist.jar" />
 			<zipfileset excludes="META-INF/" src="lib/datagen/org.eclipse.equinox.preferences_3.4.2.dist.jar" />
 			<zipfileset excludes="META-INF/" src="lib/datagen/org.eclipse.equinox.registry_3.5.100.v20110502.jar" />
