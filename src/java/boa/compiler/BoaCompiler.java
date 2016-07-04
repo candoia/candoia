@@ -48,6 +48,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.log4j.Logger;
 import org.scannotation.ClasspathUrlFinder;
 
@@ -174,12 +175,16 @@ public class BoaCompiler {
 				}
 				BoaGenerator generator = new BoaGenerator();
 
+				boolean feshDatGen = false;
 				for (String name : cloneRepos) {
-					if (needDataGen(DefaultProperties.GH_JSON_CACHE_PATH,
-							name.substring(name.lastIndexOf('@') + 1))) {
+					feshDatGen = needDataGen(DefaultProperties.GH_JSON_CACHE_PATH,
+							name.substring(name.lastIndexOf('@') + 1)); 
+					if (feshDatGen) {
 						actualCloning.add(name);
-						generator.generate(actualCloning.toArray(new String[actualCloning.size()]), localRepos);
 					}
+				}
+				if(feshDatGen){
+					generator.generate(actualCloning.toArray(new String[actualCloning.size()]), localRepos);
 				}
 				Evaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH);
 				Evaluator evaluator = new Evaluator();
@@ -228,7 +233,8 @@ public class BoaCompiler {
 					delete(new File(directory.getAbsolutePath() + "/data"));
 					delete(new File(directory.getAbsolutePath() + "/index"));
 					delete(new File(directory.getAbsolutePath() + "/projects.seq"));
-					return false;
+					delete(new File(directory.getAbsolutePath() + "/" +CandoiaConfiguration.getCachefilename()));
+					return needDatagen;
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -473,9 +479,7 @@ public class BoaCompiler {
 		if (f.isDirectory())
 			for (final File g : f.listFiles())
 				delete(g);
-
-		if (!f.delete())
-			throw new IOException("unable to delete file " + f);
+		FileDeleteStrategy.FORCE.delete(f);
 	}
 
 	private static void generateJar(final String jarName, final File dir, final List<File> libJars)

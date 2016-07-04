@@ -18,7 +18,7 @@ public class CandoiaConfiguration {
 	private final static HashMap<String, BugForge> bugforges;
 	private final static ArrayList<AbstractConnector> vcs;
 	private final static String githubAccessToken = "3a46b401267a5efa9dab8b9371174f23a08d5181";
-	private final static String cacheFileName = "cache.txt";
+	private final static String cacheFileName = ".candoiaCache.txt";
 	
 	public static String getGithubAccessToken(){
 		return githubAccessToken;

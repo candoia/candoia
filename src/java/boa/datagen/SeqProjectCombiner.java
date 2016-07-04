@@ -161,7 +161,7 @@ public class SeqProjectCombiner {
 	public static void clean(String path){
 		File dir = new File(path);
 		for(File file :  dir.listFiles()){
-			if((!"ast.seq".equals(file.getName())) && (!"projects.seq".equals(file.getName())) && (!"cache.txt".equals(file.getName()))){
+			if((!"ast.seq".equals(file.getName())) && (!"projects.seq".equals(file.getName())) && (!CandoiaConfiguration.getCachefilename().equals(file.getName()))){
 				file.delete();
 			}
 		}
