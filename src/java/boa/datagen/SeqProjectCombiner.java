@@ -19,6 +19,7 @@ package boa.datagen;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -32,6 +33,7 @@ import org.apache.hadoop.io.Text;
 
 import com.google.protobuf.CodedInputStream;
 
+import boa.datagen.candoia.CandoiaConfiguration;
 import boa.types.Ast.ASTRoot;
 import boa.types.Toplevel.Project;
 
@@ -60,6 +62,7 @@ public class SeqProjectCombiner {
 		HashMap<String, String> sources = new HashMap<String, String>();
 		HashSet<String> marks = new HashSet<String>();
 		FileStatus[] files = fileSystem.listStatus(new Path(base));
+		PrintWriter cache = new PrintWriter(DefaultProperties.GH_JSON_CACHE_PATH+ "/" + CandoiaConfiguration.getCachefilename());
 		for (int i = 0; i < files.length; i++) {
 			FileStatus file = files[i];
 			String name = file.getPath().getName();
@@ -77,12 +80,14 @@ public class SeqProjectCombiner {
 						if (p.getCodeRepositoriesCount() > 0 && p.getCodeRepositories(0).getRevisionsCount() > 0)
 							marks.add(s);
 						sources.put(s, name);
+						cache.println(p.getProjectUrl());
 					}
 				} catch (Exception e) {
 					System.err.println(name);
 					e.printStackTrace();
 				}
 				r.close();
+				cache.close();
 			}
 			else if (name.contains("ast") && name.endsWith(".seq")) {
 				SequenceFile.Reader r = new SequenceFile.Reader(fileSystem, file.getPath(), conf);
@@ -156,7 +161,7 @@ public class SeqProjectCombiner {
 	public static void clean(String path){
 		File dir = new File(path);
 		for(File file :  dir.listFiles()){
-			if((!"ast.seq".equals(file.getName())) && (!"projects.seq".equals(file.getName()))){
+			if((!"ast.seq".equals(file.getName())) && (!"projects.seq".equals(file.getName())) && (!"cache.txt".equals(file.getName()))){
 				file.delete();
 			}
 		}

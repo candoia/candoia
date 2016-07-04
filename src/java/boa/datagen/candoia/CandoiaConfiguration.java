@@ -18,6 +18,7 @@ public class CandoiaConfiguration {
 	private final static HashMap<String, BugForge> bugforges;
 	private final static ArrayList<AbstractConnector> vcs;
 	private final static String githubAccessToken = "3a46b401267a5efa9dab8b9371174f23a08d5181";
+	private final static String cacheFileName = "cache.txt";
 	
 	public static String getGithubAccessToken(){
 		return githubAccessToken;
@@ -81,6 +82,10 @@ public class CandoiaConfiguration {
 		System.err.println(
 				"Given version control system is not supported by Candoia. Please consider extending Candoia platform.");
 		return null;
+	}
+
+	public static String getCachefilename() {
+		return cacheFileName;
 	}
 
 }

@@ -18,10 +18,12 @@ package boa.compiler;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -61,13 +63,13 @@ import boa.compiler.visitors.TaskClassifyingVisitor;
 import boa.compiler.visitors.TypeCheckingVisitor;
 import boa.datagen.BoaGenerator;
 import boa.datagen.DefaultProperties;
+import boa.datagen.candoia.CandoiaConfiguration;
+import boa.debugger.Env.EmptyEnv;
 import boa.debugger.Evaluator;
 import boa.debugger.value.Value;
 import boa.parser.BoaLexer;
 import boa.parser.BoaParser;
 
-
-import boa.debugger.Env.EmptyEnv;
 /**
  * The main entry point for the Boa compiler.
  *
@@ -85,6 +87,7 @@ public class BoaCompiler {
 		final ArrayList<File> inputFiles = BoaCompiler.inputFiles;
 		String[] localRepos = new String[0];
 		String[] cloneRepos = new String[0];
+		ArrayList<String> actualCloning = new ArrayList<String>();
 
 		// get the name of the generated class
 		final String className = getGeneratedClass(cl);
@@ -170,8 +173,13 @@ public class BoaCompiler {
 					e.printStackTrace();
 				}
 				BoaGenerator generator = new BoaGenerator();
-				if (!isCompleteDataSet(DefaultProperties.GH_JSON_CACHE_PATH)){
-					generator.generate(cloneRepos, localRepos);
+
+				for (String name : cloneRepos) {
+					if (needDataGen(DefaultProperties.GH_JSON_CACHE_PATH,
+							name.substring(name.lastIndexOf('@') + 1))) {
+						actualCloning.add(name);
+						generator.generate(actualCloning.toArray(new String[actualCloning.size()]), localRepos);
+					}
 				}
 				Evaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH);
 				Evaluator evaluator = new Evaluator();
@@ -182,16 +190,51 @@ public class BoaCompiler {
 		}
 	}
 
-	private static boolean isCompleteDataSet(String path) {
+	private static boolean needDataGen(String path, String projName) {
 		int countForAllThreeFiles = 0;
 		File directory = new File(path);
+		boolean needDatagen = true;
+		ArrayList<String> repos = new ArrayList<>();
 		if (directory.exists()) {
 			for (String fileName : directory.list()) {
-				if ((fileName.equals("data")) || fileName.equals("index") || fileName.equals("projects.seq"))
+				if ((fileName.equals("data")) || fileName.equals("index") || fileName.equals("projects.seq")) {
 					countForAllThreeFiles++;
+				} else if ((fileName.equals(CandoiaConfiguration.getCachefilename()))) {
+					FileReader fr = null;
+					BufferedReader cacheReader = null;
+					String nextRepo = null;
+					try {
+						fr = new FileReader(path + "/" + CandoiaConfiguration.getCachefilename());
+						cacheReader = new BufferedReader(fr);
+						while ((nextRepo = cacheReader.readLine()) != null) {
+							repos.add(nextRepo);
+						}
+						fr.close();
+						cacheReader.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		}
-		return (countForAllThreeFiles == 3);
+		if (countForAllThreeFiles == 3) {
+			for (String name : repos) {
+				if (name.equals(projName)) {
+					needDatagen = false;
+				}
+			}
+			if (needDatagen) {
+				try {
+					delete(new File(directory.getAbsolutePath() + "/data"));
+					delete(new File(directory.getAbsolutePath() + "/index"));
+					delete(new File(directory.getAbsolutePath() + "/projects.seq"));
+					return false;
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return needDatagen;
 	}
 
 	public static void parseOnly(final String[] args) throws IOException {
