@@ -1,14 +1,21 @@
 package boa.datagen.forges;
 
+import java.io.Console;
 import java.io.File;
 import java.util.ArrayList;
 
+import boa.datagen.candoia.CandoiaUtilities;
 import boa.types.Code.CodeRepository;
 import boa.types.Code.CodeRepository.RepositoryKind;
 import boa.types.Toplevel.Project;
 import boa.types.Toplevel.Project.ForgeKind;
 
 public abstract class AbstractForge {
+
+    private static char[] pwd;
+    private static String usrName;
+    private static class Lock{
+    }
 
 	public abstract boolean getJSON(String url, String jsonPath);
 
@@ -40,4 +47,25 @@ public abstract class AbstractForge {
 		project.addCodeRepositories(cr.build());
 		return project.build();
 	}
+
+    public static char[] readPassword(){
+        synchronized (Lock.class){
+            if(pwd != null){
+                return pwd;
+            }else{
+                Console cnsl = null;
+                char[] password = null;
+                try {
+                    cnsl = System.console();
+                    if (cnsl != null) {
+                        password = cnsl.readPassword("Password: ");
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                pwd = password;
+                return password;
+            }
+        }
+    }
 }

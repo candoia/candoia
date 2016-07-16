@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import boa.datagen.candoia.CandoiaUtilities;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import boa.datagen.forges.AbstractForge;
@@ -65,20 +66,6 @@ public class ForgeGithub extends AbstractForge {
 			}
 		}
 		return false;
-	}
-
-	private char[] readPassword() {
-		Console cnsl = null;
-		char[] pwd = null;
-		try {
-			cnsl = System.console();
-			if (cnsl != null) {
-				pwd = cnsl.readPassword("Password: ");
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		return pwd;
 	}
 
 	private boolean downloadJSON(MetadataCacher mc, String jsonPath) {

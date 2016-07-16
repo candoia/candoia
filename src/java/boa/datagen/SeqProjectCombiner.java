@@ -17,12 +17,11 @@
 
 package boa.datagen;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import boa.datagen.candoia.CandoiaUtilities;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -55,14 +54,15 @@ public class SeqProjectCombiner {
 	public static void combine() throws IOException {
 		System.out.println("Combiner method has been called");
 		Configuration conf = new Configuration();
-		// conf.set("fs.default.name", "hdfs://boa-njt/");
 		FileSystem fileSystem = FileSystem.get(conf);
 		String base = DefaultProperties.GH_JSON_CACHE_PATH;
 
 		HashMap<String, String> sources = new HashMap<String, String>();
 		HashSet<String> marks = new HashSet<String>();
 		FileStatus[] files = fileSystem.listStatus(new Path(base));
-		PrintWriter cache = new PrintWriter(DefaultProperties.GH_JSON_CACHE_PATH+ "/" + CandoiaConfiguration.getCachefilename());
+		FileWriter fw = new FileWriter(DefaultProperties.GH_JSON_CACHE_PATH+ "/" + CandoiaConfiguration.getCachefilename());
+		BufferedWriter bw = new BufferedWriter(fw);
+		PrintWriter cache = new PrintWriter(bw);
 		for (int i = 0; i < files.length; i++) {
 			FileStatus file = files[i];
 			String name = file.getPath().getName();
@@ -80,16 +80,14 @@ public class SeqProjectCombiner {
 						if (p.getCodeRepositoriesCount() > 0 && p.getCodeRepositories(0).getRevisionsCount() > 0)
 							marks.add(s);
 						sources.put(s, name);
-						cache.println(p.getProjectUrl());
+						cache.println(CandoiaUtilities.buildJSONObject(p.getName(),p.getProjectUrl(), CandoiaUtilities.getLatestRevisionId(p)));
 					}
 				} catch (Exception e) {
 					System.err.println(name);
 					e.printStackTrace();
 				}
 				r.close();
-				cache.close();
-			}
-			else if (name.contains("ast") && name.endsWith(".seq")) {
+			}else if (name.contains("ast") && name.endsWith(".seq")) {
 				SequenceFile.Reader r = new SequenceFile.Reader(fileSystem, file.getPath(), conf);
 				final Text key = new Text();
 				final BytesWritable value = new BytesWritable();
@@ -153,7 +151,9 @@ public class SeqProjectCombiner {
 		}
 		astWriter.close();
 		w.close();
-
+        cache.close();
+        fw.close();
+        bw.close();
 		fileSystem.close();
 		clean(DefaultProperties.GH_JSON_CACHE_PATH);
 	}

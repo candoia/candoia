@@ -11,6 +11,7 @@ import boa.datagen.forges.github.ForgeGithub;
 import boa.datagen.forges.sf.ForgeSF;
 import boa.datagen.scm.AbstractConnector;
 import boa.datagen.scm.GitConnector;
+import net.sf.json.JSONObject;
 
 public class CandoiaConfiguration {
 	public static final boolean DEBUG = false;
