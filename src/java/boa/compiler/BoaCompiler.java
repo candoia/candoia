@@ -175,15 +175,17 @@ public class BoaCompiler {
 				}
 				BoaGenerator generator = new BoaGenerator();
 
-				boolean feshDatGen = false;
+				boolean freshDatGen = false;
 				for (String name : cloneRepos) {
-					feshDatGen = needDataGen(DefaultProperties.GH_JSON_CACHE_PATH,
+					boolean cloneFlag = needDataGen(DefaultProperties.GH_JSON_CACHE_PATH,
 							name.substring(name.lastIndexOf('@') + 1)); 
-					if (feshDatGen) {
+					if (cloneFlag) {
 						actualCloning.add(name);
 					}
+					freshDatGen = freshDatGen || cloneFlag;
 				}
-				if(feshDatGen){
+
+				if(freshDatGen){
 					generator.generate(actualCloning.toArray(new String[actualCloning.size()]), localRepos);
 				}
 				Evaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH);

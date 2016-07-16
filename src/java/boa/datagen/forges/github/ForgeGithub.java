@@ -60,9 +60,9 @@ public class ForgeGithub extends AbstractForge {
 			if (downloadJSON(mc, jsonPath)) {
 				String mcUrl = mc.getUrl();
 				mc.setUrl(mcUrl + "/languages");
-				return downloadLangJSON(mc, jsonPath);
-//				mc.setUrl(mcUrl + "/issues?page=1");
-//				return downloadIssuesJSON(mc, jsonPath);
+                downloadLangJSON(mc, jsonPath);
+				mc.setUrl(mcUrl + "/issues?page=1");
+				return downloadIssuesJSON(mc, jsonPath);
 			}
 		}
 		return false;
