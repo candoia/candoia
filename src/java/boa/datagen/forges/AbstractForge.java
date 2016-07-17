@@ -4,7 +4,6 @@ import java.io.Console;
 import java.io.File;
 import java.util.ArrayList;
 
-import boa.datagen.candoia.CandoiaUtilities;
 import boa.types.Code.CodeRepository;
 import boa.types.Code.CodeRepository.RepositoryKind;
 import boa.types.Toplevel.Project;
@@ -27,6 +26,8 @@ public abstract class AbstractForge {
 	public abstract Project toBoaProject(File jsonFile);
 
 	public abstract String getDirName(String URL);
+	
+	public abstract String getUsrName(String URL);
 
 	public static Project buildLocalProject(String path) {
 		if (path.contains("@")) {

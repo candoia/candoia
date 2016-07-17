@@ -156,10 +156,12 @@ public class BoaGenerator {
 				@Override
 				public void run() {
 					String repoName = forge.getDirName(str);
-					if(!new File(DefaultProperties.GH_JSON_PATH + "/" + repoName).exists())
-						forge.getJSON(str, DefaultProperties.GH_JSON_PATH + "/" + repoName);
-					if(! new File(DefaultProperties.GH_GIT_PATH + "/" + repoName).exists())
-						forge.cloneRepo(str, DefaultProperties.GH_GIT_PATH + "/" + repoName);
+					String userName = forge.getUsrName(str);
+					String gitRepo = userName + "/" + repoName;
+					if(!new File(DefaultProperties.GH_JSON_PATH + "/" + gitRepo).exists())
+						forge.getJSON(str, DefaultProperties.GH_JSON_PATH + "/" + gitRepo);
+					if(! new File(DefaultProperties.GH_GIT_PATH + "/" + gitRepo).exists())
+						forge.cloneRepo(str, DefaultProperties.GH_GIT_PATH + "/" + gitRepo);
 				}
 			});
 		}
@@ -179,8 +181,10 @@ public class BoaGenerator {
 
 		this.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(maxThread);
 		if(jsonFiles.isDirectory()){
-			for (File projectJson : jsonFiles.listFiles()) {
-				this.executor.execute(new ProjectbuildTask(repos, projectJson, listOfForges));
+			for (File allRepos : jsonFiles.listFiles()) {
+				for (File projectJson : allRepos.listFiles()) {
+					this.executor.execute(new ProjectbuildTask(repos, projectJson, listOfForges));					
+				}
 			}	
 		}
 		for(String  local: localRepos){

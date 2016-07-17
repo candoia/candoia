@@ -39,17 +39,17 @@ public class ForgeGithub extends AbstractForge {
 			String userName = url.substring(0, url.indexOf('@'));
 			String temp[] = url.split("/");
 			String targetURL = "https://api.github.com/repos/" + temp[temp.length - 2] + "/" + temp[temp.length - 1];
-		    char[] pswrd = readPassword();
-		    if(pswrd == null){
-		    	String password = "candoiauser2016";
-		    	userName = "candoiaISU";
-		    	return new MetadataCacher(targetURL, userName, password);	
-		    }else{
-		    	String password = new String(pswrd);
-		    	return new MetadataCacher(targetURL, userName, password);	
-		    }
-//			String password = "candoiauser2016";
-			
+			char[] pswrd = readPassword();
+			if (pswrd == null) {
+				String password = "candoiauser2016";
+				userName = "candoiaISU";
+				return new MetadataCacher(targetURL, userName, password);
+			} else {
+				String password = new String(pswrd);
+				return new MetadataCacher(targetURL, userName, password);
+			}
+			// String password = "candoiauser2016";
+
 		}
 	}
 
@@ -60,7 +60,7 @@ public class ForgeGithub extends AbstractForge {
 			if (downloadJSON(mc, jsonPath)) {
 				String mcUrl = mc.getUrl();
 				mc.setUrl(mcUrl + "/languages");
-                downloadLangJSON(mc, jsonPath);
+				downloadLangJSON(mc, jsonPath);
 				mc.setUrl(mcUrl + "/issues?page=1");
 				return downloadIssuesJSON(mc, jsonPath);
 			}
@@ -252,11 +252,11 @@ public class ForgeGithub extends AbstractForge {
 						}
 					}
 					pageNumber++;
-					String newURL = mc.getUrl().substring(0, mc.getUrl().length()-1);
-					newURL = newURL+(pageNumber+1);
+					String newURL = mc.getUrl().substring(0, mc.getUrl().length() - 1);
+					newURL = newURL + (pageNumber + 1);
 					mc.setUrl(newURL);
 				}
-//				break;
+				// break;
 			}
 		} else {
 			System.out.println("Authentication failed!");
@@ -264,7 +264,7 @@ public class ForgeGithub extends AbstractForge {
 		}
 		return true;
 	}
-	
+
 	public boolean cloneRepo(String URL, String repoPath) {
 		URL = URL.substring(URL.indexOf('@') + 1, URL.length()) + ".git";
 		try {
@@ -299,4 +299,9 @@ public class ForgeGithub extends AbstractForge {
 		return repoName;
 	}
 
+	@Override
+	public String getUsrName(String URL) {
+		String[] details = URL.split("/");
+		return details[details.length - 2];
+	}
 }

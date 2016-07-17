@@ -210,4 +210,10 @@ public class ForgeSF extends AbstractForge{
 		String[] details = URL.split("/");
 		return details[details.length-1];
 	}
+	
+	@Override
+	public String getUsrName(String URL) {
+		String[] details = URL.split("/");
+		return details[details.length-2];
+	}
 }

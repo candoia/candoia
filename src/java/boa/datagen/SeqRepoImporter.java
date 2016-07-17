@@ -450,11 +450,11 @@ public class SeqRepoImporter {
 				} catch (InvalidProtocolBufferException e) {
 					e.printStackTrace();
 				}
-				final String name = cachedProject.getName();
+				final String dirName = cachedProject.getName();
 				if (debug)
 					System.out.println("Processing " + id + " / " + cacheOfProjects.size() + " " + cachedProject.getId()
-							+ " " + name);
-				String dirName = name.substring(name.lastIndexOf('/') + 1, name.length());
+							+ " " + dirName);
+//				String dirName = name.substring(name.lastIndexOf('/') + 1, name.length());
 				String repoPath = DefaultProperties.GH_GIT_PATH + "/" + dirName;
 				Project project = null;
 				if(new File(repoPath).isDirectory()){
