@@ -22,19 +22,21 @@ import br.ufpe.cin.groundhog.IssueLabel;
 import br.ufpe.cin.groundhog.Project;
 import br.ufpe.cin.groundhog.http.HttpModule;
 import br.ufpe.cin.groundhog.http.Requests;
+import br.ufpe.cin.groundhog.search.SearchGitHub;
 
-public class SearchIssues {
+public class SearchIssues extends SearchGitHub{
 	private final Gson gson;
 	private final Requests requests;
 	private final UrlBuilder builder;
 
 	@Inject
 	public SearchIssues(Requests requests) {
+		super(requests);
 		this.requests = requests;
 		this.gson = new Gson();
 		this.builder = Guice.createInjector(new HttpModule()).getInstance(UrlBuilder.class);
 	}
-
+	
 	public List<Issue> getAllProjectIssues(Project project) {
 
 		int pageNumber = 1;
@@ -45,9 +47,6 @@ public class SearchIssues {
 			String searchUrl = builder.uses(GithubAPI.ROOT).withParam("repos")
 					.withSimpleParam("/", project.getOwner().getLogin()).withSimpleParam("", project.getName())
 					.withParam("/issues").withParam("?state=all&").withParam("page=" + pageNumber).build();
-			// String
-			// searchUrl="https://api.github.com/repos/"+project.getOwner().getLogin()
-			// + project.getName()+"/issues?page="+pageNumber;
 
 			String jsonString = requests.get(searchUrl);
 			List<IssueLabel> lables = new ArrayList<IssueLabel>();
@@ -170,7 +169,7 @@ public class SearchIssues {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} finally {
-			try {
+			try {	
 				file.flush();
 				file.close();
 			} catch (IOException e) {
