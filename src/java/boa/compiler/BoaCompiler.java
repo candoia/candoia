@@ -16,42 +16,6 @@
  */
 package boa.compiler;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-import java.util.jar.JarOutputStream;
-import java.util.zip.ZipEntry;
-
-import javax.tools.JavaCompiler;
-import javax.tools.ToolProvider;
-
-import org.antlr.v4.runtime.ANTLRFileStream;
-import org.antlr.v4.runtime.BaseErrorListener;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Recognizer;
-import org.antlr.v4.runtime.atn.PredictionMode;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.PosixParser;
-import org.apache.commons.io.FileDeleteStrategy;
-import org.apache.log4j.Logger;
-import org.scannotation.ClasspathUrlFinder;
-
 import boa.compiler.ast.Program;
 import boa.compiler.ast.Start;
 import boa.compiler.listeners.BoaErrorListener;
@@ -65,11 +29,33 @@ import boa.compiler.visitors.TypeCheckingVisitor;
 import boa.datagen.BoaGenerator;
 import boa.datagen.DefaultProperties;
 import boa.datagen.candoia.CandoiaConfiguration;
+import boa.datagen.candoia.CandoiaUtilities;
 import boa.debugger.Env.EmptyEnv;
 import boa.debugger.Evaluator;
 import boa.debugger.value.Value;
 import boa.parser.BoaLexer;
 import boa.parser.BoaParser;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.atn.PredictionMode;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.PosixParser;
+import org.apache.commons.io.FileDeleteStrategy;
+import org.apache.log4j.Logger;
+import org.scannotation.ClasspathUrlFinder;
+
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+import java.io.*;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import java.util.jar.JarOutputStream;
+import java.util.zip.ZipEntry;
 
 /**
  * The main entry point for the Boa compiler.
@@ -79,6 +65,7 @@ import boa.parser.BoaParser;
  */
 public class BoaCompiler {
 
+	static ArrayList<File> inputFiles = null;
 	private static Logger LOG = Logger.getLogger(BoaCompiler.class);
 
 	public static void main(final String[] args) throws IOException {
@@ -175,17 +162,13 @@ public class BoaCompiler {
 				}
 				BoaGenerator generator = new BoaGenerator();
 
-				boolean freshDatGen = false;
-				for (String name : cloneRepos) {
-					boolean cloneFlag = needDataGen(DefaultProperties.GH_JSON_CACHE_PATH,
-							name.substring(name.lastIndexOf('@') + 1)); 
-					if (cloneFlag) {
-						actualCloning.add(name);
-					}
-					freshDatGen = freshDatGen || cloneFlag;
+				boolean prevDataExists = CandoiaUtilities.prevDataExists(DefaultProperties.GH_JSON_CACHE_PATH);
+				actualCloning = CandoiaUtilities.getToBeCloned(DefaultProperties.GH_JSON_CACHE_PATH + "/" + DefaultProperties.CLONE_DIR_NAME, new ArrayList<String>(Arrays.asList(cloneRepos)));
+				if(prevDataExists && (actualCloning.size() > 0)){
+					// if dataset is older then delete the existing dataset and rebuild it
+                    CandoiaUtilities.cleanOlderDataset(DefaultProperties.GH_JSON_CACHE_PATH);
 				}
-
-				if(freshDatGen){
+				if(!prevDataExists){
 					generator.generate(actualCloning.toArray(new String[actualCloning.size()]), localRepos);
 				}
 				Evaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH);
@@ -369,8 +352,6 @@ public class BoaCompiler {
 
 		delete(outputRoot);
 	}
-
-	static ArrayList<File> inputFiles = null;
 
 	private static CommandLine processCommandLineOptions(final String[] args) {
 		// parse the command line options

@@ -1,8 +1,5 @@
 package boa.datagen.candoia;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import boa.datagen.bugForge.BugForge;
 import boa.datagen.bugForge.gitIssue.GithubIssues;
 import boa.datagen.bugForge.sfIssues.SFTickets;
@@ -11,7 +8,9 @@ import boa.datagen.forges.github.ForgeGithub;
 import boa.datagen.forges.sf.ForgeSF;
 import boa.datagen.scm.AbstractConnector;
 import boa.datagen.scm.GitConnector;
-import net.sf.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class CandoiaConfiguration {
 	public static final boolean DEBUG = false;
@@ -21,25 +20,25 @@ public class CandoiaConfiguration {
 	private final static String githubAccessToken = "3a46b401267a5efa9dab8b9371174f23a08d5181";
 	private final static String cacheFileName = ".candoiaCache.txt";
 	
-	public static String getGithubAccessToken(){
-		return githubAccessToken;
-	}
-	
 	static {
 		bugforges = new HashMap<String, BugForge>();
 		bugforges.put("github.com", new GithubIssues());
 		bugforges.put("sourceforge.net", new SFTickets());
 	}
-
+	
 	static {
 		forges = new HashMap<String, AbstractForge>();
 		forges.put("github.com", new ForgeGithub());
 		forges.put("sourceforge.net", new ForgeSF());
 	}
-	
+
 	static {
 		vcs = new ArrayList<AbstractConnector>();
 		vcs.add(new GitConnector());
+	}
+	
+	public static String getGithubAccessToken(){
+		return githubAccessToken;
 	}
 
 	public static AbstractForge getForge(String url) {
@@ -85,6 +84,19 @@ public class CandoiaConfiguration {
 		return null;
 	}
 
+	public static boolean isProperVCSDir(String path){
+		ArrayList<AbstractConnector> supportedVCS = CandoiaConfiguration.getVCS();
+		for (AbstractConnector conn : supportedVCS) {
+			AbstractConnector copy= conn.getNewInstance();
+			if (copy.initialize(path)) {
+				return true;
+			}
+		}
+		System.err.println(
+				"Given version control system is not supported by Candoia. Please consider extending Candoia platform.");
+		return false;
+	}
+	
 	public static String getCachefilename() {
 		return cacheFileName;
 	}

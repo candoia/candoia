@@ -16,17 +16,12 @@
  */
 package boa.types.proto;
 
+import boa.types.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import boa.types.BoaInt;
-import boa.types.BoaProtoList;
-import boa.types.BoaProtoTuple;
-import boa.types.BoaString;
-import boa.types.BoaTime;
-import boa.types.BoaType;
 
 /**
  * A {@link IssueProtoTuple}.
@@ -81,6 +76,9 @@ public class IssueProtoTuple extends BoaProtoTuple {
 
 		names.put("comments", counter++);
 		members.add(new BoaProtoList(new IssueCommentProtoTuple()));
+
+		names.put("title", counter++);
+		members.add(new BoaString());
 	}
 
 	/**

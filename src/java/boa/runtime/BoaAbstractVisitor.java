@@ -1,47 +1,31 @@
-/*
- * Copyright 2014, Hridesh Rajan, Robert Dyer, 
- *                 and Iowa State University of Science and Technology
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package boa.runtime;
 
-import java.util.List;
-
 import boa.functions.BoaAstIntrinsics;
-
 import boa.types.Ast.*;
 import boa.types.Code.CodeRepository;
 import boa.types.Code.Revision;
 import boa.types.Diff.ChangedFile;
+import boa.types.Issues.*;
 import boa.types.Shared.Person;
 import boa.types.Toplevel.Project;
 
+import java.util.List;
+
 /**
  * Boa abstract AST visitor.
- * 
+ *
  * The <code>visit()</code> methods first call <code>preVisit()</code> for the node.
  * If <code>preVisit()</code> returns <code>true</code>, then each of that node's children are visited and then <code>postVisit()</code> is called.
- * 
+ *
  * By default, all <code>preVisit()</code> methods call {@link #defaultPreVisit()} and return <code>true</code>.
  * By default, all <code>postVisit()</code> methods call {@link #defaultPostVisit()}.
- * 
+ *
  * @author rdyer
  */
 public abstract class BoaAbstractVisitor {
 	/**
 	 * Initializes any visitor-specific data before starting a visit.
-	 * 
+	 *
 	 * @return itself, to allow method chaining
 	 */
 	public BoaAbstractVisitor initialize() {
@@ -51,7 +35,7 @@ public abstract class BoaAbstractVisitor {
 	/**
 	 * Provides a default action for pre-visiting nodes.
 	 * Any <code>preVisit()</code> method that is not overridden calls this method.
-	 * 
+	 *
 	 * @return always returns true
 	 */
 	protected boolean defaultPreVisit() throws Exception {
@@ -61,7 +45,23 @@ public abstract class BoaAbstractVisitor {
 	protected boolean preVisit(final Project node) throws Exception {
 		return defaultPreVisit();
 	}
+	protected boolean preVisit(final PullRequest node) throws Exception {
+		return defaultPreVisit();
+	}
 	protected boolean preVisit(final CodeRepository node) throws Exception {
+		return defaultPreVisit();
+	}
+	protected boolean preVisit(final IssueRepository node) throws Exception {
+		return defaultPreVisit();
+	}
+	protected boolean preVisit(final IssueAttachment node) throws Exception {
+		return defaultPreVisit();
+	}
+
+	protected boolean preVisit(final Issue node) throws Exception {
+		return defaultPreVisit();
+	}
+	protected boolean preVisit(final IssueComment node) throws Exception {
 		return defaultPreVisit();
 	}
 	protected boolean preVisit(final Revision node) throws Exception {
@@ -103,6 +103,9 @@ public abstract class BoaAbstractVisitor {
 	protected boolean preVisit(final Person node) throws Exception {
 		return defaultPreVisit();
 	}
+	protected boolean preVisit(final Milestone node) throws Exception {
+		return defaultPreVisit();
+	}
 
 	/**
 	 * Provides a default action for post-visiting nodes.
@@ -114,6 +117,21 @@ public abstract class BoaAbstractVisitor {
 		defaultPostVisit();
 	}
 	protected void postVisit(final CodeRepository node) throws Exception {
+		defaultPostVisit();
+	}
+	protected void postVisit(final IssueRepository node) throws Exception {
+		defaultPostVisit();
+	}
+	protected void postVisit(final IssueAttachment node) throws Exception {
+		defaultPostVisit();
+	}
+	protected void postVisit(final Issue node) throws Exception {
+		defaultPostVisit();
+	}
+	protected void postVisit(final IssueComment node) throws Exception {
+		defaultPostVisit();
+	}
+	protected void postVisit(final Milestone node) throws Exception {
 		defaultPostVisit();
 	}
 	protected void postVisit(final Revision node) throws Exception {
@@ -152,6 +170,9 @@ public abstract class BoaAbstractVisitor {
 	protected void postVisit(final Comment node) throws Exception {
 		defaultPostVisit();
 	}
+	protected void postVisit(final PullRequest node) throws Exception {
+		defaultPostVisit();
+	}
 	protected void postVisit(final Person node) throws Exception {
 		defaultPostVisit();
 	}
@@ -162,6 +183,11 @@ public abstract class BoaAbstractVisitor {
 			final int reposSize = reposList.size();
 			for (int i = 0; i < reposSize; i++)
 				visit(reposList.get(i));
+
+			final List<IssueRepository> issueList = node.getIssueRepositoriesList();
+			final int issueSize = issueList.size();
+			for (int i = 0; i < issueSize; i++)
+				visit(issueList.get(i));
 
 			final List<Person> devsList = node.getDevelopersList();
 			final int devsSize = devsList.size();
@@ -186,6 +212,20 @@ public abstract class BoaAbstractVisitor {
 			postVisit(node);
 		}
 	}
+
+
+	public final void visit(final IssueRepository node) throws Exception {
+		if (preVisit(node)) {
+			final List<Issue> issueList = node.getIssuesList();
+			final int issueSize = issueList.size();
+			for (int i = 0; i < issueSize; i++)
+				visit(issueList.get(i));
+			postVisit(node);
+		}
+	}
+
+
+
 	public final void visit(final Revision node) throws Exception {
 		if (preVisit(node)) {
 			final List<ChangedFile> filesList = node.getFilesList();
@@ -202,10 +242,42 @@ public abstract class BoaAbstractVisitor {
 			postVisit(node);
 		}
 	}
+
+	public final void visit(final Issue node) throws Exception {
+		if (preVisit(node)) {
+			final List<IssueAttachment> filesList = node.getAttachmentsList();
+			final int filesSize = filesList.size();
+			for (int i = 0; i < filesSize; i++)
+				visit(filesList.get(i));
+
+			final List<IssueComment> commentList = node.getCommentsList();
+			final int commentsSize = commentList.size();
+			for (int i = 0; i < commentsSize; i++)
+				visit(commentList.get(i));
+			if (node.hasAssignee())
+				visit(node.getAssignee());
+
+			if (node.hasCreatedBy())
+				visit(node.getCreatedBy());
+
+			if (node.hasClosedBy())
+				visit(node.getClosedBy());
+
+			postVisit(node);
+		}
+	}
+
+	public final void visit(final IssueAttachment node) throws Exception {
+		if (preVisit(node)) {
+
+			postVisit(node);
+		}
+	}
+
+
 	public final void visit(final ChangedFile node) throws Exception {
 		if (preVisit(node)) {
 			visit(BoaAstIntrinsics.getast(node));
-
 			postVisit(node);
 		}
 	}
@@ -270,6 +342,7 @@ public abstract class BoaAbstractVisitor {
 		}
 	}
 	public final void visit(final Type node) throws Exception {
+		//system.out.println("Abstract visitor Type");
 		if (preVisit(node)) {
 			postVisit(node);
 		}
@@ -399,6 +472,29 @@ public abstract class BoaAbstractVisitor {
 			postVisit(node);
 		}
 	}
+	public final void visit(final IssueComment node) throws Exception {
+		if (preVisit(node)) {
+			if(node.hasUser())
+				visit(node.getUser());
+			postVisit(node);
+		}
+	}
+
+	public final void visit(final Milestone node) throws Exception {
+		if (preVisit(node)) {
+			if(node.hasCreator())
+				visit(node.getCreator());
+			postVisit(node);
+		}
+	}
+	public final void visit(final PullRequest node) throws Exception {
+		if (preVisit(node)) {
+			if(node.hasMergedBy())
+				visit(node.getMergedBy());
+			postVisit(node);
+		}
+	}
+
 	public final void visit(final Person node) throws Exception {
 		if (preVisit(node)) {
 			postVisit(node);

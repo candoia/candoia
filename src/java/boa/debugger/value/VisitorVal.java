@@ -1,7 +1,5 @@
 package boa.debugger.value;
 
-import java.util.HashMap;
-
 import boa.compiler.ast.Identifier;
 import boa.compiler.ast.statements.Block;
 import boa.compiler.ast.statements.VisitStatement;
@@ -9,21 +7,15 @@ import boa.debugger.Env;
 import boa.debugger.Env.ExtendEnv;
 import boa.debugger.Evaluator;
 import boa.runtime.BoaAbstractVisitor;
-import boa.types.Ast.ASTRoot;
-import boa.types.Ast.Comment;
-import boa.types.Ast.Declaration;
-import boa.types.Ast.Expression;
-import boa.types.Ast.Method;
-import boa.types.Ast.Modifier;
-import boa.types.Ast.Namespace;
-import boa.types.Ast.Statement;
-import boa.types.Ast.Type;
-import boa.types.Ast.Variable;
+import boa.types.Ast.*;
 import boa.types.Code.CodeRepository;
 import boa.types.Code.Revision;
 import boa.types.Diff.ChangedFile;
+import boa.types.Issues;
 import boa.types.Shared.Person;
 import boa.types.Toplevel.Project;
+
+import java.util.HashMap;
 
 public class VisitorVal extends BoaAbstractVisitor implements Value {
 	private Block _body;
@@ -147,6 +139,14 @@ public class VisitorVal extends BoaAbstractVisitor implements Value {
 		} else if (node instanceof Type) {
 			visit((Type) node);
 		} else if (node instanceof Variable) {
+			visit((Variable) node);
+		} else if (node instanceof Issues.Issue) {
+			visit((Variable) node);
+		} else if (node instanceof Issues.IssueRepository) {
+			visit((Variable) node);
+		} else if (node instanceof Issues.IssueAttachment) {
+			visit((Variable) node);
+		} else if (node instanceof Issues.IssueComment) {
 			visit((Variable) node);
 		}
 	}
@@ -481,7 +481,96 @@ public class VisitorVal extends BoaAbstractVisitor implements Value {
 		return true;
 	}
 
-	
+
+	@Override
+	protected boolean preVisit(final Issues.Issue node) throws Exception {
+		Value result = null;
+		Env<Value> local = this._env;
+		if (_toBeExecutedBefore.containsKey("Issue")) {
+			VisitStatement stmt = _toBeExecutedBefore.get("Issue");
+			if (stmt.hasComponent()) {
+				local = new ExtendEnv<Value>(_env, stmt.getComponent().getIdentifier().toString(), new AnyVal(node));
+			}
+			result = this._eval.visit(stmt, local);
+		} else {
+			if (hasWildCardBefore) {
+				VisitStatement stmt = _toBeExecutedBefore.get("Issue");
+				result = this._eval.visit(stmt, local);
+			}
+		}
+		if (result instanceof ReturnVal) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	protected boolean preVisit(final Issues.IssueRepository node) throws Exception {
+		Value result = null;
+		Env<Value> local = this._env;
+		if (_toBeExecutedBefore.containsKey("IssueRepository")) {
+			VisitStatement stmt = _toBeExecutedBefore.get("IssueRepository");
+			if (stmt.hasComponent()) {
+				local = new ExtendEnv<Value>(_env, stmt.getComponent().getIdentifier().toString(), new AnyVal(node));
+			}
+			result = this._eval.visit(stmt, local);
+		} else {
+			if (hasWildCardBefore) {
+				VisitStatement stmt = _toBeExecutedBefore.get("wildcard");
+				result = this._eval.visit(stmt, local);
+			}
+		}
+		if (result instanceof ReturnVal) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	protected boolean preVisit(final Issues.IssueComment node) throws Exception {
+		Value result = null;
+		Env<Value> local = this._env;
+		if (_toBeExecutedBefore.containsKey("IssueComment")) {
+			VisitStatement stmt = _toBeExecutedBefore.get("IssueComment");
+			if (stmt.hasComponent()) {
+				local = new ExtendEnv<Value>(_env, stmt.getComponent().getIdentifier().toString(), new AnyVal(node));
+			}
+			result = this._eval.visit(stmt, local);
+		} else {
+			if (hasWildCardBefore) {
+				VisitStatement stmt = _toBeExecutedBefore.get("IssueComment");
+				result = this._eval.visit(stmt, local);
+			}
+		}
+		if (result instanceof ReturnVal) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	protected boolean preVisit(final Issues.IssueAttachment node) throws Exception {
+		Value result = null;
+		Env<Value> local = this._env;
+		if (_toBeExecutedBefore.containsKey("IssueAttachment")) {
+			VisitStatement stmt = _toBeExecutedBefore.get("IssueAttachment");
+			if (stmt.hasComponent()) {
+				local = new ExtendEnv<Value>(_env, stmt.getComponent().getIdentifier().toString(), new AnyVal(node));
+			}
+			result = this._eval.visit(stmt, local);
+		} else {
+			if (hasWildCardBefore) {
+				VisitStatement stmt = _toBeExecutedBefore.get("wildcard");
+				result = this._eval.visit(stmt, local);
+			}
+		}
+		if (result instanceof ReturnVal) {
+			return false;
+		}
+		return true;
+	}
+
+
 	@Override
 	protected void postVisit(final Project node) throws Exception {
 		Env<Value> local = this._env;
@@ -737,7 +826,75 @@ public class VisitorVal extends BoaAbstractVisitor implements Value {
 			}
 		}
 	}
-	
+
+	@Override
+	protected void postVisit(final Issues.IssueAttachment node) throws Exception {
+		Env<Value> local = this._env;
+		if (_toBeExecutedAfter.containsKey("Comment")) {
+			VisitStatement stmt = _toBeExecutedAfter.get("IssueAttachment");
+			if (stmt.hasComponent()) {
+				local = new ExtendEnv<Value>(_env, stmt.getComponent().getIdentifier().toString(), new AnyVal(node));
+			}
+			this._eval.visit(stmt, local);
+		} else {
+			if (hasWildCardAfter) {
+				VisitStatement stmt = _toBeExecutedAfter.get("wildcard");
+				this._eval.visit(stmt, local);
+			}
+		}
+	}
+
+	@Override
+	protected void postVisit(final Issues.IssueRepository node) throws Exception {
+		Env<Value> local = this._env;
+		if (_toBeExecutedAfter.containsKey("Comment")) {
+			VisitStatement stmt = _toBeExecutedAfter.get("IssueRepository");
+			if (stmt.hasComponent()) {
+				local = new ExtendEnv<Value>(_env, stmt.getComponent().getIdentifier().toString(), new AnyVal(node));
+			}
+			this._eval.visit(stmt, local);
+		} else {
+			if (hasWildCardAfter) {
+				VisitStatement stmt = _toBeExecutedAfter.get("wildcard");
+				this._eval.visit(stmt, local);
+			}
+		}
+	}
+
+	@Override
+	protected void postVisit(final Issues.Issue node) throws Exception {
+		Env<Value> local = this._env;
+		if (_toBeExecutedAfter.containsKey("Comment")) {
+			VisitStatement stmt = _toBeExecutedAfter.get("Issue");
+			if (stmt.hasComponent()) {
+				local = new ExtendEnv<Value>(_env, stmt.getComponent().getIdentifier().toString(), new AnyVal(node));
+			}
+			this._eval.visit(stmt, local);
+		} else {
+			if (hasWildCardAfter) {
+				VisitStatement stmt = _toBeExecutedAfter.get("wildcard");
+				this._eval.visit(stmt, local);
+			}
+		}
+	}
+
+	@Override
+	protected void postVisit(final Issues.IssueComment node) throws Exception {
+		Env<Value> local = this._env;
+		if (_toBeExecutedAfter.containsKey("IssueComment")) {
+			VisitStatement stmt = _toBeExecutedAfter.get("IssueComment");
+			if (stmt.hasComponent()) {
+				local = new ExtendEnv<Value>(_env, stmt.getComponent().getIdentifier().toString(), new AnyVal(node));
+			}
+			this._eval.visit(stmt, local);
+		} else {
+			if (hasWildCardAfter) {
+				VisitStatement stmt = _toBeExecutedAfter.get("wildcard");
+				this._eval.visit(stmt, local);
+			}
+		}
+	}
+
 	@Override
 	public int hashCode(){
 		return this.get().hashCode();

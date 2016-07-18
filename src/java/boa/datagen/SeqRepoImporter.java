@@ -17,30 +17,6 @@
 
 package boa.datagen;
 
-import java.io.EOFException;
-import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.SequenceFile;
-import org.apache.hadoop.io.Text;
-
-import com.google.protobuf.InvalidProtocolBufferException;
-
 import boa.datagen.bugForge.BugForge;
 import boa.datagen.candoia.CandoiaConfiguration;
 import boa.datagen.scm.AbstractConnector;
@@ -51,6 +27,25 @@ import boa.types.Code.CodeRepository;
 import boa.types.Code.Revision;
 import boa.types.Issues.IssueRepository;
 import boa.types.Toplevel.Project;
+import com.google.protobuf.InvalidProtocolBufferException;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.SequenceFile;
+import org.apache.hadoop.io.Text;
+
+import java.io.EOFException;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author hoan
@@ -73,15 +68,13 @@ public class SeqRepoImporter {
 
 	private final static ArrayList<byte[]> cacheOfProjects = new ArrayList<byte[]>();
 	private final static HashSet<String> processedProjectIds = new HashSet<String>();
-
-	private static Configuration conf = null;
-	private static FileSystem fileSystem = null;
-	private static String base = null;
-
 	private final static int poolSize = Integer
 			.parseInt(Properties.getProperty("num.threads", boa.datagen.DefaultProperties.NUM_THREADS));
 	private final static AtomicInteger numOfProcessedProjects = new AtomicInteger(0), listId = new AtomicInteger(0);
 	private final static int maxListId = 16;
+	private static Configuration conf = null;
+	private static FileSystem fileSystem = null;
+	private static String base = null;
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		conf = new Configuration();
@@ -208,11 +201,20 @@ public class SeqRepoImporter {
 		System.out.println();
 	}
 
+	private static void printError(final Throwable e, final String message) {
+		System.err.println("ERR: " + message);
+		if (debug) {
+			e.printStackTrace();
+			// System.exit(-1);
+		} else
+			System.err.println(e.getMessage());
+	}
+
 	public static class ImportTask implements Runnable {
 		private static final int MAX_COUNTER = 10000;
+		SequenceFile.Writer projectWriter, astWriter;
 		private int id;
 		private int counter = 0;
-		SequenceFile.Writer projectWriter, astWriter;
 
 		public ImportTask(int id) throws IOException {
 			this.id = id;
@@ -382,9 +384,9 @@ public class SeqRepoImporter {
 
 	public static class ImportTaskLocal extends Thread {
 		private static final int MAX_COUNTER = 10000;
-		private int id;
 		byte[] bs = null;
 		SequenceFile.Writer projectWriter, astWriter;
+		private int id;
 
 		public ImportTaskLocal(byte[] bs) throws IOException {
 			this.bs = bs;
@@ -462,11 +464,11 @@ public class SeqRepoImporter {
 				}else{
 					project = storeRepositoryFrom(cachedProject, 0, new File(cachedProject.getProjectUrl()));
 				}
-					
+
 				if (project.getIssueRepositoriesCount() > 0){
-//					project = storeIsseuesFrom(project, project.getIssueRepositories(0).getUrl());
+					project = storeIsseuesFrom(project, project.getIssueRepositories(0).getUrl());
 				}
-					
+
 				try {
 					projectWriter.append(new Text(project.getId()), new BytesWritable(project.toByteArray()));
 				} catch (IOException e) {
@@ -559,15 +561,6 @@ public class SeqRepoImporter {
 			bugForge.buildIssue(projBuilder, project.getProjectUrl());
 			return projBuilder.build();
 		}
-	}
-
-	private static void printError(final Throwable e, final String message) {
-		System.err.println("ERR: " + message);
-		if (debug) {
-			e.printStackTrace();
-			// System.exit(-1);
-		} else
-			System.err.println(e.getMessage());
 	}
 
 }
