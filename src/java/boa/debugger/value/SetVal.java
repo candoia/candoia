@@ -40,15 +40,10 @@ public class SetVal<V, T> extends BoaType implements Value {
 	}
 
 	public void remove(T index) {
-		if (boa.debugger.Evaluator.DEBUG) {
-			System.out.println("Request to delete:" + index + "from :" + set.size() + "elements");
-		}
 		set.remove(index);
 	}
 
 	public boolean contains(T obj) {
-		if (boa.debugger.Evaluator.DEBUG)
-			System.out.println("set contains returns:" + set.contains(obj));
 		return set.contains(obj);
 	}
 
@@ -57,17 +52,7 @@ public class SetVal<V, T> extends BoaType implements Value {
 	}
 
 	public void add(V val) {
-		if (boa.debugger.Evaluator.DEBUG) {
-			System.out.println("Request to add:" + "from :" + set.size() + "elements");
-		}
 		(this.set).add(val);
-		if (boa.debugger.Evaluator.DEBUG) {
-			System.out.println("Currently size of array:" + set.size());
-		}
-	}
-
-	public void setPrevIndex(T index) {
-		this.prevIndex = index;
 	}
 
 	public boolean hasKey(Value index) {
@@ -76,6 +61,10 @@ public class SetVal<V, T> extends BoaType implements Value {
 
 	public T getPrevIndex() {
 		return this.prevIndex;
+	}
+
+	public void setPrevIndex(T index) {
+		this.prevIndex = index;
 	}
 
 	public boolean equals(Value v) {

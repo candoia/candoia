@@ -1,22 +1,15 @@
 package boa.debugger;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import boa.compiler.ast.Component;
 import boa.compiler.ast.statements.Block;
-import boa.compiler.ast.types.AbstractType;
 import boa.compiler.ast.types.FunctionType;
 import boa.debugger.Env.ExtendEnv;
 import boa.debugger.Env.LookupException;
 import boa.debugger.value.DynamicError;
 import boa.debugger.value.FunVal;
-import boa.debugger.value.ListVal;
 import boa.debugger.value.NumVal;
-import boa.debugger.value.PairVal;
 import boa.debugger.value.Value;
 import boa.types.Ast.Comment.CommentKind;
-import boa.types.Ast.Expression;
 import boa.types.Ast.Expression.ExpressionKind;
 import boa.types.Ast.Modifier.ModifierKind;
 import boa.types.Ast.Modifier.Visibility;
@@ -28,32 +21,27 @@ import boa.types.Issues.Issue;
 import boa.types.Issues.Issue.IssueKind;
 import boa.types.Shared.ChangeKind;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FunctionCall {
-	protected enum functionList {
-		abs, acos, acosh, add, asin, asinh, atan, atan2, atanh, ceil, clear, cos, cosh, dayofyear, strcontains, now, exp, floor, sin, sinh, tan, formattime, tanh, def, format, getast, get_annotation, lookup, getcomments, get_metric_ca, get_metric_cbc, get_metric_dit, getLOC, get_metric_lcoo, get_metric_noa, get_metric_noc, get_metric_noo, get_metric_npm, get_metric_rfc, getsnapshot, has_annotation, hasfiletype, keys, contains, haskey, has_modifier, has_modifier_final, has_modifier_namespace, has_modifier_private, has_modifier_protected, has_modifier_public, has_modifier_static, has_modifier_synchronized, has_visibility, isfinte, isinfinte, isnormal, isnan, isfixingrevision, iskind, isliteral, len, log, log10, lowercase, max, min, match, matchposns, matchstrs, nrand, pop, pow, push, rand, remove, round, substring, split, splitall, splitn, strfind, string, strreplace, sqrt, trim, trunc, uppercase, visit, yearof
-	};
-
-	protected enum InbuiltEnumList {
-		TypeKind, StatementKind, ExpressionKind, ModifierKind, Visibility, CommentKind, RepositoryKind, FileKind, IssueKind, ChangeKind, Priority, Severity, State
-	};
-
-	public static boolean isInBuiltFunction(String str) {
+		public static boolean isInBuiltFunction(String str) {
 		for (functionList f : functionList.values()) {
 			if (f.name().equals(str)) {
 				return true;
 			}
 		}
 		return false;
-	}
+	};
 
-	public static boolean isInBuiltEnum(String str) {
+		public static boolean isInBuiltEnum(String str) {
 		for (InbuiltEnumList f : InbuiltEnumList.values()) {
 			if (f.name().equals(str)) {
 				return true;
 			}
 		}
 		return false;
-	}
+	};
 
 	public static Value getInbuildEnumFieldValue(String enumName, String FieldName) {
 		switch (InbuiltEnumList.valueOf(enumName)) {
@@ -377,6 +365,8 @@ public class FunctionCall {
 			return InterpreterBoaFunctionMapping.callCompilerVisit(operation, env);
 		case yearof:
 			return InterpreterBoaFunctionMapping.callCompilerYearOf(operation, env);
+        case getAsList:
+			return InterpreterBoaFunctionMapping.callCompileGetAsList(operation, env);
 		default:
 			throw new UnsupportedOperationException();
 		}
@@ -401,5 +391,13 @@ public class FunctionCall {
 		Value result = body.accept(evaluator, temp);
 		System.out.println("Executor function returns:" + result.get());
 		return result;
+	}
+
+protected enum functionList {
+		abs, acos, acosh, add, asin, asinh, atan, atan2, atanh, ceil, clear, cos, cosh, dayofyear, strcontains, now, exp, floor, sin, sinh, tan, formattime, tanh, def, format, getast, get_annotation, lookup, getcomments, get_metric_ca, get_metric_cbc, get_metric_dit, getLOC, get_metric_lcoo, get_metric_noa, get_metric_noc, get_metric_noo, get_metric_npm, get_metric_rfc, getsnapshot, has_annotation, hasfiletype, keys, contains, haskey, has_modifier, has_modifier_final, has_modifier_namespace, has_modifier_private, has_modifier_protected, has_modifier_public, has_modifier_static, has_modifier_synchronized, has_visibility, isfinte, isinfinte, isnormal, isnan, isfixingrevision, iskind, isliteral, len, log, log10, lowercase, max, min, match, matchposns, matchstrs, nrand, pop, pow, push, rand, remove, round, substring, split, splitall, splitn, strfind, string, strreplace, sqrt, trim, trunc, uppercase, visit, yearof, getAsList
+	}
+
+protected enum InbuiltEnumList {
+		TypeKind, StatementKind, ExpressionKind, ModifierKind, Visibility, CommentKind, RepositoryKind, FileKind, IssueKind, ChangeKind, Priority, Severity, State
 	}
 }

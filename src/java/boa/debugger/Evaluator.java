@@ -3,11 +3,17 @@
 */
 package boa.debugger;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-
+import boa.compiler.ast.*;
+import boa.compiler.ast.expressions.*;
+import boa.compiler.ast.literals.*;
+import boa.compiler.ast.statements.*;
+import boa.compiler.ast.types.*;
+import boa.compiler.visitors.AbstractVisitor;
+import boa.debugger.Env.EmptyEnv;
+import boa.debugger.Env.ExtendEnv;
+import boa.debugger.Env.LookupException;
+import boa.debugger.value.*;
+import boa.debugger.value.aggregators.*;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -15,90 +21,10 @@ import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.util.ReflectionUtils;
 import org.apache.log4j.Logger;
 
-import boa.compiler.ast.Call;
-import boa.compiler.ast.Comparison;
-import boa.compiler.ast.Component;
-import boa.compiler.ast.Composite;
-import boa.compiler.ast.Conjunction;
-import boa.compiler.ast.Factor;
-import boa.compiler.ast.Identifier;
-import boa.compiler.ast.Index;
-import boa.compiler.ast.Node;
-import boa.compiler.ast.Pair;
-import boa.compiler.ast.Program;
-import boa.compiler.ast.Selector;
-import boa.compiler.ast.Start;
-import boa.compiler.ast.Term;
-import boa.compiler.ast.UnaryFactor;
-import boa.compiler.ast.expressions.Expression;
-import boa.compiler.ast.expressions.FunctionExpression;
-import boa.compiler.ast.expressions.ParenExpression;
-import boa.compiler.ast.expressions.SimpleExpr;
-import boa.compiler.ast.expressions.VisitorExpression;
-import boa.compiler.ast.literals.CharLiteral;
-import boa.compiler.ast.literals.FloatLiteral;
-import boa.compiler.ast.literals.IntegerLiteral;
-import boa.compiler.ast.literals.StringLiteral;
-import boa.compiler.ast.literals.TimeLiteral;
-import boa.compiler.ast.statements.AssignmentStatement;
-import boa.compiler.ast.statements.Block;
-import boa.compiler.ast.statements.BreakStatement;
-import boa.compiler.ast.statements.ContinueStatement;
-import boa.compiler.ast.statements.DoStatement;
-import boa.compiler.ast.statements.EmitStatement;
-import boa.compiler.ast.statements.ExistsStatement;
-import boa.compiler.ast.statements.ExprStatement;
-import boa.compiler.ast.statements.ForStatement;
-import boa.compiler.ast.statements.ForeachStatement;
-import boa.compiler.ast.statements.IfAllStatement;
-import boa.compiler.ast.statements.IfStatement;
-import boa.compiler.ast.statements.PostfixStatement;
-import boa.compiler.ast.statements.ReturnStatement;
-import boa.compiler.ast.statements.Statement;
-import boa.compiler.ast.statements.StopStatement;
-import boa.compiler.ast.statements.SwitchCase;
-import boa.compiler.ast.statements.SwitchStatement;
-import boa.compiler.ast.statements.TypeDecl;
-import boa.compiler.ast.statements.VarDeclStatement;
-import boa.compiler.ast.statements.VisitStatement;
-import boa.compiler.ast.statements.WhileStatement;
-import boa.compiler.ast.types.AbstractType;
-import boa.compiler.ast.types.ArrayType;
-import boa.compiler.ast.types.FunctionType;
-import boa.compiler.ast.types.MapType;
-import boa.compiler.ast.types.OutputType;
-import boa.compiler.ast.types.SetType;
-import boa.compiler.ast.types.StackType;
-import boa.compiler.ast.types.TupleType;
-import boa.compiler.ast.types.VisitorType;
-import boa.compiler.visitors.AbstractVisitor;
-import boa.debugger.Env.EmptyEnv;
-import boa.debugger.Env.ExtendEnv;
-import boa.debugger.Env.LookupException;
-import boa.debugger.value.AnyVal;
-import boa.debugger.value.BindingVal;
-import boa.debugger.value.BoolVal;
-import boa.debugger.value.BreakVal;
-import boa.debugger.value.CharVal;
-import boa.debugger.value.DynamicError;
-import boa.debugger.value.FunVal;
-import boa.debugger.value.ListVal;
-import boa.debugger.value.MapVal;
-import boa.debugger.value.NumVal;
-import boa.debugger.value.PairVal;
-import boa.debugger.value.ReturnVal;
-import boa.debugger.value.StackVal;
-import boa.debugger.value.StringVal;
-import boa.debugger.value.TupleVal;
-import boa.debugger.value.UnitVal;
-import boa.debugger.value.Value;
-import boa.debugger.value.VisitorVal;
-import boa.debugger.value.aggregators.AggregatorVal;
-import boa.debugger.value.aggregators.CollectionAggregatorVal;
-import boa.debugger.value.aggregators.IntSumAggregatorVal;
-import boa.debugger.value.aggregators.MaxAggregatorVal;
-import boa.debugger.value.aggregators.MinAggregatorVal;
-import boa.debugger.value.aggregators.TopAggregatorVal;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
 
 /**
  * @author nmtiwari
@@ -108,11 +34,11 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	public static ArrayList<String> pathToDataSet = new ArrayList<>();
 	public static boolean DEBUG = true;
 	public static Logger LOG = Logger.getLogger(Evaluator.class);
+	public static String visitorVar = "_$declaredVisitor$";
 	ByteArrayOutputStream op = new ByteArrayOutputStream();
 	PrintStream ps = new PrintStream(op);
 	PrintStream old = System.out;
 	ArrayList<String> aggregators = new ArrayList<>();
-	public static String visitorVar = "_$declaredVisitor$";
 
 	public Evaluator() {
 
@@ -799,7 +725,8 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final SetType n, Env<Value> env) {
-		throw new UnsupportedOperationException();
+		return new SetVal<>();
+//		throw new UnsupportedOperationException();
 	}
 
 	public Value visit(final TupleType n, Env<Value> env) {
