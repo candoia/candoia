@@ -1,10 +1,8 @@
 package boa.debugger.value;
 
 import boa.types.BoaType;
-import boa.types.Diff.ChangedFile;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * @author nmtiwari
@@ -17,8 +15,8 @@ public class ListVal<T> extends BoaType implements Value {
 		values = new ArrayList<>();
 	}
 
-	public ListVal(T[] list) {
-		values = new ArrayList<T>(Arrays.asList(list));
+	public ListVal(ArrayList<T> list) {
+		values = new ArrayList<T>(list);
 	}
 
 	public long size() {

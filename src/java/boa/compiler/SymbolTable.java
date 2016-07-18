@@ -16,21 +16,19 @@
  */
 package boa.compiler;
 
+import boa.aggregators.AggregatorSpec;
+import boa.compiler.ast.Operand;
+import boa.functions.FunctionSpec;
+import boa.types.*;
+import boa.types.proto.*;
+import boa.types.proto.enums.*;
+import org.scannotation.AnnotationDB;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
-
-import org.scannotation.AnnotationDB;
-
-import boa.aggregators.AggregatorSpec;
-import boa.functions.FunctionSpec;
-import boa.types.*;
-import boa.types.proto.*;
-import boa.types.proto.enums.*;
-
-import boa.compiler.ast.Operand;
 
 /**
  * @author anthonyu
@@ -38,20 +36,11 @@ import boa.compiler.ast.Operand;
  * @author rramu
  */
 public class SymbolTable {
-	private static HashMap<String, Class<?>> aggregators;
 	private static final Map<Class<?>, BoaType> protomap;
-	private static Map<String, BoaType> idmap;
 	private static final Map<String, BoaType> globals;
+	private static HashMap<String, Class<?>> aggregators;
+	private static Map<String, BoaType> idmap;
 	private static FunctionTrie globalFunctions;
-
-	private FunctionTrie functions;
-	private Map<String, BoaType> locals;
-
-	private String id;
-	private Operand operand;
-	private Stack<BoaType> operandType = new Stack<BoaType>();
-	private boolean needsBoxing;
-	private boolean isBeforeVisitor = false;
 
 	static {
 		aggregators = new HashMap<String, Class<?>>();
@@ -167,6 +156,7 @@ public class SymbolTable {
 		globalFunctions.addFunction("add", new BoaFunction(new BoaAny(), new BoaType[] { new BoaSet(new BoaTypeVar("V")), new BoaTypeVar("V") }, "${0}.add(${1})"));
 		globalFunctions.addFunction("remove", new BoaFunction(new BoaAny(), new BoaType[] { new BoaSet(new BoaTypeVar("V")), new BoaTypeVar("V") }, "${0}.remove(${1})"));
 		globalFunctions.addFunction("clear", new BoaFunction(new BoaAny(), new BoaType[] { new BoaSet(new BoaTypeVar("V")) }, "${0}.clear()"));
+		globalFunctions.addFunction("getAsList", new BoaFunction(new BoaArray(new BoaTypeVar("K")), new BoaType[] { new BoaSet(new BoaScalar()), new BoaScalar() }, "${0}.contains(${1})"));
 
 		// casts from enums to string
 		globalFunctions.addFunction("string", new BoaFunction(new BoaString(), new BoaType[] { new BoaProtoMap() }, "${0}.name()"));
@@ -325,6 +315,14 @@ public class SymbolTable {
 		globalFunctions.addFunction("min", new BoaFunction(new BoaString(), new BoaScalar[] { new BoaString(), new BoaString() }, "(${0}.compareTo(${1}) < 0 ? ${0} : ${1})"));
 	}
 
+	private FunctionTrie functions;
+	private Map<String, BoaType> locals;
+	private String id;
+	private Operand operand;
+	private Stack<BoaType> operandType = new Stack<BoaType>();
+	private boolean needsBoxing;
+	private boolean isBeforeVisitor = false;
+
 	public SymbolTable() {
 		// variables with a local scope
 		this.locals = new HashMap<String, BoaType>();
@@ -333,58 +331,6 @@ public class SymbolTable {
 
 	public static void initialize(final List<URL> libs) throws IOException {
 		importLibs(libs);
-	}
-
-	public SymbolTable cloneNonLocals() throws IOException {
-		SymbolTable st = new SymbolTable();
-
-		st.functions = this.functions;
-		st.locals = new HashMap<String, BoaType>(this.locals);
-		st.isBeforeVisitor = this.isBeforeVisitor;
-
-		return st;
-	}
-
-	public void set(final String id, final BoaType type) {
-		this.set(id, type, false);
-	}
-
-	public void set(final String id, final BoaType type, final boolean global) {
-		if (idmap.containsKey(id))
-			throw new RuntimeException(id + " already declared as type " + idmap.get(id));
-
-		if (type instanceof BoaFunction)
-			this.setFunction(id, (BoaFunction) type);
-
-		if (global)
-			globals.put(id, type);
-		else
-			this.locals.put(id, type);
-	}
-
-	public boolean hasGlobal(final String id) {
-		return globals.containsKey(id);
-	}
-
-	public boolean hasLocal(final String id) {
-		return this.locals.containsKey(id);
-	}
-
-	public BoaType get(final String id) {
-		if (idmap.containsKey(id))
-			return idmap.get(id);
-
-		if (globals.containsKey(id))
-			return globals.get(id);
-
-		if (this.locals.containsKey(id))
-			return this.locals.get(id);
-
-		throw new RuntimeException("no such identifier " + id);
-	}
-
-	public boolean hasType(final String id) {
-		return idmap.containsKey(id);
 	}
 
 	public static BoaType getType(final String id) {
@@ -399,10 +345,6 @@ public class SymbolTable {
 					getType(id.substring(id.indexOf("[") + 1, id.indexOf("]")).trim()));
 
 		throw new RuntimeException("no such type " + id);
-	}
-
-	public void setType(final String id, final BoaType boaType) {
-		idmap.put(id, boaType);
 	}
 
 	private static void importAggregator(final Class<?> clazz) {
@@ -427,27 +369,6 @@ public class SymbolTable {
 		} catch (final ClassNotFoundException e) {
 			throw new RuntimeException("no such class " + c, e);
 		}
-	}
-
-	public Class<?> getAggregator(final String name, final BoaScalar type) {
-		if (aggregators.containsKey(name + ":" + type))
-			return aggregators.get(name + ":" + type);
-		else if (aggregators.containsKey(name))
-			return aggregators.get(name);
-		else
-			throw new RuntimeException("no such aggregator " + name + " of " + type);
-	}
-
-	public List<Class<?>> getAggregators(final String name, final BoaType type) {
-		final List<Class<?>> aggregators = new ArrayList<Class<?>>();
-
-		if (type instanceof BoaTuple)
-			for (final BoaType subType : ((BoaTuple) type).getTypes())
-				aggregators.add(this.getAggregator(name, (BoaScalar) subType));
-		else
-			aggregators.add(this.getAggregator(name, (BoaScalar) type));
-
-		return aggregators;
 	}
 
 	private static void importFunction(final Method m) {
@@ -545,15 +466,92 @@ public class SymbolTable {
 
 			for (final URL url : urls)
 				db.scanArchives(url);
-	
+
 			final Map<String, Set<String>> annotationIndex = db.getAnnotationIndex();
-	
+
 			for (final String s : annotationIndex.get(AggregatorSpec.class.getCanonicalName()))
 				importAggregator(s);
-	
+
 			for (final String s : annotationIndex.get(FunctionSpec.class.getCanonicalName()))
 				importFunctions(s);
 		}
+	}
+
+	public SymbolTable cloneNonLocals() throws IOException {
+		SymbolTable st = new SymbolTable();
+
+		st.functions = this.functions;
+		st.locals = new HashMap<String, BoaType>(this.locals);
+		st.isBeforeVisitor = this.isBeforeVisitor;
+
+		return st;
+	}
+
+	public void set(final String id, final BoaType type) {
+		this.set(id, type, false);
+	}
+
+	public void set(final String id, final BoaType type, final boolean global) {
+		if (idmap.containsKey(id))
+			throw new RuntimeException(id + " already declared as type " + idmap.get(id));
+
+		if (type instanceof BoaFunction)
+			this.setFunction(id, (BoaFunction) type);
+
+		if (global)
+			globals.put(id, type);
+		else
+			this.locals.put(id, type);
+	}
+
+	public boolean hasGlobal(final String id) {
+		return globals.containsKey(id);
+	}
+
+	public boolean hasLocal(final String id) {
+		return this.locals.containsKey(id);
+	}
+
+	public BoaType get(final String id) {
+		if (idmap.containsKey(id))
+			return idmap.get(id);
+
+		if (globals.containsKey(id))
+			return globals.get(id);
+
+		if (this.locals.containsKey(id))
+			return this.locals.get(id);
+
+		throw new RuntimeException("no such identifier " + id);
+	}
+
+	public boolean hasType(final String id) {
+		return idmap.containsKey(id);
+	}
+
+	public void setType(final String id, final BoaType boaType) {
+		idmap.put(id, boaType);
+	}
+
+	public Class<?> getAggregator(final String name, final BoaScalar type) {
+		if (aggregators.containsKey(name + ":" + type))
+			return aggregators.get(name + ":" + type);
+		else if (aggregators.containsKey(name))
+			return aggregators.get(name);
+		else
+			throw new RuntimeException("no such aggregator " + name + " of " + type);
+	}
+
+	public List<Class<?>> getAggregators(final String name, final BoaType type) {
+		final List<Class<?>> aggregators = new ArrayList<Class<?>>();
+
+		if (type instanceof BoaTuple)
+			for (final BoaType subType : ((BoaTuple) type).getTypes())
+				aggregators.add(this.getAggregator(name, (BoaScalar) subType));
+		else
+			aggregators.add(this.getAggregator(name, (BoaScalar) type));
+
+		return aggregators;
 	}
 
 	public BoaFunction getFunction(final String id) {
@@ -599,48 +597,48 @@ public class SymbolTable {
 		return this.getFunction(to.toString(), new BoaType[] { from });
 	}
 
-	public void setId(final String id) {
-		this.id = id;
-	}
-
 	public String getId() {
 		return this.id;
 	}
 
-	public void setOperand(final Operand operand) {
-		this.operand = operand;
+	public void setId(final String id) {
+		this.id = id;
 	}
 
 	public Operand getOperand() {
 		return this.operand;
 	}
 
-	public void setOperandType(final BoaType operandType) {
-		this.operandType.push(operandType);
+	public void setOperand(final Operand operand) {
+		this.operand = operand;
 	}
 
 	public BoaType getOperandType() {
 		return this.operandType.pop();
 	}
 
-	public boolean hasOperandType() {
-		return !this.operandType.empty();
+	public void setOperandType(final BoaType operandType) {
+		this.operandType.push(operandType);
 	}
 
-	public void setNeedsBoxing(final boolean needsBoxing) {
-		this.needsBoxing = needsBoxing;
+	public boolean hasOperandType() {
+		return !this.operandType.empty();
 	}
 
 	public boolean getNeedsBoxing() {
 		return this.needsBoxing;
 	}
 
-	public void setIsBeforeVisitor(final boolean isBeforeVisitor) {
-		this.isBeforeVisitor = isBeforeVisitor;
+	public void setNeedsBoxing(final boolean needsBoxing) {
+		this.needsBoxing = needsBoxing;
 	}
 
 	public boolean getIsBeforeVisitor() {
 		return this.isBeforeVisitor;
+	}
+
+	public void setIsBeforeVisitor(final boolean isBeforeVisitor) {
+		this.isBeforeVisitor = isBeforeVisitor;
 	}
 
 	@Override
