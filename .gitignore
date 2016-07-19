@@ -1,8 +1,2 @@
 build/
 dist/
-.class
-.iml
-.boa
-.idea
-.gitignore
-

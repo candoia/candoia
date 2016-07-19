@@ -291,7 +291,7 @@
 			<zipfileset excludes="META-INF/" src="lib/datagen/svnkit-1.7.6.jar" />
 			<zipfileset excludes="META-INF/" src="lib/datagen/groundhog-0.1.0-jar-with-dependencies.jar" />
 			<zipfileset excludes="META-INF/" src="lib/datagen/json-lib-2.4-jdk15.jar" />
-			<zipfileset excludes="META-INF/" src="lib/datagen/slf4j-site-1.7.21.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/slf4j-api-1.4.3.jar" />
 			<zipfileset excludes="META-INF/" src="lib/datagen/ezmorph-1.0.6.jar" />
 			<zipfileset excludes="META-INF/" src="lib/datagen/zookeeper-3.4.3.jar" />
 			<zipfileset excludes="META-INF/" src="lib/datagen/guice-4.1.0.jar" />
@@ -327,8 +327,7 @@
 			<zipfileset excludes="META-INF/" src="lib/datagen/mrunit-0.9.0-incubating-hadoop1.jar" />
 			<zipfileset excludes="META-INF/" src="lib/datagen/xercesImpl.jar" />
 			<zipfileset excludes="META-INF/" src="lib/datagen/xml-apis.jar" />
-			<zipfileset excludes="META-INF/" src="lib/datagen/json-20160212.jar" />
-			
+
 		</jar>
 	</target>
 
