@@ -365,8 +365,8 @@ public class FunctionCall {
 			return InterpreterBoaFunctionMapping.callCompilerVisit(operation, env);
 		case yearof:
 			return InterpreterBoaFunctionMapping.callCompilerYearOf(operation, env);
-        case getAsList:
-			return InterpreterBoaFunctionMapping.callCompileGetAsList(operation, env);
+        case getAsArray:
+			return InterpreterBoaFunctionMapping.callCompileGetAsArray(operation, env);
 		default:
 			throw new UnsupportedOperationException();
 		}
@@ -394,7 +394,7 @@ public class FunctionCall {
 	}
 
 protected enum functionList {
-		abs, acos, acosh, add, asin, asinh, atan, atan2, atanh, ceil, clear, cos, cosh, dayofyear, strcontains, now, exp, floor, sin, sinh, tan, formattime, tanh, def, format, getast, get_annotation, lookup, getcomments, get_metric_ca, get_metric_cbc, get_metric_dit, getLOC, get_metric_lcoo, get_metric_noa, get_metric_noc, get_metric_noo, get_metric_npm, get_metric_rfc, getsnapshot, has_annotation, hasfiletype, keys, contains, haskey, has_modifier, has_modifier_final, has_modifier_namespace, has_modifier_private, has_modifier_protected, has_modifier_public, has_modifier_static, has_modifier_synchronized, has_visibility, isfinte, isinfinte, isnormal, isnan, isfixingrevision, iskind, isliteral, len, log, log10, lowercase, max, min, match, matchposns, matchstrs, nrand, pop, pow, push, rand, remove, round, substring, split, splitall, splitn, strfind, string, strreplace, sqrt, trim, trunc, uppercase, visit, yearof, getAsList
+		abs, acos, acosh, add, asin, asinh, atan, atan2, atanh, ceil, clear, cos, cosh, dayofyear, strcontains, now, exp, floor, sin, sinh, tan, formattime, tanh, def, format, getast, get_annotation, lookup, getcomments, get_metric_ca, get_metric_cbc, get_metric_dit, getLOC, get_metric_lcoo, get_metric_noa, get_metric_noc, get_metric_noo, get_metric_npm, get_metric_rfc, getsnapshot, has_annotation, hasfiletype, keys, contains, haskey, has_modifier, has_modifier_final, has_modifier_namespace, has_modifier_private, has_modifier_protected, has_modifier_public, has_modifier_static, has_modifier_synchronized, has_visibility, isfinte, isinfinte, isnormal, isnan, isfixingrevision, iskind, isliteral, len, log, log10, lowercase, max, min, match, matchposns, matchstrs, nrand, pop, pow, push, rand, remove, round, substring, split, splitall, splitn, strfind, string, strreplace, sqrt, trim, trunc, uppercase, visit, yearof, getAsArray
 	}
 
 protected enum InbuiltEnumList {

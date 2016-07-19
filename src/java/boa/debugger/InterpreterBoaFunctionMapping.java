@@ -976,7 +976,7 @@ public class InterpreterBoaFunctionMapping {
 		return new StringVal(result);
 	}
 
-	public static Value callCompileGetAsList(ArrayList<Value> operands, Env<Value> env) {
+	public static Value callCompileGetAsArray(ArrayList<Value> operands, Env<Value> env) {
 		Value fst = operands.get(0);
 		Value snd = operands.get(1);
 		if (fst instanceof SetVal) {

@@ -156,8 +156,7 @@ public class SymbolTable {
 		globalFunctions.addFunction("add", new BoaFunction(new BoaAny(), new BoaType[] { new BoaSet(new BoaTypeVar("V")), new BoaTypeVar("V") }, "${0}.add(${1})"));
 		globalFunctions.addFunction("remove", new BoaFunction(new BoaAny(), new BoaType[] { new BoaSet(new BoaTypeVar("V")), new BoaTypeVar("V") }, "${0}.remove(${1})"));
 		globalFunctions.addFunction("clear", new BoaFunction(new BoaAny(), new BoaType[] { new BoaSet(new BoaTypeVar("V")) }, "${0}.clear()"));
-		globalFunctions.addFunction("getAsList", new BoaFunction(new BoaArray(new BoaTypeVar("K")), new BoaType[] { new BoaSet(new BoaScalar()), new BoaScalar() }, "${0}.contains(${1})"));
-
+		globalFunctions.addFunction("getAsArray", new BoaFunction(new BoaArray(new BoaTypeVar("K")), new BoaType[] { new BoaSet(new BoaTypeVar("K")) }, "boa.functions.BoaIntrinsics.basic_array(${0}.toArray())"));
 		// casts from enums to string
 		globalFunctions.addFunction("string", new BoaFunction(new BoaString(), new BoaType[] { new BoaProtoMap() }, "${0}.name()"));
 
