@@ -67,5 +67,7 @@
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/rtlib/protobuf-java-2.5.0.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/rtlib/scannotation-1.0.3.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/rtlib/ST-4.0.8.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/async-http-client-1.6.3.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/json-20160212.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
