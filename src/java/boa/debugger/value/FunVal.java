@@ -1,10 +1,10 @@
 package boa.debugger.value;
 
-import java.util.ArrayList;
-
 import boa.compiler.ast.expressions.Expression;
 import boa.compiler.ast.statements.Block;
 import boa.compiler.ast.types.FunctionType;
+
+import java.util.ArrayList;
 
 public class FunVal implements Value {
 
@@ -95,7 +95,13 @@ public class FunVal implements Value {
 		int result = 31;
 		int c = _body.hashCode();
 		result = 37 * result + c;
-		c = returnType.hashCode();
+		if(this.returnType != null){
+			c = returnType.hashCode();
+		}else if(this.type != null){
+			c = this.type.hashCode();
+		}else{
+			c= 13;
+		}
 		result = 37 * result + c;
 		c = type.hashCode();
 		result = 37 * result + c;

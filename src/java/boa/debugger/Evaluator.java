@@ -725,7 +725,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final SetType n, Env<Value> env) {
-		return new SetVal<>();
+		return new SetVal<>(n.getValue().getType());
 //		throw new UnsupportedOperationException();
 	}
 

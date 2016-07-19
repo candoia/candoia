@@ -978,11 +978,24 @@ public class InterpreterBoaFunctionMapping {
 
 	public static Value callCompileGetAsArray(ArrayList<Value> operands, Env<Value> env) {
 		Value fst = operands.get(0);
-		Value snd = operands.get(1);
 		if (fst instanceof SetVal) {
 			HashSet set = (HashSet) ((SetVal) fst).getMap();
 			ArrayList<Object> list = new ArrayList<Object>(Arrays.asList(set.toArray()));
-			return new ListVal<Object>(list);
+			ListVal<Value> result = new ListVal<Value>();
+			switch(((SetVal)fst).getType().toString()){
+				case "string" : {
+					for(Object ob: list){
+						result.add(new StringVal(ob.toString()));
+					}
+					return result;
+				}
+				default : {
+					for(Object ob: list){
+						result.add(new AnyVal(ob));
+					}
+					return result;
+				}
+			}
 		}
 		throw new UnsupportedOperationException();
 	}
@@ -993,7 +1006,7 @@ public class InterpreterBoaFunctionMapping {
 		if (fst instanceof SetVal) {
 			HashSet set = (HashSet) ((SetVal) fst).getMap();
 			((SetVal) fst).add(snd.toString());
-			return UnitVal.v;
+			return fst;
 		}
 		throw new UnsupportedOperationException();
 	}

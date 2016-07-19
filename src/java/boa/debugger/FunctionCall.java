@@ -389,7 +389,6 @@ public class FunctionCall {
 		}
 		Block body = function.body();
 		Value result = body.accept(evaluator, temp);
-		System.out.println("Executor function returns:" + result.get());
 		return result;
 	}
 

@@ -1,5 +1,6 @@
 package boa.debugger.value;
 
+import boa.compiler.ast.types.AbstractType;
 import boa.types.BoaType;
 
 import java.util.HashSet;
@@ -14,9 +15,11 @@ import java.util.Set;
 public class SetVal<V, T> extends BoaType implements Value {
 	protected Set<V> set;
 	protected T prevIndex;
+	protected AbstractType typ;
 
-	public SetVal() {
+	public SetVal(AbstractType typ) {
 		set = new HashSet<V>();
+		this.typ = typ;
 	}
 
 	public SetVal(Set<V> set2) {
@@ -78,6 +81,8 @@ public class SetVal<V, T> extends BoaType implements Value {
 	public boolean isLessThanOrEqualTo(Value v) {
 		return false;
 	}
+
+	public AbstractType getType(){return this.typ;}
 
 	@Override
 	public String toString() {
