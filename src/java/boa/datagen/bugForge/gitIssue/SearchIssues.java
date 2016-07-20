@@ -1,19 +1,5 @@
 package boa.datagen.bugForge.gitIssue;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.inject.Guice;
-import com.google.inject.Inject;
-
 import boa.datagen.DefaultProperties;
 import boa.datagen.bugForge.gitIssue.UrlBuilder.GithubAPI;
 import boa.types.Issues.IssueRepository;
@@ -23,6 +9,15 @@ import br.ufpe.cin.groundhog.Project;
 import br.ufpe.cin.groundhog.http.HttpModule;
 import br.ufpe.cin.groundhog.http.Requests;
 import br.ufpe.cin.groundhog.search.SearchGitHub;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SearchIssues extends SearchGitHub{
 	private final Gson gson;
@@ -37,6 +32,26 @@ public class SearchIssues extends SearchGitHub{
 		this.builder = Guice.createInjector(new HttpModule()).getInstance(UrlBuilder.class);
 	}
 	
+	private static void writeToFile(String content, String path) {
+		FileWriter file = null;
+		try {
+			file = new FileWriter(path);
+			file.write(content);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} finally {
+			try {
+				file.flush();
+				file.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+	}
+
 	public List<Issue> getAllProjectIssues(Project project) {
 
 		int pageNumber = 1;
@@ -160,30 +175,10 @@ public class SearchIssues extends SearchGitHub{
 		return numIssue;
 	}
 
-	private static void writeToFile(String content, String path) {
-		FileWriter file = null;
-		try {
-			file = new FileWriter(path);
-			file.write(content);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} finally {
-			try {	
-				file.flush();
-				file.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-	}
-
 	public long buildIssuesFromJSON(Project project, IssueRepository.Builder issueRepoBuilder, String path) {
 		String projName = project.getName().substring(project.getName().lastIndexOf('/') + 1);
-		String issueJson = DefaultProperties.GH_TICKETS_PATH + "/" + projName + DefaultProperties.BUG_DIR_NAME;
-		File dir = new File(issueJson);
+//		String issueJson = DefaultProperties.GH_TICKETS_PATH + "/" + projName + DefaultProperties.BUG_DIR_NAME;
+		File dir = new File(path);
 		long numIssue = 0;
 		if (dir.isDirectory()) {
 			for (File file : dir.listFiles()) {

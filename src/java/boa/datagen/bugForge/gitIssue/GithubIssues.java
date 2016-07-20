@@ -1,26 +1,20 @@
 package boa.datagen.bugForge.gitIssue;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
+import boa.datagen.DefaultProperties;
+import boa.datagen.bugForge.BugForge;
+import boa.types.Issues.Issue.IssueKind;
+import boa.types.Issues.Issue.State;
+import boa.types.Issues.IssueRepository;
+import boa.types.Issues.IssueRepository.IssueRepositoryKind;
+import boa.types.Shared.Person;
+import boa.types.Toplevel.Project.Builder;
+import br.ufpe.cin.groundhog.*;
+import br.ufpe.cin.groundhog.search.SearchModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
-import boa.types.Issues.Issue.IssueKind;
-import boa.types.Issues.Issue.State;
-import boa.types.Issues.IssueRepository.IssueRepositoryKind;
-import boa.datagen.DefaultProperties;
-import boa.datagen.bugForge.BugForge;
-import boa.types.Issues.IssueRepository;
-import boa.types.Shared.Person;
-import boa.types.Toplevel.Project.Builder;
-import br.ufpe.cin.groundhog.Issue;
-import br.ufpe.cin.groundhog.Milestone;
-import br.ufpe.cin.groundhog.Project;
-import br.ufpe.cin.groundhog.PullRequest;
-import br.ufpe.cin.groundhog.User;
-import br.ufpe.cin.groundhog.search.SearchModule;
+import java.io.File;
+import java.util.List;
 
 public class GithubIssues implements BugForge {
 	static SearchIssues searchGitHub;
@@ -68,14 +62,14 @@ public class GithubIssues implements BugForge {
 		issueRepoBuilder.setUrl(url);
 		issueRepoBuilder.setKind(IssueRepositoryKind.GITISSUE);
 		String projName = project.getName().substring(project.getName().lastIndexOf('/') + 1);
-		String issuepath = DefaultProperties.GH_TICKETS_PATH + "/" + projName + "/issues";
+		String issuepath = DefaultProperties.GH_TICKETS_PATH + "/" + uname + "/" + projName + "/issues";
+		long count = 0;
 		if (new File(issuepath).isDirectory()) {
-			long count = searchGitHub.buildIssuesFromJSON(pr, issueRepoBuilder, issuepath);
-			System.out.println("Total Issues for " + projName +":" + count);
+			count = searchGitHub.buildIssuesFromJSON(pr, issueRepoBuilder, issuepath);
 		} else {
-			long count = searchGitHub.buildIssuesFromRemote(pr, issueRepoBuilder);
-			System.out.println("Total Issues for " + projName +":" + count);
+			count = searchGitHub.buildIssuesFromRemote(pr, issueRepoBuilder);
 		}
+		System.out.println("Total Issues for " + user + "/" + projName +":" + count);
 		project.addIssueRepositories(issueRepoBuilder.build());
 		return;
 	}
