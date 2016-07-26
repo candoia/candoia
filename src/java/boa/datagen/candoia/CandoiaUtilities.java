@@ -1,11 +1,5 @@
 package boa.datagen.candoia;
 
-import boa.datagen.scm.AbstractConnector;
-import boa.types.Code;
-import boa.types.Toplevel;
-import org.apache.commons.io.FileDeleteStrategy;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,6 +7,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.apache.commons.io.FileDeleteStrategy;
+import boa.datagen.scm.AbstractConnector;
+import boa.types.Code;
+import boa.types.Toplevel;
+import net.sf.json.JSONObject;
+import org.json.*;
 
 /**
  * Created by nmtiwari on 7/15/16.
@@ -60,8 +60,8 @@ public class CandoiaUtilities {
 		}
 	}
 
-	private static List<JSONObject> getExistingProjs(File cacheFile) throws IOException {
-		ArrayList<JSONObject> projs = new ArrayList<JSONObject>(); 
+	private static List<org.json.JSONObject> getExistingProjs(File cacheFile) throws IOException {
+		ArrayList<org.json.JSONObject> projs = new ArrayList<org.json.JSONObject>(); 
 		List<String> cached = Files.readAllLines(Paths.get(cacheFile.getAbsolutePath()));
 		for(String line: cached){
 			org.json.JSONObject json = new org.json.JSONObject(line);

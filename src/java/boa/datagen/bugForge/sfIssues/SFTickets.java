@@ -9,6 +9,7 @@ import com.google.inject.Injector;
 import boa.datagen.bugForge.BugForge;
 import boa.types.Issues.Issue;
 import boa.types.Issues.IssueRepository;
+import boa.types.Issues.IssueRepository.IssueRepositoryKind;
 import boa.types.Toplevel.Project.Builder;
 import br.ufpe.cin.groundhog.search.SearchModule;
 
@@ -61,6 +62,7 @@ public class SFTickets implements BugForge{
 		for (Issue issue : issues) {
 			issueRepoBuilder.addIssues(issue);
 		}
+		issueRepoBuilder.setKind(IssueRepositoryKind.SVNTICKETS);
 		project.addIssueRepositories(issueRepoBuilder);
 	}
 

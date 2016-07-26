@@ -55,7 +55,7 @@ public class GitConnector extends AbstractConnector {
 	public GitConnector(final String path) {
 		try {
 			this.path = path;
-			this.repository = new FileRepositoryBuilder().setGitDir(new File(path + "/.git")).build();
+			this.repository = new FileRepositoryBuilder().setGitDir(new File(path + "/.git")).setMustExist(true).build();
 			this.git = new Git(this.repository);
 			this.revwalk = new RevWalk(this.repository);
 		} catch (final IOException e) {
@@ -67,7 +67,7 @@ public class GitConnector extends AbstractConnector {
 	public boolean initialize(final String path){
 		try {
 			this.path = path;
-			this.repository = new FileRepositoryBuilder().setGitDir(new File(path + "/.git")).build();
+			this.repository = new FileRepositoryBuilder().setGitDir(new File(path + "/.git")).setMustExist(true).build();
 			this.git = new Git(this.repository);
 			this.revwalk = new RevWalk(this.repository);
 		} catch (final IOException e) {

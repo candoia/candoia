@@ -388,7 +388,12 @@ public abstract class AbstractCommit {
 			JavaCore.setComplianceOptions(compliance, options);
 			parser.setCompilerOptions(options);
 
-			final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+			CompilationUnit cu = null;
+			try{
+				cu  = (CompilationUnit) parser.createAST(null);
+			}catch(Exception e){
+				return false;
+			}
 
 			final JavaErrorCheckVisitor errorCheck = new JavaErrorCheckVisitor();
 			cu.accept(errorCheck);

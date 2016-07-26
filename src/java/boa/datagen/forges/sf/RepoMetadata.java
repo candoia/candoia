@@ -359,7 +359,9 @@ public class RepoMetadata {
 		Project.Builder project = Project.newBuilder();
 		project.setKind(ForgeKind.SOURCEFORGE);
 		if (jsonProject.has("name")) {
-			project.setName(jsonProject.getString("name"));
+			String[] brokenUrl = jsonProject.get("url").toString().split("/");
+//			project.setName(jsonProject.getString("name"));
+			project.setName("projects/" + brokenUrl[brokenUrl.length-1]);
 		}
 		if (jsonProject.has("url")) {
 			String name = jsonProject.getString("url");
@@ -580,6 +582,7 @@ public class RepoMetadata {
 					IssueRepository.Builder ir = IssueRepository.newBuilder();
 					issueRepository = "https://sourceforge.net" + bug.get("url");
 					ir.setUrl(issueRepository);
+					ir.setKind(IssueRepositoryKind.SVNTICKETS);
 					project.addIssueRepositories(ir.build());
 					break;
 				}

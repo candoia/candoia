@@ -8,6 +8,7 @@ import boa.datagen.forges.github.ForgeGithub;
 import boa.datagen.forges.sf.ForgeSF;
 import boa.datagen.scm.AbstractConnector;
 import boa.datagen.scm.GitConnector;
+import boa.datagen.scm.SVNConnector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +36,7 @@ public class CandoiaConfiguration {
 	static {
 		vcs = new ArrayList<AbstractConnector>();
 		vcs.add(new GitConnector());
+		vcs.add(new SVNConnector());
 	}
 	
 	public static String getGithubAccessToken(){
