@@ -74,8 +74,14 @@ public class SVNConnector extends AbstractConnector {
 
     @Override
     public boolean initialize(String path) {
+    	File f = new File(path);
+    	if(f.isDirectory()){
+    		if(f.listFiles().length == 1){
+    			f = f.listFiles()[0];
+    		}
+    	}
         try {
-            this.url = SVNURL.fromFile(new File(path));
+            this.url = SVNURL.fromFile(f);
             this.authManager = SVNWCUtil.createDefaultAuthenticationManager();
             this.repository = SVNRepositoryFactory.create(this.url);
             this.repository.setAuthenticationManager(this.authManager);

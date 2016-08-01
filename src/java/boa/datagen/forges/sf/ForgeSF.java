@@ -40,7 +40,7 @@ public class ForgeSF extends AbstractForge {
 				if (!f.delete())
 					FileDeleteStrategy.FORCE.delete(f);
 				URL = "svn://svn.code.sf.net/p/" + details[details.length - 1] + "/svn";
-				SVNRepositoryCloner.clone(URL, repoPath);
+				SVNRepositoryCloner.clone(this.createURL(URL), repoPath);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -213,5 +213,12 @@ public class ForgeSF extends AbstractForge {
 	public String getUsrName(String URL) {
 		String[] details = URL.split("/");
 		return details[details.length - 2];
+	}
+	private String createURL(String raw) {
+		String processed = "svn.code.sf.net::";
+		String[] details = raw.split("/");
+		int length = details.length;
+		processed = processed + details[length - 3] + "/" + details[length - 2] + "/" + details[length - 1];
+		return processed;
 	}
 }
