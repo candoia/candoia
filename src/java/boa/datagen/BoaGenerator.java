@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -30,8 +31,10 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
+import org.mockito.internal.util.ArrayUtils;
 
 import boa.datagen.candoia.CandoiaConfiguration;
+import boa.datagen.candoia.CandoiaUtilities;
 import boa.datagen.forges.AbstractForge;
 import boa.datagen.util.FileIO;
 import boa.datagen.util.Properties;
@@ -75,7 +78,7 @@ public class BoaGenerator {
 				} else if (cl.hasOption("repo")) {
 					local = cl.getOptionValue("repo").split(",");
 				}
-				generator.buildProject(DefaultProperties.GH_JSON_PATH, local);
+				generator.buildProject(local);
 			}
 		} else {
 			System.err.println(
@@ -85,11 +88,30 @@ public class BoaGenerator {
 	}
 	
 	public void generate(String[] clone, String[] local){
-		getProjectFromRemote(clone);
-		buildProject(DefaultProperties.GH_JSON_PATH, local);
+		ArrayList<String> actualCloning = CandoiaUtilities.getToBeCloned(DefaultProperties.GH_JSON_CACHE_PATH + "/" + DefaultProperties.CLONE_DIR_NAME, new ArrayList<String>(Arrays.asList(clone)));
+		getProjectFromRemote(actualCloning.toArray(new String[0]));
+		ArrayList<String> nonStandardForge = getNonForgeClonedPaths(clone);
+		String[] nonStandardForgeAsArray = nonStandardForge.toArray(new String[0]);
+		String[] localAndNonStandardForge = (String[]) org.apache.commons.lang.ArrayUtils.addAll(local, nonStandardForgeAsArray);
+		buildProject(localAndNonStandardForge);
 	}
 	
-
+    private ArrayList<String> getNonForgeClonedPaths(String[] clone){
+    	ArrayList<String> paths = new ArrayList<>();
+    	for(String str: clone){
+    		if(! str.contains("github.com") && ! str.contains("sourceforge.net")){
+    			final AbstractForge forge = CandoiaConfiguration.getForge(str);
+    			String repoName = forge.getDirName(str);
+				String userName = forge.getUsrName(str);
+				String repo = userName + "/" + repoName;
+				repo = DefaultProperties.GH_GIT_PATH + "/" + repo;
+				paths.add(repo);
+    		}
+    	}
+    	return paths;
+    }
+	
+	
 	private static final void printHelp(Options options, String message) {
 		String header = "The most commonly used Boa options are:";
 		String footer = "\nPlease report issues at http://www.github.com/boalang/";
@@ -157,11 +179,11 @@ public class BoaGenerator {
 				public void run() {
 					String repoName = forge.getDirName(str);
 					String userName = forge.getUsrName(str);
-					String gitRepo = userName + "/" + repoName;
-					if(!new File(DefaultProperties.GH_JSON_PATH + "/" + gitRepo).exists())
-						forge.getJSON(str, DefaultProperties.GH_JSON_PATH + "/" + gitRepo);
-					if(! new File(DefaultProperties.GH_GIT_PATH + "/" + gitRepo).exists())
-						forge.cloneRepo(str, DefaultProperties.GH_GIT_PATH + "/" + gitRepo);
+					String repo = userName + "/" + repoName;
+					if(!new File(DefaultProperties.GH_JSON_PATH + "/" + repo).exists())
+						forge.getJSON(str, DefaultProperties.GH_JSON_PATH + "/" + repo);
+					if(! new File(DefaultProperties.GH_GIT_PATH + "/" + repo).exists())
+						forge.cloneRepo(str, DefaultProperties.GH_GIT_PATH + "/" + repo);
 				}
 			});
 		}
@@ -170,11 +192,12 @@ public class BoaGenerator {
 			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+			return false;
 		}
 		return true;
 	}
 
-	private void buildProject(String jsonPath, String[] localRepos) {
+	private void buildProject(String[] localRepos) {
 		HashMap<String, byte[]> repos = new HashMap<>();
 		File jsonFiles = new File(DefaultProperties.GH_JSON_PATH);
 		ArrayList<String> listOfForges = CandoiaConfiguration.getSupportedForges();

@@ -169,7 +169,8 @@ public class BoaCompiler {
                     CandoiaUtilities.cleanOlderDataset(DefaultProperties.GH_JSON_CACHE_PATH);
 				}
 				if(!prevDataExists){
-					generator.generate(actualCloning.toArray(new String[actualCloning.size()]), localRepos);
+//					generator.generate(actualCloning.toArray(new String[0]), localRepos);
+					generator.generate(cloneRepos, localRepos);
 				}
 				Evaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH);
 				Evaluator evaluator = new Evaluator();

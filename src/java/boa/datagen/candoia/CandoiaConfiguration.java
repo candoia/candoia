@@ -6,6 +6,7 @@ import boa.datagen.bugForge.sfIssues.SFTickets;
 import boa.datagen.forges.AbstractForge;
 import boa.datagen.forges.github.ForgeGithub;
 import boa.datagen.forges.sf.ForgeSF;
+import boa.datagen.forges.sf.SVNForge;
 import boa.datagen.scm.AbstractConnector;
 import boa.datagen.scm.GitConnector;
 import boa.datagen.scm.SVNConnector;
@@ -31,6 +32,7 @@ public class CandoiaConfiguration {
 		forges = new HashMap<String, AbstractForge>();
 		forges.put("github.com", new ForgeGithub());
 		forges.put("sourceforge.net", new ForgeSF());
+		forges.put("://svn", new SVNForge());
 	}
 
 	static {

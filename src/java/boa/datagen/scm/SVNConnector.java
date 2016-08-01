@@ -75,8 +75,8 @@ public class SVNConnector extends AbstractConnector {
     @Override
     public boolean initialize(String path) {
         try {
-            this.url = SVNURL.parseURIEncoded("file:///"+ path);
-            this.authManager = SVNWCUtil.createDefaultAuthenticationManager("", "");
+            this.url = SVNURL.fromFile(new File(path));
+            this.authManager = SVNWCUtil.createDefaultAuthenticationManager();
             this.repository = SVNRepositoryFactory.create(this.url);
             this.repository.setAuthenticationManager(this.authManager);
             this.latestRevision = this.repository.getLatestRevision();

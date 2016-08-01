@@ -17,8 +17,7 @@ public class GITRepositoryCloner {
 
 	private static String REMOTE_URL = "";
 
-	public static boolean clone(String URL, String path)
-			throws IOException, InvalidRemoteException, TransportException, GitAPIException {
+	public static boolean clone(String URL, String path) {
 		// prepare a new folder for the cloned repository
 		String localpaths = path;
 		String url = URL;
@@ -27,14 +26,15 @@ public class GITRepositoryCloner {
 		if (!localPath.exists())
 			localPath.mkdir();
 		// then clone
-		try {
-			Git result = Git.cloneRepository().setURI(REMOTE_URL).setDirectory(localPath).call();
-			result.getRepository().close();
+			Git result;
+			try {
+				result = Git.cloneRepository().setURI(REMOTE_URL).setDirectory(localPath).call();
+				result.getRepository().close();
+			} catch (GitAPIException | org.eclipse.jgit.api.errors.JGitInternalException e) {
+				return false;
+			}
+			
 			return true;
-		} catch (Exception e) {
-//			e.printStackTrace();
-			return false;
-		}
 	}
 
 	public static void main(String[] args)
