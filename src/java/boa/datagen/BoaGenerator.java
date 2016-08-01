@@ -72,7 +72,8 @@ public class BoaGenerator {
 			if (cl.hasOption("help")) {
 				return;
 			} else { // remote repository analysis
-				String[] local = new String[0];;
+				String[] local = new String[0];
+				;
 				if (cl.hasOption("clone")) {
 					generator.getProjectFromRemote(cl.getOptionValue("clone").split(","));
 				} else if (cl.hasOption("repo")) {
@@ -86,32 +87,34 @@ public class BoaGenerator {
 			new HelpFormatter().printHelp("BoaCompiler", options);
 		}
 	}
-	
-	public void generate(String[] clone, String[] local){
-		ArrayList<String> actualCloning = CandoiaUtilities.getToBeCloned(DefaultProperties.GH_JSON_CACHE_PATH + "/" + DefaultProperties.CLONE_DIR_NAME, new ArrayList<String>(Arrays.asList(clone)));
+
+	public void generate(String[] clone, String[] local) {
+		ArrayList<String> actualCloning = CandoiaUtilities.getToBeCloned(
+				DefaultProperties.GH_JSON_CACHE_PATH + "/" + DefaultProperties.CLONE_DIR_NAME,
+				new ArrayList<String>(Arrays.asList(clone)));
 		getProjectFromRemote(actualCloning.toArray(new String[0]));
 		ArrayList<String> nonStandardForge = getNonForgeClonedPaths(clone);
 		String[] nonStandardForgeAsArray = nonStandardForge.toArray(new String[0]);
-		String[] localAndNonStandardForge = (String[]) org.apache.commons.lang.ArrayUtils.addAll(local, nonStandardForgeAsArray);
+		String[] localAndNonStandardForge = (String[]) org.apache.commons.lang.ArrayUtils.addAll(local,
+				nonStandardForgeAsArray);
 		buildProject(localAndNonStandardForge);
 	}
-	
-    private ArrayList<String> getNonForgeClonedPaths(String[] clone){
-    	ArrayList<String> paths = new ArrayList<>();
-    	for(String str: clone){
-    		if(! str.contains("github.com") && ! str.contains("sourceforge.net")){
-    			final AbstractForge forge = CandoiaConfiguration.getForge(str);
-    			String repoName = forge.getDirName(str);
+
+	private ArrayList<String> getNonForgeClonedPaths(String[] clone) {
+		ArrayList<String> paths = new ArrayList<>();
+		for (String str : clone) {
+			if (!str.contains("github.com") && !str.contains("sourceforge.net")) {
+				final AbstractForge forge = CandoiaConfiguration.getForge(str);
+				String repoName = forge.getDirName(str);
 				String userName = forge.getUsrName(str);
 				String repo = userName + "/" + repoName;
 				repo = DefaultProperties.GH_GIT_PATH + "/" + repo;
 				paths.add(repo);
-    		}
-    	}
-    	return paths;
-    }
-	
-	
+			}
+		}
+		return paths;
+	}
+
 	private static final void printHelp(Options options, String message) {
 		String header = "The most commonly used Boa options are:";
 		String footer = "\nPlease report issues at http://www.github.com/boalang/";
@@ -180,9 +183,9 @@ public class BoaGenerator {
 					String repoName = forge.getDirName(str);
 					String userName = forge.getUsrName(str);
 					String repo = userName + "/" + repoName;
-					if(!new File(DefaultProperties.GH_JSON_PATH + "/" + repo).exists())
+					if (!new File(DefaultProperties.GH_JSON_PATH + "/" + repo).exists())
 						forge.getJSON(str, DefaultProperties.GH_JSON_PATH + "/" + repo);
-					if(! new File(DefaultProperties.GH_GIT_PATH + "/" + repo).exists())
+					if (!new File(DefaultProperties.GH_GIT_PATH + "/" + repo).exists())
 						forge.cloneRepo(str, DefaultProperties.GH_GIT_PATH + "/" + repo);
 				}
 			});
@@ -203,16 +206,16 @@ public class BoaGenerator {
 		ArrayList<String> listOfForges = CandoiaConfiguration.getSupportedForges();
 
 		this.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(maxThread);
-		if(jsonFiles.isDirectory()){
+		if (jsonFiles.isDirectory()) {
 			for (File allRepos : jsonFiles.listFiles()) {
 				for (File projectJson : allRepos.listFiles()) {
-					this.executor.execute(new ProjectbuildTask(repos, projectJson, listOfForges));					
+					this.executor.execute(new ProjectbuildTask(repos, projectJson, listOfForges));
 				}
-			}	
+			}
 		}
-		for(String  local: localRepos){
+		for (String local : localRepos) {
 			Project pr = AbstractForge.buildLocalProject(local);
-			synchronized(repos){
+			synchronized (repos) {
 				repos.put(pr.getId(), pr.toByteArray());
 			}
 		}

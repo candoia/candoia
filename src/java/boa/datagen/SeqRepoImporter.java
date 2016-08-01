@@ -456,16 +456,17 @@ public class SeqRepoImporter {
 				if (debug)
 					System.out.println("Processing " + id + " / " + cacheOfProjects.size() + " " + cachedProject.getId()
 							+ " " + dirName);
-//				String dirName = name.substring(name.lastIndexOf('/') + 1, name.length());
+				// String dirName = name.substring(name.lastIndexOf('/') + 1,
+				// name.length());
 				String repoPath = DefaultProperties.GH_GIT_PATH + "/" + dirName;
 				Project project = null;
-				if(new File(repoPath).isDirectory()){
+				if (new File(repoPath).isDirectory()) {
 					project = storeRepositoryFrom(cachedProject, 0, new File(repoPath));
-				}else{
+				} else {
 					project = storeRepositoryFrom(cachedProject, 0, new File(cachedProject.getProjectUrl()));
 				}
 
-				if (project.getIssueRepositoriesCount() > 0){
+				if (project.getIssueRepositoriesCount() > 0) {
 					project = storeIsseuesFrom(project, project.getIssueRepositories(0).getUrl());
 				}
 

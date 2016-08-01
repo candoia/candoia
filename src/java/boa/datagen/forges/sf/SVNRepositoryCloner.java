@@ -34,13 +34,12 @@ public class SVNRepositoryCloner {
 	// }
 	// }
 
-
 	public static void clone(String URL, String repoPath) throws IOException {
 		File dest = new File(repoPath);
 		if (!dest.exists()) {
 			dest.mkdirs();
 		}
-		if(repoPath.endsWith("/svn") && URL.endsWith("/svn")){
+		if (repoPath.endsWith("/svn") && URL.endsWith("/svn")) {
 			repoPath = repoPath.substring(0, repoPath.lastIndexOf('/'));
 		}
 		String line = "rsync -av " + URL + " " + repoPath;

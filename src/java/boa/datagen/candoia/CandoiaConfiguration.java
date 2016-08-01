@@ -21,18 +21,18 @@ public class CandoiaConfiguration {
 	private final static ArrayList<AbstractConnector> vcs;
 	private final static String githubAccessToken = "3a46b401267a5efa9dab8b9371174f23a08d5181";
 	private final static String cacheFileName = ".candoiaCache.txt";
-	
+
 	static {
 		bugforges = new HashMap<String, BugForge>();
 		bugforges.put("github.com", new GithubIssues());
 		bugforges.put("sourceforge.net", new SFTickets());
 	}
-	
+
 	static {
 		forges = new HashMap<String, AbstractForge>();
 		forges.put("github.com", new ForgeGithub());
 		forges.put("sourceforge.net", new ForgeSF());
-		forges.put("://svn", new SVNForge());
+		forges.put("svn", new SVNForge());
 	}
 
 	static {
@@ -40,8 +40,8 @@ public class CandoiaConfiguration {
 		vcs.add(new GitConnector());
 		vcs.add(new SVNConnector());
 	}
-	
-	public static String getGithubAccessToken(){
+
+	public static String getGithubAccessToken() {
 		return githubAccessToken;
 	}
 
@@ -62,23 +62,23 @@ public class CandoiaConfiguration {
 		}
 		return null;
 	}
-	
+
 	public static ArrayList<AbstractConnector> getVCS() {
 		return vcs;
 	}
-	
-	public static ArrayList<String> getSupportedForges(){
-		ArrayList<String>listOfForge = new ArrayList<>();
-		for(Object obj: forges.keySet()){
+
+	public static ArrayList<String> getSupportedForges() {
+		ArrayList<String> listOfForge = new ArrayList<>();
+		for (Object obj : forges.keySet()) {
 			listOfForge.add(obj.toString());
 		}
 		return listOfForge;
 	}
-	
+
 	public static AbstractConnector getVCS(String path) {
 		ArrayList<AbstractConnector> supportedVCS = CandoiaConfiguration.getVCS();
 		for (AbstractConnector conn : supportedVCS) {
-			AbstractConnector copy= conn.getNewInstance();
+			AbstractConnector copy = conn.getNewInstance();
 			if (copy.initialize(path)) {
 				return copy;
 			}
@@ -88,10 +88,10 @@ public class CandoiaConfiguration {
 		return null;
 	}
 
-	public static boolean isProperVCSDir(String path){
+	public static boolean isProperVCSDir(String path) {
 		ArrayList<AbstractConnector> supportedVCS = CandoiaConfiguration.getVCS();
 		for (AbstractConnector conn : supportedVCS) {
-			AbstractConnector copy= conn.getNewInstance();
+			AbstractConnector copy = conn.getNewInstance();
 			if (copy.initialize(path)) {
 				return true;
 			}
@@ -100,7 +100,7 @@ public class CandoiaConfiguration {
 				"Given version control system is not supported by Candoia. Please consider extending Candoia platform.");
 		return false;
 	}
-	
+
 	public static String getCachefilename() {
 		return cacheFileName;
 	}

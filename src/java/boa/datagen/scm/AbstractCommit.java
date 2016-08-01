@@ -389,9 +389,9 @@ public abstract class AbstractCommit {
 			parser.setCompilerOptions(options);
 
 			CompilationUnit cu = null;
-			try{
-				cu  = (CompilationUnit) parser.createAST(null);
-			}catch(Exception e){
+			try {
+				cu = (CompilationUnit) parser.createAST(null);
+			} catch (Exception e) {
 				return false;
 			}
 

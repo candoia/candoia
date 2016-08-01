@@ -163,13 +163,17 @@ public class BoaCompiler {
 				BoaGenerator generator = new BoaGenerator();
 
 				boolean prevDataExists = CandoiaUtilities.prevDataExists(DefaultProperties.GH_JSON_CACHE_PATH);
-				actualCloning = CandoiaUtilities.getToBeCloned(DefaultProperties.GH_JSON_CACHE_PATH + "/" + DefaultProperties.CLONE_DIR_NAME, new ArrayList<String>(Arrays.asList(cloneRepos)));
-				if(prevDataExists && (actualCloning.size() > 0)){
-					// if dataset is older then delete the existing dataset and rebuild it
-                    CandoiaUtilities.cleanOlderDataset(DefaultProperties.GH_JSON_CACHE_PATH);
+				actualCloning = CandoiaUtilities.getToBeCloned(
+						DefaultProperties.GH_JSON_CACHE_PATH + "/" + DefaultProperties.CLONE_DIR_NAME,
+						new ArrayList<String>(Arrays.asList(cloneRepos)));
+				if (prevDataExists && (actualCloning.size() > 0)) {
+					// if dataset is older then delete the existing dataset and
+					// rebuild it
+					CandoiaUtilities.cleanOlderDataset(DefaultProperties.GH_JSON_CACHE_PATH);
 				}
-				if(!prevDataExists){
-//					generator.generate(actualCloning.toArray(new String[0]), localRepos);
+				if (!prevDataExists) {
+					// generator.generate(actualCloning.toArray(new String[0]),
+					// localRepos);
 					generator.generate(cloneRepos, localRepos);
 				}
 				Evaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH);
@@ -219,7 +223,7 @@ public class BoaCompiler {
 					delete(new File(directory.getAbsolutePath() + "/data"));
 					delete(new File(directory.getAbsolutePath() + "/index"));
 					delete(new File(directory.getAbsolutePath() + "/projects.seq"));
-					delete(new File(directory.getAbsolutePath() + "/" +CandoiaConfiguration.getCachefilename()));
+					delete(new File(directory.getAbsolutePath() + "/" + CandoiaConfiguration.getCachefilename()));
 					return needDatagen;
 				} catch (IOException e) {
 					e.printStackTrace();
