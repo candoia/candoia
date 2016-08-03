@@ -23,7 +23,7 @@ import boa.types.Issues.IssueComment.Builder;
 import boa.types.Issues.IssueRepository;
 import boa.types.Shared.Person;
 
-public class JiraIssues implements BugForge{
+public class JiraIssues implements BugForge {
 	static int ids = 0;
 
 	public final List<boa.types.Issues.Issue> importBugs(String url, String project) {
@@ -37,14 +37,16 @@ public class JiraIssues implements BugForge{
 			if (session.open()) {
 				DefaultSearchData searchData = new DefaultSearchData();
 				searchData.add("jql", "project = " + project);
-				// searchData.add("jql", "project = HADOOP COMMON");
-				// AND issuetype = Bug AND status in (Resolved, Closed) AND
-				// resolution = Fixed
+				// searchData.add("jql", "project = HADOOP COMMON AND issuetype
+				// = Bug AND status in (Resolved, Closed) AND resolution =
+				// Fixed");
 				Iterator i = session.searchBugs(searchData, null).iterator();
 
 				while (i.hasNext()) {
 					Issue issue = (Issue) i.next();
 					boa.types.Issues.Issue.Builder issueBuilder = boa.types.Issues.Issue.newBuilder();
+					System.out.println(issue.getId());
+					;
 					try {
 						issues.add(storeProperties(issueBuilder, issue));
 					} catch (Exception e) {
@@ -172,10 +174,6 @@ public class JiraIssues implements BugForge{
 		// setClosedAt same as updatedAt
 		if (issue.getUpdateTimestamp() != null)
 			issueBuilder.setClosedAt(issue.getUpdateTimestamp().getTime());
-		// pullrequest
-		// none for bugzilla
-		// milestone
-		// commments
 		Iterator commentsIter = issue.getComments().iterator();
 		while (commentsIter.hasNext()) {
 			DefaultComment comment = (DefaultComment) commentsIter.next();

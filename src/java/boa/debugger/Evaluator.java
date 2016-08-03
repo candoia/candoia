@@ -295,6 +295,9 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 		Value value = null;
 		for (Statement s : n.getStatements()) {
 			value = s.accept(this, env);
+			if(value instanceof ReturnVal){
+				return value;
+			}
 			if (s instanceof ReturnStatement || s instanceof ContinueStatement || s instanceof BreakStatement
 					|| s instanceof StopStatement) {
 				// return s.accept(this, env);
@@ -302,11 +305,9 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 			} else if (s instanceof VarDeclStatement) {
 				BindingVal val = (BindingVal) value;
 				env = new ExtendEnv<Value>(env, val.getID(), val.getInitializer());
-			} else if (value instanceof ReturnVal) {
-				return (Value) value.get();
-			}
+			} 
 		}
-		return UnitVal.v;
+		return value;
 	}
 
 	public Value visit(final BreakStatement n, Env<Value> env) {
@@ -375,7 +376,10 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 			for (BoolVal bool : range) {
 				lmtdScope = new ExtendEnv<Value>(env, var, new NumVal(++i));
 				if (bool.v()) {
-					n.getBody().accept(this, lmtdScope);
+					Value bodyVal = n.getBody().accept(this, lmtdScope);
+					if(bodyVal instanceof ReturnVal){
+						return bodyVal;
+					}
 				}
 			}
 			break;

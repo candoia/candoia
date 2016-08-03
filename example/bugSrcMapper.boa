@@ -1,0 +1,51 @@
+BugSrcMapper: output sum[string] of int;
+logs: output collection of string;
+bug: output sum of int;
+p: Project = input;
+
+isfixing := false;
+bugfix := false;
+count := 0;
+# map of file names to the last revision of that file
+files: map[string] of ChangedFile;
+issues: set of string;
+
+isBugFixing := function(logging: string, issueRecord: set of string): bool{
+    lst := getAsArray(issueRecord);
+    foreach(i: int; def(lst[i])){
+        if(strfind(lst[i], logging) > -1){
+            return true;
+        }
+    }
+    return false;
+};
+
+
+visit(p, visitor {
+    before node: Issue -> {
+          add(issues, node.number);
+        }
+});
+
+
+visit(p, visitor {
+	before node: Revision -> {
+        comment := node.log;
+        isfixing = isfixingrevision(comment);
+        if(isfixing){
+          bugfix= isBugFixing(comment, issues);
+        }
+    }
+	before node: ChangedFile -> {
+		# if this is a fixing revision and
+		# there was a previous version of the file
+       if(bugfix){
+         BugSrcMapper[node.name] << 1;
+       }
+	}
+
+  after node: Revision -> {
+    isfixing = false;
+    bugfix = false;
+  }
+});

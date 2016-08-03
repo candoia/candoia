@@ -79,6 +79,9 @@ public class IssueProtoTuple extends BoaProtoTuple {
 
 		names.put("title", counter++);
 		members.add(new BoaString());
+		
+		names.put("number", counter++);
+		members.add(new BoaString());
 	}
 
 	/**
