@@ -62,6 +62,9 @@ public class ChangedFileProtoTuple extends BoaProtoTuple {
 
 		names.put("previous_index", counter++);
 		members.add(new BoaProtoList(new BoaInt()));
+		
+		names.put("loc", counter++);
+		members.add(new BoaInt());
 	}
 
 	/**

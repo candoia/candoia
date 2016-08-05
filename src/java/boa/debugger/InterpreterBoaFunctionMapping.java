@@ -12,6 +12,7 @@ import boa.types.Diff.ChangedFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 public class InterpreterBoaFunctionMapping {
 
@@ -110,10 +111,24 @@ public class InterpreterBoaFunctionMapping {
 		boolean result = map.hasKey(secondArg);
 		return new BoolVal(result);
 	}
-	
+
+	// public static Value callCompilerKeys(ArrayList<Value> operands,
+	// Env<Value> env) {
+	// MapVal<?, ?> map = (MapVal<?, ?>) operands.get(0);
+	// Set<?> keys = map.getMap().keySet();
+	// SetVal<?> key = new SetVal<>(keys);
+	// key.setType(map.getIndexType());
+	// return key;
+	// }
+
 	public static Value callCompilerKeys(ArrayList<Value> operands, Env<Value> env) {
 		MapVal<?, ?> map = (MapVal<?, ?>) operands.get(0);
-		return new SetVal(map.getMap().keySet());
+		Set<?> keys = map.getMap().keySet();
+		SetVal<?> key = new SetVal<>(keys);
+		key.setType(map.getIndexType());
+		ArrayList<Value> list = new ArrayList<>();
+		list.add(key);
+		return callCompileGetAsArray(list, env);
 	}
 
 	public static Value callCompilerHasModifierPublic(ArrayList<Value> operands, Env<Value> env) {
@@ -218,7 +233,7 @@ public class InterpreterBoaFunctionMapping {
 			((MapVal<?, ?>) stack).clearAll();
 			return UnitVal.v;
 		} else if (stack instanceof SetVal) {
-			((SetVal<?, ?>) stack).clearAll();
+			((SetVal<?>) stack).clearAll();
 			return UnitVal.v;
 		}
 		return new DynamicError("clear Expects either String or Stack/Map as First argument");
@@ -979,22 +994,22 @@ public class InterpreterBoaFunctionMapping {
 	public static Value callCompileGetAsArray(ArrayList<Value> operands, Env<Value> env) {
 		Value fst = operands.get(0);
 		if (fst instanceof SetVal) {
-			HashSet set = (HashSet) ((SetVal) fst).getMap();
+			Set set = ((SetVal) fst).getMap();
 			ArrayList<Object> list = new ArrayList<Object>(Arrays.asList(set.toArray()));
 			ListVal<Value> result = new ListVal<Value>();
-			switch(((SetVal)fst).getType().toString()){
-				case "string" : {
-					for(Object ob: list){
-						result.add(new StringVal(ob.toString()));
-					}
-					return result;
+			switch (((SetVal) fst).getType().toString()) {
+			case "string": {
+				for (Object ob : list) {
+					result.add(new StringVal(ob.toString()));
 				}
-				default : {
-					for(Object ob: list){
-						result.add(new AnyVal(ob));
-					}
-					return result;
+				return result;
+			}
+			default: {
+				for (Object ob : list) {
+					result.add(new AnyVal(ob));
 				}
+				return result;
+			}
 			}
 		}
 		throw new UnsupportedOperationException();

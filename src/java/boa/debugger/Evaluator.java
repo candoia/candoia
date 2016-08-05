@@ -648,8 +648,10 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	public Value visit(final MapType n, Env<Value> env) {
 		Component ind = n.getIndex();
 		Component val = n.getValue();
-		return new MapVal<>();
-		// return new MapVal<>(ind.getType(), val.getType());
+		MapVal<AbstractType, AbstractType> v = new MapVal<AbstractType, AbstractType>();
+		v.setIndexType(ind.getType());
+		v.setValueType(val.getType());
+		return v;
 	}
 
 	public Value visit(final OutputType n, Env<Value> env) {

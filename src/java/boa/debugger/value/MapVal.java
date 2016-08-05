@@ -4,13 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import boa.compiler.ast.types.AbstractType;
+
 /**
  * @author nmtiwari
  *
  */
 public class MapVal<T, V> implements Value {
 	protected Map<T, V> map;
-
+	protected AbstractType indexTyp;
+	protected AbstractType valueTyp;
+	
 	public MapVal() {
 		map = new HashMap<T, V>();
 	}
@@ -92,4 +96,17 @@ public class MapVal<T, V> implements Value {
 		}
 		return result;
 	}
+	
+	public void setValueType(AbstractType typ){
+		this.valueTyp = typ;
+	}
+	
+	public AbstractType getIndexType(){return this.indexTyp;}
+	
+	public void setIndexType(AbstractType typ){
+		this.indexTyp = typ;
+	}
+	
+	public AbstractType getValueType(){return this.valueTyp;}
+	
 }

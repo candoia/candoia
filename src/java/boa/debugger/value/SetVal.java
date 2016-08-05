@@ -12,9 +12,8 @@ import java.util.Set;
  * @param <T>
  *
  */
-public class SetVal<V, T> extends BoaType implements Value {
+public class SetVal<V> extends BoaType implements Value {
 	protected Set<V> set;
-	protected T prevIndex;
 	protected AbstractType typ;
 
 	public SetVal(AbstractType typ) {
@@ -38,15 +37,15 @@ public class SetVal<V, T> extends BoaType implements Value {
 		return set.size();
 	}
 
-	public T[] keySet() {
-		return (T[]) set.toArray();
+	public V[] keySet() {
+		return (V[]) set.toArray();
 	}
 
-	public void remove(T index) {
+	public void remove(V index) {
 		set.remove(index);
 	}
 
-	public boolean contains(T obj) {
+	public boolean contains(V obj) {
 		return set.contains(obj);
 	}
 
@@ -60,14 +59,6 @@ public class SetVal<V, T> extends BoaType implements Value {
 
 	public boolean hasKey(Value index) {
 		return set.contains(index);
-	}
-
-	public T getPrevIndex() {
-		return this.prevIndex;
-	}
-
-	public void setPrevIndex(T index) {
-		this.prevIndex = index;
 	}
 
 	public boolean equals(Value v) {
@@ -111,5 +102,9 @@ public class SetVal<V, T> extends BoaType implements Value {
 			result = 37 * result + ele.hashCode();
 		}
 		return result;
+	}
+	
+	public void setType(AbstractType typ){
+		this.typ = typ;
 	}
 }
