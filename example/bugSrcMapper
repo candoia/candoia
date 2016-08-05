@@ -1,0 +1,26 @@
+BugFileCounter: output sum[string] of int;
+p: Project = input;
+
+isfixing := false;
+bugfix := false;
+count := 0;
+# map of file names to the last revision of that file
+files: map[string] of ChangedFile;
+issues: set of string;
+
+isBugFixing := function(log: string, issueRecord: set of string): bool{
+    lst := getAsArray(issueRecord);
+    foreach(i: int; def(lst[i])){
+        if(strfind(lst[i], log) > -1){
+            return true;
+        }
+    }
+    return false;
+};
+
+
+visit(p, visitor {
+    before node: Issue -> {
+          add(issues, node.id);
+        }
+});

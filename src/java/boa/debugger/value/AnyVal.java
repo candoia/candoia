@@ -243,8 +243,6 @@ public class AnyVal extends TupleVal implements Value {
 				}
 				return list;
 			} else if (search.equals("name")) {
-				if (boa.debugger.Evaluator.DEBUG)
-					System.out.println("returning:" + ast.getName());
 				return new StringVal(ast.getName());
 			} else {
 				throw new UnsupportedOperationException();
@@ -459,8 +457,6 @@ public class AnyVal extends TupleVal implements Value {
 				return new DynamicError("There was no new type information for this expressions");
 			} else if (search.equals("method")) {
 				if (m.hasMethod()) {
-					if (boa.debugger.Evaluator.DEBUG)
-						System.out.println("expression method name:" + m.getMethod());
 					return new StringVal(m.getMethod());
 				}
 				return new DynamicError("No Methd found for this Expression");
@@ -669,8 +665,6 @@ public class AnyVal extends TupleVal implements Value {
 				for (boa.types.Issues.IssueComment m : p.getCommentsList()) {
 					list.add(new AnyVal(m));
 				}
-				if (boa.debugger.Evaluator.DEBUG)
-					System.out.println("issue has:" + list.size() + "comments");
 				return list;
 			} else if (search.equals("attachments")) {
 				ListVal<Value> list = new ListVal<Value>();
@@ -708,12 +702,8 @@ public class AnyVal extends TupleVal implements Value {
 
 			} else if (search.equals("closed_at")) {
 				try {
-					if (boa.debugger.Evaluator.DEBUG)
-						System.out.println("closed ta retun:" + p.getClosedAt());
 					return new NumVal(p.getCreatedAt());
 				} catch (NullPointerException ex) {
-					if (boa.debugger.Evaluator.DEBUG)
-						System.out.println("exception in alosed at");
 					return new DynamicError("No created at found for this issue");
 				}
 			}
@@ -727,12 +717,8 @@ public class AnyVal extends TupleVal implements Value {
 
 			else if (search.equals("created_at")) {
 				try {
-					if (boa.debugger.Evaluator.DEBUG)
-						System.out.println("closed ta retun:" + p.getClosedAt());
 					return new NumVal(p.getCreatedAt());
 				} catch (NullPointerException ex) {
-					if (boa.debugger.Evaluator.DEBUG)
-						System.out.println("exception in alosed at");
 					return new DynamicError("No created at found for this issue");
 				}
 			} else if (search.equals("pull_request")) {
@@ -920,8 +906,8 @@ public class AnyVal extends TupleVal implements Value {
 			}
 
 		}
-
-		throw new UnsupportedOperationException();
+		
+		throw new UnsupportedOperationException("value: " + search.length() + " and " + value);
 	}
 
 	@Override
