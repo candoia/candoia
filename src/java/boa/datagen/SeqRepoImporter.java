@@ -202,12 +202,7 @@ public class SeqRepoImporter {
 	}
 
 	private static void printError(final Throwable e, final String message) {
-		System.err.println("ERR: " + message);
-		if (debug) {
 			e.printStackTrace();
-			// System.exit(-1);
-		} else
-			System.err.println(e.getMessage());
 	}
 
 	public static class ImportTask implements Runnable {
@@ -502,7 +497,7 @@ public class SeqRepoImporter {
 				projBuilder.setCodeRepositories(i, repoBuilder);
 				return projBuilder.build();
 			} catch (final Exception e) {
-				printError(e, "unknown error");
+				e.printStackTrace();
 			} finally {
 				conn.clear();
 				try {

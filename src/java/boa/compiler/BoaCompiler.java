@@ -32,6 +32,7 @@ import boa.datagen.candoia.CandoiaConfiguration;
 import boa.datagen.candoia.CandoiaUtilities;
 import boa.debugger.Env.EmptyEnv;
 import boa.debugger.Evaluator;
+import boa.debugger.value.StringVal;
 import boa.debugger.value.Value;
 import boa.parser.BoaLexer;
 import boa.parser.BoaParser;
@@ -178,7 +179,25 @@ public class BoaCompiler {
 				}
 				Evaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH);
 				Evaluator evaluator = new Evaluator();
-				(evaluator).start(p.getProgram(), new EmptyEnv<Value>());
+				Value result = (evaluator).start(p.getProgram(), new EmptyEnv<Value>());
+				String resultOfProgram = result.toString();
+				BufferedWriter writer = null;
+				FileWriter filewriter = null;
+				try {
+					filewriter = new FileWriter("output.txt");
+					writer = new BufferedWriter(filewriter);
+					writer.write(resultOfProgram);
+				} catch (IOException e) {
+				} finally {
+					try {
+						if (writer != null) {
+							writer.close();
+							filewriter.close();
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		} finally {
 			o.close();

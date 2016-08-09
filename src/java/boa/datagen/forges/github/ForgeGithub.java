@@ -39,7 +39,8 @@ public class ForgeGithub extends AbstractForge {
 			String userName = url.substring(0, url.indexOf('@'));
 			String temp[] = url.split("/");
 			String targetURL = "https://api.github.com/repos/" + temp[temp.length - 2] + "/" + temp[temp.length - 1];
-			char[] pswrd = readPassword();
+//			char[] pswrd = readPassword();
+			char[] pswrd = null;
 			if (pswrd == null) {
 				String password = "candoiauser2016";
 				userName = "candoiaISU";

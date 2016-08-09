@@ -59,8 +59,7 @@ public class GitConnector extends AbstractConnector {
 			this.git = new Git(this.repository);
 			this.revwalk = new RevWalk(this.repository);
 		} catch (final IOException e) {
-			if (debug)
-				System.err.println("Git Error connecting to " + path + ". " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -71,18 +70,18 @@ public class GitConnector extends AbstractConnector {
 			this.git = new Git(this.repository);
 			this.revwalk = new RevWalk(this.repository);
 		} catch (final IOException e) {
-			if (debug)
-				System.err.println("Git Error connecting to " + path + ". " + e.getMessage());
+			e.printStackTrace();
 			return false;
 		}
 		return true;
 	}
 	
 	public boolean clear(){
-			this.path = null;
+//			this.path = null;
 //			this.repository = null;
-			this.git = null;
-			this.revwalk = null;
+//			this.git = null;
+//			this.revwalk = null;
+			this.revwalk.reset();
 		return true;
 	}
 	
@@ -95,14 +94,12 @@ public class GitConnector extends AbstractConnector {
 	public String getLastCommitId() {
 		if (lastCommitId == null) {
 			revwalk.reset();
-
 			try {
 				revwalk.markStart(revwalk.parseCommit(repository.resolve(Constants.HEAD)));
 				revwalk.sort(RevSort.COMMIT_TIME_DESC);
 				lastCommitId = revwalk.next().getId().toString();
 			} catch (final Exception e) {
-				if (debug)
-					System.err.println("Git Error getting last commit for " + path + ". " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 		return lastCommitId;
@@ -120,27 +117,22 @@ public class GitConnector extends AbstractConnector {
 			revwalk.sort(RevSort.TOPO, true);
 			revwalk.sort(RevSort.COMMIT_TIME_DESC, true);
 			revwalk.sort(RevSort.REVERSE, true);
-
 			revisions.clear();
 			revisionMap = new HashMap<String, Integer>();
 
 			for (final RevCommit rc : revwalk) {
 				final GitCommit gc = new GitCommit(repository, this);
-
 				gc.setId(rc.getName());
 				gc.setAuthor(rc.getAuthorIdent().getName());
 				gc.setCommitter(rc.getCommitterIdent().getName());
 				gc.setDate(new Date(((long) rc.getCommitTime()) * 1000));
 				gc.setMessage(rc.getFullMessage());
-
 				gc.getChangeFiles(this.revisionMap, rc);
-
 				revisionMap.put(gc.id, revisions.size());
 				revisions.add(gc);
 			}
 		} catch (final IOException e) {
-			if (debug)
-				System.err.println("Git Error getting parsing HEAD commit for " + path + ". " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -152,8 +144,7 @@ public class GitConnector extends AbstractConnector {
 				commits.add(ref.getObjectId().getName());
 			}
 		} catch (final GitAPIException e) {
-			if (debug)
-				System.err.println("Git Error reading tags: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -165,8 +156,7 @@ public class GitConnector extends AbstractConnector {
 				commits.add(ref.getObjectId().getName());
 			}
 		} catch (final GitAPIException e) {
-			if (debug)
-				System.err.println("Git Error reading branches: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
