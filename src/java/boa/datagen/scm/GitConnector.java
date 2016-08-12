@@ -70,7 +70,7 @@ public class GitConnector extends AbstractConnector {
 			this.git = new Git(this.repository);
 			this.revwalk = new RevWalk(this.repository);
 		} catch (final IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			return false;
 		}
 		return true;

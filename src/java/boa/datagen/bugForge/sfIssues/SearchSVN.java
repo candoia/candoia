@@ -32,60 +32,43 @@ public class SearchSVN {
 	public SearchSVN(Requests requests) {
 		this.requests = requests;
 		this.gson = new Gson();
-		this.builder = Guice.createInjector(new HttpModule()).getInstance(
-				UrlBuilder.class);
+		this.builder = Guice.createInjector(new HttpModule()).getInstance(UrlBuilder.class);
 	}
-	
+
 	private void setTicketBuilder(List<Issue> issues, String searchUrl, boolean isBug) {
-		try{
+		try {
 
 			String jsonString = requests.get(searchUrl);
-			JsonObject ticketObject = new JsonParser().parse(jsonString)
-					.getAsJsonObject();
+			JsonObject ticketObject = new JsonParser().parse(jsonString).getAsJsonObject();
 
 			JsonArray jsonArray = ticketObject.get("tickets").getAsJsonArray();
 
 			for (JsonElement element : jsonArray) {
-				String ticket_num = element.getAsJsonObject().get("ticket_num")
-						.getAsString();
-				//System.out.println(ticket_num);
-				UrlBuilder builder = Guice.createInjector(new HttpModule()).getInstance(
-						UrlBuilder.class);
+				String ticket_num = element.getAsJsonObject().get("ticket_num").getAsString();
+				UrlBuilder builder = Guice.createInjector(new HttpModule()).getInstance(UrlBuilder.class);
 				String bugUrl = builder.withParam(searchUrl).withSimpleParam("/", ticket_num).sbuild();
 				String bugString = requests.get(bugUrl);
-				//System.out.println(bugString);
-				JsonObject jObj = new JsonParser().parse(bugString)
-						.getAsJsonObject();
+				JsonObject jObj = new JsonParser().parse(bugString).getAsJsonObject();
 
 				JsonElement ticket = jObj.get("ticket").getAsJsonObject();
-				
-				if (ticket == null)
-					System.out.println();
 				Builder issueBuilder = Issue.newBuilder();
-
 				int id = ticket.getAsJsonObject().get("ticket_num").getAsInt();
 				int number = id;
-
 				issueBuilder.setId(id);
 				issueBuilder.setNumber(number);
 				// issueBuilder.setKind(IssueKind.BUG);
-				issueBuilder.setTitle(ticket.getAsJsonObject().get("summary")
-						.getAsString());
-				issueBuilder.setBody(ticket.getAsJsonObject().get("description")
-						.getAsString());
+				issueBuilder.setTitle(ticket.getAsJsonObject().get("summary").getAsString());
+				issueBuilder.setBody(ticket.getAsJsonObject().get("description").getAsString());
 
-				String status = ticket.getAsJsonObject().get("status")
-						.getAsString();
+				String status = ticket.getAsJsonObject().get("status").getAsString();
 				String assigned_to_id = null;
-				if (!ticket.getAsJsonObject()
-						.get("assigned_to_id").isJsonNull())
-					assigned_to_id = ticket.getAsJsonObject()
-							.get("assigned_to_id").getAsString();
+				if (!ticket.getAsJsonObject().get("assigned_to_id").isJsonNull())
+					assigned_to_id = ticket.getAsJsonObject().get("assigned_to_id").getAsString();
 
 				if (status.equalsIgnoreCase("open")) {
 					if (isBug)
 						issueBuilder.setKind(IssueKind.BUG);
-					else 
+					else
 						issueBuilder.setKind(IssueKind.ENHANCEMENT);
 					if (assigned_to_id == null)
 						issueBuilder.setState(State.UNCONFIRMED);
@@ -100,7 +83,7 @@ public class SearchSVN {
 				} else if (status.equalsIgnoreCase("closed")) {
 					if (isBug)
 						issueBuilder.setKind(IssueKind.UNKNOWN);
-					else 
+					else
 						issueBuilder.setKind(IssueKind.ENHANCEMENT);
 					issueBuilder.setState(State.RESOLVED);
 				} else if (status.equalsIgnoreCase("closed-accepted")) {
@@ -135,29 +118,25 @@ public class SearchSVN {
 				Person.Builder personBuilder;
 				String assigned_to = null;
 				if (!ticket.getAsJsonObject().get("assigned_to").isJsonNull())
-					assigned_to = ticket.getAsJsonObject().get("assigned_to")
-							.getAsString();
+					assigned_to = ticket.getAsJsonObject().get("assigned_to").getAsString();
 				if (assigned_to != null) {
 					personBuilder = Person.newBuilder();
-					UrlBuilder personUrlBuilder = Guice.createInjector(
-							new HttpModule()).getInstance(UrlBuilder.class);
-					String personUrl = personUrlBuilder.uses(SVNAPI.USER)
-							.withSimpleParam("/", assigned_to)
+					UrlBuilder personUrlBuilder = Guice.createInjector(new HttpModule()).getInstance(UrlBuilder.class);
+					String personUrl = personUrlBuilder.uses(SVNAPI.USER).withSimpleParam("/", assigned_to)
 							.withParam("/profile").sbuild();
 
 					String personString = requests.get(personUrl);
-					JsonObject personObject =null;
-					try{
+					JsonObject personObject = null;
+					try {
 						personObject = new JsonParser().parse(personString).getAsJsonObject();
-					}catch(com.google.gson.JsonSyntaxException ex){
-						
+					} catch (com.google.gson.JsonSyntaxException ex) {
+
 					}
-							
-					if(personObject!=null)
-					{
+
+					if (personObject != null) {
 						personBuilder.setRealName(personObject.getAsJsonObject().get("name").getAsString());
 						String username = personObject.getAsJsonObject()
-								
+
 								.get("username").getAsString();
 						personBuilder.setUsername(username);
 						String email = username + "@sf.net";
@@ -165,7 +144,7 @@ public class SearchSVN {
 
 						issueBuilder.setAssignee(personBuilder.build());
 
-					}else{
+					} else {
 						personBuilder.setRealName("anonymous");
 						String username = "anonymous";
 						personBuilder.setUsername(username);
@@ -175,7 +154,7 @@ public class SearchSVN {
 						issueBuilder.setAssignee(personBuilder.build());
 
 					}
-					
+
 					if (status.contains("closed")) {
 						// closed by the assigned user
 						issueBuilder.setClosedBy(personBuilder.build());
@@ -184,17 +163,14 @@ public class SearchSVN {
 
 				String datePattern = "yyyy-MM-dd";// HH:mm:ss.SSSXXX";
 				SimpleDateFormat dateFormater = new SimpleDateFormat(datePattern);
-				//System.out.println(dateFormater.format(new Date()));
 				try {
-					String dateString = ticket.getAsJsonObject()
-							.get("created_date").getAsString();
+					String dateString = ticket.getAsJsonObject().get("created_date").getAsString();
 					String subs[] = dateString.split(" ");
 					if (dateString != null) {
 						Date date = dateFormater.parse(subs[0]);
 						issueBuilder.setCreatedAt(date.getTime());
 					}
-					dateString = ticket.getAsJsonObject().get("mod_date")
-							.getAsString();
+					dateString = ticket.getAsJsonObject().get("mod_date").getAsString();
 					subs = dateString.split(" ");
 					if (dateString != null) {
 						Date date = dateFormater.parse(subs[0]);
@@ -205,19 +181,19 @@ public class SearchSVN {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 				String milestone = null;
 				if (!ticket.getAsJsonObject().get("custom_fields").isJsonNull()
 						&& ticket.getAsJsonObject().get("custom_fields").getAsJsonObject().has("_milestone"))
-					try{
-						JsonObject obj=ticket.getAsJsonObject().get("custom_fields").getAsJsonObject();
-						if(obj.has("_milestone")){
-							JsonElement o=obj.get("_milestone");
+					try {
+						JsonObject obj = ticket.getAsJsonObject().get("custom_fields").getAsJsonObject();
+						if (obj.has("_milestone")) {
+							JsonElement o = obj.get("_milestone");
 							milestone = o.toString();
 						}
-							
+
 						else
-							milestone = "mile stone not found";	
+							milestone = "mile stone not found";
 
 						if (milestone != null) {
 							boa.types.Issues.Milestone.Builder milestoneBuilder = boa.types.Issues.Milestone
@@ -227,43 +203,30 @@ public class SearchSVN {
 							milestoneBuilder.setTitle(milestone);
 							issueBuilder.setMilestone(milestoneBuilder.build());
 						}
-						
-					}catch(NullPointerException ex){
-						
+
+					} catch (NullPointerException ex) {
+
 					}
-				System.out.println("Adding issues:"+issueBuilder.build());
 				issues.add(issueBuilder.build());
 			}
-		
-		}catch( com.google.gson.JsonSyntaxException e){
-			
+
+		} catch (com.google.gson.JsonSyntaxException e) {
+
 		}
 	}
 
 	public List<Issue> storeTickets(String project) {
 		List<Issue> issues = new ArrayList<>();
-
-		System.out.println("Searching project tickets metadata");
-
-		String searchUrl = builder.uses(SVNAPI.ROOT)
-				.withSimpleParam("/", project).withParam("/bugs").sbuild();
-
+		String searchUrl = builder.uses(SVNAPI.ROOT).withSimpleParam("/", project).withParam("/bugs").sbuild();
 		setTicketBuilder(issues, searchUrl, true);
-		
-		UrlBuilder frBuilder = Guice.createInjector(
-				new HttpModule()).getInstance(UrlBuilder.class);
-		String frUrl = frBuilder.uses(SVNAPI.ROOT)
-				.withSimpleParam("/", project).withParam("/feature-requests").sbuild();
-		
+		UrlBuilder frBuilder = Guice.createInjector(new HttpModule()).getInstance(UrlBuilder.class);
+		String frUrl = frBuilder.uses(SVNAPI.ROOT).withSimpleParam("/", project).withParam("/feature-requests")
+				.sbuild();
 		setTicketBuilder(issues, frUrl, false);
-		
-		UrlBuilder srBuilder = Guice.createInjector(
-				new HttpModule()).getInstance(UrlBuilder.class);
-		String srUrl = srBuilder.uses(SVNAPI.ROOT)
-				.withSimpleParam("/", project).withParam("/support-requests").sbuild();
-		
+		UrlBuilder srBuilder = Guice.createInjector(new HttpModule()).getInstance(UrlBuilder.class);
+		String srUrl = srBuilder.uses(SVNAPI.ROOT).withSimpleParam("/", project).withParam("/support-requests")
+				.sbuild();
 		setTicketBuilder(issues, srUrl, false);
-		
 		return issues;
 	}
 

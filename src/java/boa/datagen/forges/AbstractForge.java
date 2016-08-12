@@ -20,9 +20,6 @@ public abstract class AbstractForge {
 
 	public abstract boolean cloneRepo(String jsonPath, String repoPath);
 
-	// public boolean cloneRepoFromURL(String URL, String repoPath);
-	// public boolean cloneRepoFromJSON(String jsonPath, String repoPath);
-	// public boolean buildProject(String url);
 	public abstract Project toBoaProject(File jsonFile);
 
 	public abstract String getDirName(String URL);

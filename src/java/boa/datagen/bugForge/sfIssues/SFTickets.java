@@ -22,16 +22,11 @@ public class SFTickets implements BugForge{
 			setup();
 
 		List<Issue> issues = searchSVN.storeTickets(pname);
-		// system.out.println("Total Tickets:"+issues.size());
-		for (Issue i : issues)
-			System.out.println(i);
 		return issues;
 	}
 
 	public static List<Issue> getSVNTickets(String args) {
 		if (args == null) {
-			// system.out.println("Please provide the sourceforge project
-			// name!");
 			return new ArrayList<Issue>();
 		}
 		SFTickets svnTickets = new SFTickets();
@@ -40,13 +35,11 @@ public class SFTickets implements BugForge{
 
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			// system.out.println("Please provide the sourceforge project
-			// name!");
 		}
 		SFTickets svnTickets = new SFTickets();
 		issues = getSVNTickets(args[0]);
 		for (Issue i : issues) {
-			// system.out.println(i);
+			 System.out.println(i);
 		}
 	}
 

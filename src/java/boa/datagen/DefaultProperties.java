@@ -25,8 +25,8 @@ public class DefaultProperties {
 	public static String NUM_THREADS = "1";
 	public static final String MAX_COMMITS = "10000";
 
-	public static  String CLONE_DIR_NAME = "/__clonedByBoa";
-	public static  String JSON_DIR_NAME = "/__json";
+	public static  String CLONE_DIR_NAME = "/.candoia/__clonedByBoa";
+	public static  String JSON_DIR_NAME = "/.candoia/__json";
 	public static  String BUG_DIR_NAME = "/issues";
 	
 	// HBase tables

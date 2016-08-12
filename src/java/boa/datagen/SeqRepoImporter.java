@@ -202,7 +202,7 @@ public class SeqRepoImporter {
 	}
 
 	private static void printError(final Throwable e, final String message) {
-			e.printStackTrace();
+		e.printStackTrace();
 	}
 
 	public static class ImportTask implements Runnable {
@@ -451,9 +451,17 @@ public class SeqRepoImporter {
 				if (debug)
 					System.out.println("Processing " + id + " / " + cacheOfProjects.size() + " " + cachedProject.getId()
 							+ " " + dirName);
-				// String dirName = name.substring(name.lastIndexOf('/') + 1,
-				// name.length());
 				String repoPath = DefaultProperties.GH_GIT_PATH + "/" + dirName;
+				File repo = new File(repoPath);
+				/*
+				 * Following code is a hack in to check all the sub repository to be proper vcs.
+				 * This is done to handle source forge clones
+				 */
+				if (repo.isDirectory() && repo.listFiles().length == 1
+						&& !CandoiaConfiguration.isProperVCSDir(repo.getAbsolutePath())) {
+					repoPath = repo.listFiles()[0].getAbsolutePath();
+					System.out.println("updated path: "+ repoPath);
+				}
 				Project project = null;
 				if (new File(repoPath).isDirectory()) {
 					project = storeRepositoryFrom(cachedProject, 0, new File(repoPath));

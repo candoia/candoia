@@ -167,13 +167,6 @@ public class BoaGenerator {
 
 	}
 
-	private boolean getProjectFromRemote(String url) {
-		AbstractForge forge = CandoiaConfiguration.getForge(url);
-		forge.getJSON(url, DefaultProperties.GH_JSON_PATH);
-		// forge.cloneRepo(url, DefaultProperties.GH_GIT_PATH);
-		return true;
-	}
-
 	private boolean getProjectFromRemote(String[] url) {
 		for (final String str : url) {
 			final AbstractForge forge = CandoiaConfiguration.getForge(str);
