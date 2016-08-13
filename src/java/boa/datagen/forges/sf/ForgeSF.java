@@ -5,9 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
-
-import org.apache.commons.io.FileDeleteStrategy;
-
 import boa.datagen.forges.AbstractForge;
 import boa.datagen.util.FileIO;
 import boa.types.Toplevel.Project;
@@ -19,34 +16,29 @@ public class ForgeSF extends AbstractForge {
 		MetadataCacher mc = initialize(url, jsonPath);
 		if (mc != null) {
 			if (downloadJSON(mc, jsonPath)) {
-				// String mcUrl = mc.getUrl();
-				// mc.setUrl(mcUrl + "/languages");
-				// return downloadLangJSON(mc, jsonPath);
-				// mc.setUrl(mcUrl + "/issues?page=1");
-				// return downloadIssuesJSON(mc, jsonPath);
-				return true;
+				 String mcUrl = mc.getUrl();
+				 mc.setUrl(mcUrl + "/bugs?page=1");
+				 return downloadIssuesJSON(mc, jsonPath);
 			}
 		}
 		return false;
 	}
 
+  /*
+   * There are two possibilities for source forge urls. Either it can be
+   * sourceforge.com/project or it can be of format
+   * svn.code.sf.net or git.sf.code.net
+   */
 	@Override
 	public boolean cloneRepo(String URL, String repoPath) {
-		String details[] = URL.split("/");
-		URL = "http://git.code.sf.net/p/" + details[details.length - 1] + "/code";
-		try {
-			if (!GITRepositoryCloner.clone(URL, repoPath)) {
-				File f = new File(repoPath);
-				if (!f.delete())
-					FileDeleteStrategy.FORCE.delete(f);
-				URL = "svn://svn.code.sf.net/p/" + details[details.length - 1] + "/svn";
-				SVNRepositoryCloner.clone(this.createURL(URL), repoPath);
-			}
+		if(URL.contains("git")){
+			return GITRepositoryCloner.clone(URL, repoPath);
+		}else if(URL.contains("svn")) try {
+			return SVNRepositoryCloner.clone(this.createURL(URL), repoPath);
 		} catch (IOException e) {
 			e.printStackTrace();
-			return false;
 		}
-		return true;
+		return false;
 	}
 
 	@Override
@@ -60,12 +52,14 @@ public class ForgeSF extends AbstractForge {
 	}
 
 	private MetadataCacher initialize(String url, String jsonPath) {
-		if (!url.contains("sourceforge.net")) {
+		if (!url.contains("sourceforge.net") && !url.contains("code.sf.net/")) {
 			return null;
 		} else {
 			String userName = url.substring(0, url.indexOf('@'));
 			String temp[] = url.split("/");
-			String targetURL = "http://sourceforge.net/rest/p/" + temp[temp.length - 1];
+			// Because source forge naming convention is to follow code.sf.net/proj/repo
+			// we use the second last item
+			String targetURL = "http://sourceforge.net/rest/p/" + temp[temp.length - 2];
 			System.out.println("ForgeSF has received target URL:" + targetURL);
 			// String password = readPassword();
 			// String password = "candoiauser2016";
@@ -74,10 +68,11 @@ public class ForgeSF extends AbstractForge {
 		}
 	}
 
-	private boolean downloadLangJSON(MetadataCacher mc, String jsonPath) {
+
+	private boolean downloadIssuesJSON(MetadataCacher mc, String jsonPath) {
 		String pageContent = "";
 		int pageNumber = 0;
-		File dir = new File(jsonPath + "/languages");
+		File dir = new File(jsonPath + "/issues");
 		if (!dir.exists())
 			dir.mkdirs();
 		File[] files = dir.listFiles();
@@ -104,20 +99,18 @@ public class ForgeSF extends AbstractForge {
 				if (pageContent.equals("[]"))
 					break;
 				if (!pageContent.isEmpty()) {
-					String path = jsonPath + "/languages/";
+					String path = jsonPath + "/issues/";
 					File f = new File(path);
 					if (!f.exists()) {
 						f.mkdirs();
 					}
-					path = jsonPath + "/languages/lang" + pageNumber + ".json";
+					path = jsonPath + "/issues/issue" + pageNumber + ".json";
 					f = new File(path);
 					FileWriter file = null;
 					try {
 						file = new FileWriter(path);
 						file.write(pageContent);
-						pageNumber++;
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 						return false;
 					} finally {
@@ -125,12 +118,14 @@ public class ForgeSF extends AbstractForge {
 							file.flush();
 							file.close();
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
+					pageNumber++;
+					String newURL = mc.getUrl().substring(0, mc.getUrl().length() - 1);
+					newURL = newURL + (pageNumber + 1);
+					mc.setUrl(newURL);
 				}
-				break;
 			}
 		} else {
 			System.out.println("Authentication failed!");
@@ -138,6 +133,7 @@ public class ForgeSF extends AbstractForge {
 		}
 		return true;
 	}
+
 
 	private boolean downloadJSON(MetadataCacher mc, String jsonPath) {
 		String pageContent = "";
@@ -196,10 +192,6 @@ public class ForgeSF extends AbstractForge {
 			}
 			break;
 		}
-		// } else {
-		// System.err.println("Authentication failed!");
-		// return false;
-		// }
 		return true;
 	}
 

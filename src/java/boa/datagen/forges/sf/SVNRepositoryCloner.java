@@ -11,6 +11,8 @@
  */
 package boa.datagen.forges.sf;
 
+import boa.datagen.scm.SVNConnector;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -34,21 +36,20 @@ public class SVNRepositoryCloner {
 	// }
 	// }
 
-	public static void clone(String URL, String repoPath) throws IOException {
+	public static boolean clone(String URL, String repoPath) throws IOException {
 		File dest = new File(repoPath);
 		if (!dest.exists()) {
 			dest.mkdirs();
-		}
-		if (repoPath.endsWith("/svn") && URL.endsWith("/svn")) {
-			repoPath = repoPath.substring(0, repoPath.lastIndexOf('/'));
 		}
 		String line = "rsync -av " + URL + " " + repoPath;
 		Runtime commandPrompt = Runtime.getRuntime();
 		try {
 			Process powershell = commandPrompt.exec(line);
 			powershell.waitFor();
+			return true;
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
+			return false;
 		}
 	}
 

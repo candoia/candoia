@@ -176,10 +176,13 @@ public class BoaGenerator {
 					String repoName = forge.getDirName(str);
 					String userName = forge.getUsrName(str);
 					String repo = userName + "/" + repoName;
-					if (!new File(DefaultProperties.GH_JSON_PATH + "/" + repo).exists())
+					if (!new File(DefaultProperties.GH_JSON_PATH + "/" + repo).exists()){
 						forge.getJSON(str, DefaultProperties.GH_JSON_PATH + "/" + repo);
-					if (!new File(DefaultProperties.GH_GIT_PATH + "/" + repo).exists())
+					}
+					if (!new File(DefaultProperties.GH_GIT_PATH + "/" + repo).exists()){
 						forge.cloneRepo(str, DefaultProperties.GH_GIT_PATH + "/" + repo);
+					}
+
 				}
 			});
 		}

@@ -32,6 +32,7 @@ public class CandoiaConfiguration {
 		forges = new HashMap<String, AbstractForge>();
 		forges.put("github.com", new ForgeGithub());
 		forges.put("sourceforge.net", new ForgeSF());
+		forges.put("sf.net", new ForgeSF());
 		forges.put("svn", new SVNForge());
 	}
 
