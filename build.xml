@@ -275,6 +275,14 @@
 					<include name="templates/" />
 				</patternset>
 			</fileset>
+			<zipfileset excludes="META-INF/" src="lib/datagen/atlassian-event-2.2.0.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/atlassian-httpclient-apache-httpcomponents-0.11.0.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/atlassian-httpclient-api-0.11.0.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/atlassian-httpclient-spi-0.11.0.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/atlassian-util-concurrent-2.4.0-M9.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/httpasyncclient-4.0-beta3-atlassian-1.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/httpasyncclient-cache-4.0-beta3-atlassian-1.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/httpclient-cache-4.2.1-atlassian-2.jar" />
 			<zipfileset excludes="META-INF/" src="rtlib/antlr-runtime-4.5.jar" />
 			<zipfileset excludes="META-INF/" src="rtlib/protobuf-java-2.5.0.jar" />
 			<zipfileset excludes="META-INF/" src="rtlib/log4j-1.2.15.jar" />
@@ -326,6 +334,18 @@
 			<zipfileset excludes="META-INF/" src="lib/datagen/mrunit-0.9.0-incubating-hadoop1.jar" />
 			<zipfileset excludes="META-INF/" src="lib/datagen/xercesImpl.jar" />
 			<zipfileset excludes="META-INF/" src="lib/datagen/xml-apis.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/jira-rest-java-client-2.0.0-m2.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/sal-api-2.7.0.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/spring-beans-2.5.6.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/httpcore-nio-4.2.2.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/javax.mail-api-1.5.2.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/javax.ws.rs-api-2.0.1.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/jersey-client-1.5.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/jersey-core-1.5.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/jersey-json-1.5.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/httpmime-4.1.2.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/jettison-1.1.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/joda-time-1.6.jar" />
 
 		</jar>
 	</target>

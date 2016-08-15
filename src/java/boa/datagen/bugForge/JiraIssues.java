@@ -227,8 +227,8 @@ public class JiraIssues implements BugForge {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String url = args[0];
-		String project = args[1];
+		String url = "http://jira.qos.ch/";
+		String project = "SLF4J";
 		JiraIssues jira = new JiraIssues();
 		jira.importBugs(url, project);
 
@@ -248,6 +248,7 @@ public class JiraIssues implements BugForge {
 //			e.printStackTrace();
 			System.out.println("Could not find issues on: "+ url);
 		}
+		System.out.println("jira issues:" + issues.size());
 		for (boa.types.Issues.Issue issue : issues) {
 			boa.types.Issues.Issue.Builder issueBuilder = boa.types.Issues.Issue.newBuilder();
 			issueRepoBuilder.addIssues(issue);
