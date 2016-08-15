@@ -1,6 +1,8 @@
 package boa.datagen.candoia;
 
 import boa.datagen.bugForge.BugForge;
+import boa.datagen.bugForge.BugzillaReports;
+import boa.datagen.bugForge.JiraIssues;
 import boa.datagen.bugForge.gitIssue.GithubIssues;
 import boa.datagen.bugForge.sfIssues.SFTickets;
 import boa.datagen.forges.AbstractForge;
@@ -26,6 +28,8 @@ public class CandoiaConfiguration {
 		bugforges = new HashMap<String, BugForge>();
 		bugforges.put("github.com", new GithubIssues());
 		bugforges.put("sourceforge.net", new SFTickets());
+		bugforges.put("jira", new JiraIssues());
+		bugforges.put("bugzilla", new BugzillaReports());
 	}
 
 	static {
@@ -97,8 +101,6 @@ public class CandoiaConfiguration {
 				return true;
 			}
 		}
-		System.err.println(
-				"Given version control system is not supported by Candoia. Please consider extending Candoia platform.");
 		return false;
 	}
 

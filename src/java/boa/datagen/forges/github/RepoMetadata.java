@@ -130,7 +130,6 @@ public class RepoMetadata {
 			System.err.println("File is empty " + metadataFile.getAbsolutePath());
 			return false;
 		}
-		// System.out.println(jsonTxt);
 
 		JSONObject json = null;
 		try {

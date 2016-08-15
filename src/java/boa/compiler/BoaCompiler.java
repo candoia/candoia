@@ -32,7 +32,6 @@ import boa.datagen.candoia.CandoiaConfiguration;
 import boa.datagen.candoia.CandoiaUtilities;
 import boa.debugger.Env.EmptyEnv;
 import boa.debugger.Evaluator;
-import boa.debugger.value.StringVal;
 import boa.debugger.value.Value;
 import boa.parser.BoaLexer;
 import boa.parser.BoaParser;
@@ -46,7 +45,6 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.log4j.Logger;
 import org.scannotation.ClasspathUrlFinder;
-
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 import java.io.*;
@@ -76,6 +74,7 @@ public class BoaCompiler {
 		final ArrayList<File> inputFiles = BoaCompiler.inputFiles;
 		String[] localRepos = new String[0];
 		String[] cloneRepos = new String[0];
+		String[] bugs = new String[0];
 		ArrayList<String> actualCloning = new ArrayList<String>();
 
 		// get the name of the generated class
@@ -123,6 +122,14 @@ public class BoaCompiler {
 		if (cl.hasOption("clone")) {
 			cloneRepos = cl.getOptionValue("clone").split(",");
 			DefaultProperties.NUM_THREADS = Integer.toString(cloneRepos.length);
+		}
+		if (cl.hasOption("bug")) {
+			bugs = cl.getOptionValue("bug").split(",");
+			if(bugs.length < (cloneRepos.length + localRepos.length)){
+				throw new IllegalArgumentException("Number of BugUrls does not match with repos. If only few repos have external bug url then please use empty string as repos which does not have any");
+			}
+		}else{
+			bugs = new String[cloneRepos.length + localRepos.length];
 		}
 
 		try {
@@ -173,9 +180,7 @@ public class BoaCompiler {
 					CandoiaUtilities.cleanOlderDataset(DefaultProperties.GH_JSON_CACHE_PATH);
 				}
 				if (!prevDataExists) {
-					// generator.generate(actualCloning.toArray(new String[0]),
-					// localRepos);
-					generator.generate(cloneRepos, localRepos);
+					generator.generate(cloneRepos, localRepos, bugs);
 				}
 				Evaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH);
 				Evaluator evaluator = new Evaluator();
@@ -378,7 +383,6 @@ public class BoaCompiler {
 	}
 
 	private static CommandLine processCommandLineOptions(final String[] args) {
-		// parse the command line options
 		final Options options = new Options();
 		options.addOption("l", "libs", true, "extra jars (functions/aggregators) to be compiled in");
 		options.addOption("i", "in", true, "file(s) to be compiled (comma-separated list)");
@@ -386,9 +390,10 @@ public class BoaCompiler {
 		options.addOption("nv", "no-visitor-fusion", false, "disable visitor fusion");
 		options.addOption("v", "visitors-fused", true, "number of visitors to fuse");
 		options.addOption("n", "name", true, "the name of the generated main class");
-		options.addOption("out", "path", true, "path of the output and cached data generated as result of analysis");
+		options.addOption("output", "path", true, "path of the output and cached data generated as result of analysis");
 		options.addOption("repo", "path", true, "path of local repositories");
 		options.addOption("clone", "username@url", true, "username@url for cloning");
+		options.addOption("bug", "username@url", true, "username@url for bug");
 
 		final CommandLine cl;
 		try {

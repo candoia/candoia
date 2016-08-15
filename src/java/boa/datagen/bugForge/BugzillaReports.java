@@ -275,7 +275,8 @@ public class BugzillaReports implements BugForge{
 
 	@Override
 	public void buildIssue(boa.types.Toplevel.Project.Builder pr, String details) {
-		// TODO Auto-generated method stub
+		getIssuesWithBuilder(pr, details.substring(0, details.indexOf('@')), details.substring(details.indexOf('@')+1));
+		return;
 	}
 
 

@@ -16,6 +16,17 @@
  */
 package boa.datagen;
 
+import boa.datagen.candoia.CandoiaConfiguration;
+import boa.datagen.candoia.CandoiaUtilities;
+import boa.datagen.forges.AbstractForge;
+import boa.datagen.util.FileIO;
+import boa.datagen.util.Properties;
+import boa.types.Issues;
+import boa.types.Toplevel.Project;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.PosixParser;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,24 +38,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.PosixParser;
-import org.mockito.internal.util.ArrayUtils;
-
-import boa.datagen.candoia.CandoiaConfiguration;
-import boa.datagen.candoia.CandoiaUtilities;
-import boa.datagen.forges.AbstractForge;
-import boa.datagen.util.FileIO;
-import boa.datagen.util.Properties;
-import boa.types.Toplevel.Project;
-
 /**
  * The main entry point for Boa tools for generating datasets.
  *
  * @author hridesh
- * 
+ *
  */
 public class BoaGenerator {
 	private int maxThread = Integer
@@ -73,13 +71,15 @@ public class BoaGenerator {
 				return;
 			} else { // remote repository analysis
 				String[] local = new String[0];
+				String[] clone = new String[0];
+				String[] bugs = new String[0];
 				;
 				if (cl.hasOption("clone")) {
 					generator.getProjectFromRemote(cl.getOptionValue("clone").split(","));
 				} else if (cl.hasOption("repo")) {
 					local = cl.getOptionValue("repo").split(",");
 				}
-				generator.buildProject(local);
+				generator.buildProject(clone, local, bugs);
 			}
 		} else {
 			System.err.println(
@@ -88,16 +88,12 @@ public class BoaGenerator {
 		}
 	}
 
-	public void generate(String[] clone, String[] local) {
+	public void generate(String[] clone, String[] local, String[] bugs) {
 		ArrayList<String> actualCloning = CandoiaUtilities.getToBeCloned(
 				DefaultProperties.GH_JSON_CACHE_PATH + "/" + DefaultProperties.CLONE_DIR_NAME,
 				new ArrayList<String>(Arrays.asList(clone)));
 		getProjectFromRemote(actualCloning.toArray(new String[0]));
-		ArrayList<String> nonStandardForge = getNonForgeClonedPaths(clone);
-		String[] nonStandardForgeAsArray = nonStandardForge.toArray(new String[0]);
-		String[] localAndNonStandardForge = (String[]) org.apache.commons.lang.ArrayUtils.addAll(local,
-				nonStandardForgeAsArray);
-		buildProject(localAndNonStandardForge);
+		buildProject(clone, local, bugs);
 	}
 
 	private ArrayList<String> getNonForgeClonedPaths(String[] clone) {
@@ -196,31 +192,49 @@ public class BoaGenerator {
 		return true;
 	}
 
-	private void buildProject(String[] localRepos) {
-		HashMap<String, byte[]> repos = new HashMap<>();
+	private void buildProject(String[] clone, String[] localRepos, String[] bugs) {
+		final HashMap<String, byte[]> repos = new HashMap<>();
 		File jsonFiles = new File(DefaultProperties.GH_JSON_PATH);
 		ArrayList<String> listOfForges = CandoiaConfiguration.getSupportedForges();
 
 		this.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(maxThread);
-		if (jsonFiles.isDirectory()) {
-			for (File allRepos : jsonFiles.listFiles()) {
-				for (File projectJson : allRepos.listFiles()) {
-					this.executor.execute(new ProjectbuildTask(repos, projectJson, listOfForges));
-				}
+		/*
+		 * Building all remote repository as project
+		 */
+
+		if(jsonFiles.isDirectory()){
+			for(int i =0; i< clone.length; i++){
+				String path = convertCloneRepoPath(clone[i]);
+				this.executor.execute(new ProjectbuildTask(repos, new File(path), listOfForges, bugs[i]));
 			}
 		}
-		for (String local : localRepos) {
-			Project pr = AbstractForge.buildLocalProject(local);
-			synchronized (repos) {
-				repos.put(pr.getId(), pr.toByteArray());
-			}
-		}
+
 		executor.shutdown();
 		try {
 			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+
+
+		/*
+		 * Building all local repository as project
+		 */
+		for(int i =0; i < localRepos.length; i++){
+			String local = localRepos[i];
+			Project pr = AbstractForge.buildLocalProject(local);
+			Project.Builder pb = pr.toBuilder();
+			String bugUrl = bugs[bugs.length-localRepos.length-i];
+			Issues.IssueRepository.Builder ir = Issues.IssueRepository.newBuilder();
+			ir.setUrl(bugUrl);
+			ir.setKind(Issues.IssueRepository.IssueRepositoryKind.UNKNOWN);
+			pb.addIssueRepositories(ir.build());
+			pr = pb.build();
+			synchronized (repos) {
+				repos.put(pr.getId(), pr.toByteArray());
+			}
+		}
+
 		File output = new File(DefaultProperties.GH_JSON_CACHE_PATH);
 		output.mkdirs();
 		FileIO.writeObjectToFile(repos, DefaultProperties.GH_JSON_CACHE_PATH + "/buf-map", false);
@@ -230,7 +244,6 @@ public class BoaGenerator {
 			SeqProjectCombiner.combine();
 			MapFileGenerator.generateMap(DefaultProperties.GH_JSON_CACHE_PATH);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -278,14 +291,16 @@ public class BoaGenerator {
 	}
 
 	public static class ProjectbuildTask implements Runnable {
-		private HashMap<String, byte[]> repos;
+		final private HashMap<String, byte[]> repos;
 		private File projectJson;
 		private ArrayList<String> listOfForges;
+		private String bugUrl;
 
-		public ProjectbuildTask(HashMap<String, byte[]> repos, File projectJson, ArrayList<String> listOfForges) {
+		public ProjectbuildTask(HashMap<String, byte[]> repos, File projectJson, ArrayList<String> listOfForges, String bugUrl) {
 			this.repos = repos;
 			this.projectJson = projectJson;
 			this.listOfForges = listOfForges;
+			this.bugUrl = bugUrl;
 		}
 
 		public void run() {
@@ -296,6 +311,12 @@ public class BoaGenerator {
 						AbstractForge forgeHandler = getCorrectForgeHandler(file, listOfForges);
 						if (forgeHandler != null) {
 							Project project = forgeHandler.toBoaProject(file);
+							Project.Builder pb = project.toBuilder();
+							Issues.IssueRepository.Builder ir = Issues.IssueRepository.newBuilder();
+							ir.setUrl(bugUrl);
+							ir.setKind(Issues.IssueRepository.IssueRepositoryKind.UNKNOWN);
+							pb.addIssueRepositories(ir.build());
+							project = pb.build();
 							synchronized (repos) {
 								repos.put(project.getId(), project.toByteArray());
 							}
@@ -306,5 +327,10 @@ public class BoaGenerator {
 				}
 			}
 		}
+	}
+
+	private String convertCloneRepoPath(String cloneUrl){
+		String[] details = cloneUrl.split("/");
+		return DefaultProperties.GH_JSON_PATH +"/" + details[details.length-2] + "/" + details[details.length-1];
 	}
 }

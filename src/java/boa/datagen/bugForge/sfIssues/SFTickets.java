@@ -61,8 +61,11 @@ public class SFTickets implements BugForge{
 
 	@Override
 	public void buildIssue(Builder pr, String details) {
+		if(details.endsWith("/")){
+			details = details.substring(0, details.length()-1);
+		}
 		String detail[] = details.split("/");
-		String projName = detail[detail.length-1];
+		String projName = detail[detail.length-2];
 		getIssuesWithBuilder(pr, projName);
 	}
 

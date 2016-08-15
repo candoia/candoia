@@ -287,12 +287,6 @@ public class ForgeGithub extends AbstractForge {
 		}
 		return null;
 	}
-	// @Override
-	// public boolean buildProject(String url) {
-	// this.getJSON(url, DefaultProperties.GH_JSON_PATH);
-	// this.cloneRepo(url, DefaultProperties.GH_GIT_PATH);
-	// return false;
-	// }
 
 	@Override
 	public String getDirName(String URL) {

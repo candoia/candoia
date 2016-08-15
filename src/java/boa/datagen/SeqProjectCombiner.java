@@ -52,7 +52,6 @@ public class SeqProjectCombiner {
 	}
 
 	public static void combine() throws IOException {
-		System.out.println("Combiner method has been called");
 		Configuration conf = new Configuration();
 		FileSystem fileSystem = FileSystem.get(conf);
 		String base = DefaultProperties.GH_JSON_CACHE_PATH;

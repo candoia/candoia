@@ -127,13 +127,12 @@ public abstract class AbstractCommit {
 		final Person author = parsePerson(this.author);
 		final Person committer = parsePerson(this.committer);
 		revision.setAuthor(author == null ? committer : author);
-		revision.setCommitter(committer);
+		revision.setCommitter(committer == null ? author : committer);
 
 		long time = -1;
 		if (date != null)
 			time = date.getTime() * 1000;
 		revision.setCommitDate(time);
-
 		if (message != null)
 			revision.setLog(message);
 		else

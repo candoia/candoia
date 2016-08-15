@@ -31,6 +31,7 @@ public class ForgeSF extends AbstractForge {
    */
 	@Override
 	public boolean cloneRepo(String URL, String repoPath) {
+		URL = URL.substring(URL.indexOf('@') + 1, URL.length());
 		if(URL.contains("git")){
 			return GITRepositoryCloner.clone(URL, repoPath);
 		}else if(URL.contains("svn")) try {
@@ -60,10 +61,7 @@ public class ForgeSF extends AbstractForge {
 			// Because source forge naming convention is to follow code.sf.net/proj/repo
 			// we use the second last item
 			String targetURL = "http://sourceforge.net/rest/p/" + temp[temp.length - 2];
-			System.out.println("ForgeSF has received target URL:" + targetURL);
-			// String password = readPassword();
-			// String password = "candoiauser2016";
-			String password = "candoiauser";
+			 String password = "candoiauser2016";
 			return new MetadataCacher(targetURL, userName, password);
 		}
 	}
@@ -76,7 +74,6 @@ public class ForgeSF extends AbstractForge {
 		if (!dir.exists())
 			dir.mkdirs();
 		File[] files = dir.listFiles();
-
 		Arrays.sort(files, new Comparator<File>() {
 			@Override
 			public int compare(File f1, File f2) {
@@ -92,44 +89,40 @@ public class ForgeSF extends AbstractForge {
 		pageNumber = files.length;
 		if (pageNumber > 0)
 			pageContent = FileIO.readFileContents(files[pageNumber - 1]);
-		if (mc.authenticate()) {
-			while (true) {
-				mc.getResponseJson();
-				pageContent = mc.getContent();
-				if (pageContent.equals("[]"))
-					break;
-				if (!pageContent.isEmpty()) {
-					String path = jsonPath + "/issues/";
-					File f = new File(path);
-					if (!f.exists()) {
-						f.mkdirs();
-					}
-					path = jsonPath + "/issues/issue" + pageNumber + ".json";
-					f = new File(path);
-					FileWriter file = null;
-					try {
-						file = new FileWriter(path);
-						file.write(pageContent);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-						return false;
-					} finally {
-						try {
-							file.flush();
-							file.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
+		// if (mc.authenticate()) {
+		while (true) {
+			mc.getResponseJson();
+			pageContent = mc.getContent();
+			if (pageContent.equals("[]"))
+				break;
+			if (!pageContent.isEmpty()) {
+				String path = jsonPath + "/repos/";
+				File f = new File(path);
+				if (!f.exists()) {
+					f.mkdirs();
+				}
+				path = jsonPath + "/issues/issue" + pageNumber + ".json";
+				f = new File(path);
+				FileWriter file = null;
+				try {
+					file = new FileWriter(path);
+					file.write(pageContent);
 					pageNumber++;
-					String newURL = mc.getUrl().substring(0, mc.getUrl().length() - 1);
-					newURL = newURL + (pageNumber + 1);
-					mc.setUrl(newURL);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					return false;
+				} finally {
+					try {
+						file.flush();
+						file.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
-		} else {
-			System.out.println("Authentication failed!");
-			return false;
+			break;
 		}
 		return true;
 	}

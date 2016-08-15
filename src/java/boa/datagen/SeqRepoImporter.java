@@ -76,19 +76,6 @@ public class SeqRepoImporter {
 	private static FileSystem fileSystem = null;
 	private static String base = null;
 
-	public static void main(String[] args) throws IOException, InterruptedException {
-		conf = new Configuration();
-		conf.set("fs.default.name", "hdfs://boa-njt/");
-		fileSystem = FileSystem.get(conf);
-		base = conf.get("fs.default.name", "");
-
-		getProcessedProjects();
-		getRepoInfo();
-
-		for (int i = 0; i < poolSize; i++)
-			new Thread(new ImportTask(i)).start();
-	}
-
 	// This methods work for data generation from local systems
 	public static void importFromLocalSystem() throws IOException, InterruptedException {
 		conf = new Configuration();
@@ -168,15 +155,6 @@ public class SeqRepoImporter {
 		System.out.println("Got cached projects: " + cacheOfProjects.size());
 	}
 
-	private static void getRepoInfo() {
-		String content = FileIO.readFileContents(new File("repos-Java-org-commits.csv"));
-		Scanner sc = new Scanner(content);
-		while (sc.hasNextLine()) {
-			String[] parts = sc.nextLine().split(",");
-			repoInfo.put(parts[0], new String[] { parts[1], parts[3] });
-		}
-		sc.close();
-	}
 
 	private static File exists(String name, String listId) {
 		for (int i = 2; i <= 4; i++) {
@@ -203,178 +181,6 @@ public class SeqRepoImporter {
 
 	private static void printError(final Throwable e, final String message) {
 		e.printStackTrace();
-	}
-
-	public static class ImportTask implements Runnable {
-		private static final int MAX_COUNTER = 10000;
-		SequenceFile.Writer projectWriter, astWriter;
-		private int id;
-		private int counter = 0;
-
-		public ImportTask(int id) throws IOException {
-			this.id = id;
-		}
-
-		public void openWriters() {
-			long time = System.currentTimeMillis() / 1000;
-			String hostname = "" + time;
-			for (int i = 0; i < 3; i++) {
-				try {
-					hostname = InetAddress.getLocalHost().getHostName();
-					break;
-				} catch (UnknownHostException e) {
-					e.printStackTrace();
-				}
-			}
-			String suffix = hostname + "-" + id + "-" + time + ".seq";
-			while (true) {
-				try {
-					projectWriter = SequenceFile.createWriter(fileSystem, conf,
-							new Path(base + "tmprepcache/2015-08/projects-" + suffix), Text.class, BytesWritable.class);
-					astWriter = SequenceFile.createWriter(fileSystem, conf,
-							new Path(base + "tmprepcache/2015-08/ast-" + suffix), Text.class, BytesWritable.class);
-					break;
-				} catch (Throwable t) {
-					t.printStackTrace();
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-					}
-				}
-			}
-		}
-
-		public void closeWriters() {
-			while (true) {
-				try {
-					projectWriter.close();
-					astWriter.close();
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-					}
-					break;
-				} catch (Throwable t) {
-					t.printStackTrace();
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-					}
-				}
-			}
-		}
-
-		@Override
-		public void run() {
-			openWriters();
-			while (true) {
-				try {
-					if (numOfProcessedProjects.get() == -1)
-						break;
-					int pid = numOfProcessedProjects.getAndIncrement();
-					if (pid == cacheOfProjects.size()) {
-						if (listId.get() > maxListId) {
-							numOfProcessedProjects.set(-1);
-							break;
-						}
-						buildCacheOfProjects(listId.getAndIncrement());
-						numOfProcessedProjects.set(0);
-						continue;
-					} else if (pid > cacheOfProjects.size()) {
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-						}
-						continue;
-					}
-					byte[] bs = cacheOfProjects.get(pid);
-					Project cachedProject = null;
-					try {
-						cachedProject = Project.parseFrom(bs);
-						if (processedProjectIds.contains(cachedProject.getId()))
-							continue;
-					} catch (InvalidProtocolBufferException e) {
-						e.printStackTrace();
-						continue;
-					}
-					cacheOfProjects.set(pid, null);
-					bs = null;
-
-					final String name = cachedProject.getName();
-
-					if (debug)
-						System.out.println("Processing list " + (listId.get() - 1) + ": " + pid + " / "
-								+ cacheOfProjects.size() + " " + cachedProject.getId() + " " + name);
-
-					String[] info = repoInfo.get(name);
-					Project project = cachedProject;
-					if (info != null && exists(name, info[1]) != null)
-						project = storeRepository(cachedProject, 0);
-
-					if (debug)
-						System.out.println("Putting in sequence file: " + project.getId());
-
-					// store the project metadata
-					try {
-						projectWriter.append(new Text(project.getId()), new BytesWritable(project.toByteArray()));
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					counter++;
-					if (counter >= MAX_COUNTER) {
-						closeWriters();
-						openWriters();
-						counter = 0;
-					}
-				} catch (Throwable e) {
-					e.printStackTrace();
-				}
-			}
-
-			closeWriters();
-		}
-
-		private Project storeRepository(final Project project, final int i) {
-			final CodeRepository repo = project.getCodeRepositories(i);
-			final Project.Builder projBuilder = Project.newBuilder(project);
-
-			final String name = project.getName();
-			final File gitDir = exists(name, repoInfo.get(name)[1]);
-
-			if (debug)
-				System.out.println("Has repository: " + name);
-
-			final AbstractConnector conn = new GitConnector(gitDir.getAbsolutePath());
-			try {
-				final CodeRepository.Builder repoBuilder = CodeRepository.newBuilder(repo);
-				final String repoKey = "g:" + project.getId() + keyDelim + repo.getKind().getNumber();
-				for (final Revision rev : conn.getCommits(true, astWriter, repoKey, keyDelim)) {
-					/*
-					 * if (debug) System.out.println("Storing '" + name +
-					 * "' revision: " + rev.getId());
-					 */
-
-					// build new rev w/ no namespaces
-					final Revision.Builder revBuilder = Revision.newBuilder(rev);
-					repoBuilder.addRevisions(revBuilder);
-				}
-
-				projBuilder.setCodeRepositories(i, repoBuilder);
-				return projBuilder.build();
-			} catch (final Exception e) {
-				printError(e, "unknown error");
-			} finally {
-				try {
-					if (conn != null) {
-						conn.close();
-					}
-				} catch (Exception e) {
-					printError(e, "error closing GitConnector");
-				}
-			}
-
-			return project;
-		}
 	}
 
 	public static class ImportTaskLocal extends Thread {
@@ -448,9 +254,6 @@ public class SeqRepoImporter {
 					e.printStackTrace();
 				}
 				final String dirName = cachedProject.getName();
-				if (debug)
-					System.out.println("Processing " + id + " / " + cacheOfProjects.size() + " " + cachedProject.getId()
-							+ " " + dirName);
 				String repoPath = DefaultProperties.GH_GIT_PATH + "/" + dirName;
 				File repo = new File(repoPath);
 				/*
@@ -460,17 +263,18 @@ public class SeqRepoImporter {
 				if (repo.isDirectory() && repo.listFiles().length == 1
 						&& !CandoiaConfiguration.isProperVCSDir(repo.getAbsolutePath())) {
 					repoPath = repo.listFiles()[0].getAbsolutePath();
-					System.out.println("updated path: "+ repoPath);
 				}
 				Project project = null;
 				if (new File(repoPath).isDirectory()) {
 					project = storeRepositoryFrom(cachedProject, 0, new File(repoPath));
+
 				} else {
 					project = storeRepositoryFrom(cachedProject, 0, new File(cachedProject.getProjectUrl()));
 				}
 
-				if (project.getIssueRepositoriesCount() > 0) {
-					project = storeIsseuesFrom(project, project.getIssueRepositories(0).getUrl());
+				for(IssueRepository ir: project.getIssueRepositoriesList()){
+					if(ir.getUrl().trim().length() > 0)
+					  project = storeIsseuesFrom(project, ir.getUrl());
 				}
 
 				try {
@@ -491,8 +295,6 @@ public class SeqRepoImporter {
 			final String name = project.getName();
 			final File gitDir = repoDir;
 
-			if (debug)
-				System.out.println("Has repository: " + name);
 			final AbstractConnector conn = CandoiaConfiguration.getVCS(gitDir.getAbsolutePath());
 			try {
 				final CodeRepository.Builder repoBuilder = CodeRepository.newBuilder(repo);
@@ -562,7 +364,7 @@ public class SeqRepoImporter {
 			final IssueRepository IRepo = project.getIssueRepositories(0);
 			final IssueRepository.Builder iRepoBuilder = IssueRepository.newBuilder(IRepo);
 			BugForge bugForge = CandoiaConfiguration.getBugForge(URL);
-			bugForge.buildIssue(projBuilder, project.getProjectUrl());
+			bugForge.buildIssue(projBuilder, URL);
 			return projBuilder.build();
 		}
 	}

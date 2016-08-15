@@ -27,7 +27,6 @@ public class JiraIssues implements BugForge {
 	static int ids = 0;
 
 	public final List<boa.types.Issues.Issue> importBugs(String url, String project) {
-		// system.out.println("url in importbugs:"+url);
 		List<boa.types.Issues.Issue> issues = new ArrayList<>();
 		AbstractHttpSession session = new JiraRpcSession();
 		try {
@@ -37,16 +36,11 @@ public class JiraIssues implements BugForge {
 			if (session.open()) {
 				DefaultSearchData searchData = new DefaultSearchData();
 				searchData.add("jql", "project = " + project);
-				// searchData.add("jql", "project = HADOOP COMMON AND issuetype
-				// = Bug AND status in (Resolved, Closed) AND resolution =
-				// Fixed");
 				Iterator i = session.searchBugs(searchData, null).iterator();
 
 				while (i.hasNext()) {
 					Issue issue = (Issue) i.next();
 					boa.types.Issues.Issue.Builder issueBuilder = boa.types.Issues.Issue.newBuilder();
-					System.out.println(issue.getId());
-					;
 					try {
 						issues.add(storeProperties(issueBuilder, issue));
 					} catch (Exception e) {
@@ -243,17 +237,17 @@ public class JiraIssues implements BugForge {
 	}
 
 	public static void getIssuesWithBuilder(boa.types.Toplevel.Project.Builder project, String url, String product) {
-		List<boa.types.Issues.Issue> issues = null;
-		// system.out.println("Jira received url:"+url+"product:"+product);
+		List<boa.types.Issues.Issue> issues = new ArrayList<>();
 		JiraIssues jira = new JiraIssues();
 		final IssueRepository.Builder issueRepoBuilder = IssueRepository.newBuilder();
 		issueRepoBuilder.setUrl(url);
+		issueRepoBuilder.setKind(IssueRepository.IssueRepositoryKind.JIRA);
 		try {
 			issues = jira.importBugs(url, product);
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
+			System.out.println("Could not find issues on: "+ url);
 		}
-		// system.out.println("Total issues from jira : " + issues.size());
 		for (boa.types.Issues.Issue issue : issues) {
 			boa.types.Issues.Issue.Builder issueBuilder = boa.types.Issues.Issue.newBuilder();
 			issueRepoBuilder.addIssues(issue);
@@ -263,7 +257,8 @@ public class JiraIssues implements BugForge {
 
 	@Override
 	public void buildIssue(boa.types.Toplevel.Project.Builder pr, String details) {
-		// TODO Auto-generated method stub
+		getIssuesWithBuilder(pr, details.substring(details.indexOf('@')+1), details.substring(0, details.indexOf('@')));
+		return;
 	}
 
 }

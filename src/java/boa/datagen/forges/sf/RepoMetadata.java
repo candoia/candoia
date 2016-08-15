@@ -328,7 +328,7 @@ public class RepoMetadata {
 		}
 	}
 
-	public Project toBoaMetaDataProtobuf() {
+	public Project 	toBoaMetaDataProtobuf() {
 		String jsonTxt = "";
 		try {
 			BufferedInputStream in = new BufferedInputStream(new FileInputStream(metadataFile));
@@ -344,8 +344,6 @@ public class RepoMetadata {
 			System.err.println("File is empty " + metadataFile.getAbsolutePath());
 			return null;
 		}
-		// System.out.println(jsonTxt);
-
 		JSONObject json = null;
 		try {
 			json = (JSONObject) JSONSerializer.toJSON(jsonTxt);
@@ -360,8 +358,7 @@ public class RepoMetadata {
 		project.setKind(ForgeKind.SOURCEFORGE);
 		if (jsonProject.has("name")) {
 			String[] brokenUrl = jsonProject.get("url").toString().split("/");
-//			project.setName(jsonProject.getString("name"));
-			project.setName("projects/" + brokenUrl[brokenUrl.length-1]);
+			project.setName(brokenUrl[brokenUrl.length-1]);
 		}
 		if (jsonProject.has("url")) {
 			String name = jsonProject.getString("url");
@@ -418,14 +415,6 @@ public class RepoMetadata {
 					project.addOperatingSystems(jsonOSes.getString(i));
 		}
 		if (jsonProject.has("language")) {
-			// ArrayList<String> langs = new ArrayList<String>();
-			// JSONArray languages =
-			// jsonProject.getJSONArray("programming-languages");
-			// if (languages.isArray())
-			// for (int i = 0; i < languages.size(); i++)
-			// langs.add(languages.getString(i).trim().toLowerCase());
-			// if (!langs.isEmpty())
-			// project.addAllProgrammingLanguages(langs);
 			String lang = jsonProject.getString("language");
 			project.addProgrammingLanguages(lang);
 
@@ -580,7 +569,7 @@ public class RepoMetadata {
 				JSONObject bug = (JSONObject)obj;
 				if(bug.has("name") && "tickets".equals(bug.get("name"))){
 					IssueRepository.Builder ir = IssueRepository.newBuilder();
-					issueRepository = "https://sourceforge.net" + bug.get("url");
+					issueRepository = "https://sourceforge.net/rest/" + bug.get("url");
 					ir.setUrl(issueRepository);
 					ir.setKind(IssueRepositoryKind.SVNTICKETS);
 					project.addIssueRepositories(ir.build());

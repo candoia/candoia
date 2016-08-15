@@ -87,7 +87,6 @@ public class SVNConnector extends AbstractConnector {
             this.repository.setAuthenticationManager(this.authManager);
             this.latestRevision = this.repository.getLatestRevision();
         } catch (final SVNException e) {
-            e.printStackTrace();
             return false;
         }
         return true;

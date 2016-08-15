@@ -51,8 +51,7 @@ public class GithubIssues implements BugForge {
 		}
 	}
 
-	public static void getIssuesWithBuilder(boa.types.Toplevel.Project.Builder project, String uname, String pname,
-			String url, int i) {
+	public static void getIssuesWithBuilder(boa.types.Toplevel.Project.Builder project, String uname, String pname, String url) {
 		User user = new User(uname);
 		Project pr = new Project(user, pname);
 		if (searchGitHub == null) {
@@ -247,9 +246,10 @@ public class GithubIssues implements BugForge {
 
 	@Override
 	public void buildIssue(Builder pr, String url) {
-		String projName = url.substring(url.lastIndexOf("/"), url.length());
-		String details[] = url.split("/");
+		String prjUrl = pr.getProjectUrl();
+		String projName = prjUrl.substring(prjUrl.lastIndexOf("/")+1, prjUrl.length());
+		String details[] = prjUrl.split("/");
 		String ownerName = details[details.length - 2];
-		this.getIssuesWithBuilder(pr, ownerName, projName, url, 0);
+		this.getIssuesWithBuilder(pr, ownerName, projName, url);
 	}
 }

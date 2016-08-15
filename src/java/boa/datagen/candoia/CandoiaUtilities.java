@@ -12,7 +12,6 @@ import boa.datagen.scm.AbstractConnector;
 import boa.types.Code;
 import boa.types.Toplevel;
 import net.sf.json.JSONObject;
-import org.json.*;
 
 /**
  * Created by nmtiwari on 7/15/16.
