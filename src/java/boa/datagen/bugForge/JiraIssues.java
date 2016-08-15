@@ -47,8 +47,6 @@ public class JiraIssues implements BugForge {
 						System.out.println("Exception found in issue : " + issue.getId());
 					}
 				}
-
-				// system.out.println("Total issues : " + issues.size());
 				session.close();
 			}
 
@@ -245,15 +243,13 @@ public class JiraIssues implements BugForge {
 		try {
 			issues = jira.importBugs(url, product);
 		} catch (Exception e) {
-//			e.printStackTrace();
 			System.out.println("Could not find issues on: "+ url);
 		}
 		System.out.println("jira issues:" + issues.size());
 		for (boa.types.Issues.Issue issue : issues) {
-			boa.types.Issues.Issue.Builder issueBuilder = boa.types.Issues.Issue.newBuilder();
 			issueRepoBuilder.addIssues(issue);
 		}
-		project.addIssueRepositories(issueRepoBuilder);
+		project.addIssueRepositories(issueRepoBuilder.build());
 	}
 
 	@Override
