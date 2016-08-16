@@ -1,0 +1,45 @@
+# How is transient keyword used in Java?
+p: Project = input;
+TransientTotal: output sum of int;
+TransientMax: output maximum(1) of string weight int;
+TransientMin: output minimum(1) of string weight int;
+TransientMean: output mean of int;
+
+count := 0;
+s: stack of int;
+
+visit(p, visitor {
+	before node: CodeRepository -> {
+		# only look at the latest snapshot
+		# and only include Java files
+		snapshot := getsnapshot(node, "SOURCE_JAVA_JLS");
+		foreach (i: int; def(snapshot[i]))
+			visit(snapshot[i]);
+		stop;
+	}
+	before node: Declaration -> {
+		# only interested in fields, which only occur inside (anonymous) classes
+		if (node.kind == TypeKind.CLASS || node.kind == TypeKind.ANONYMOUS) {
+			# store old value
+			push(s, count);
+			count = 0;
+
+			# find uses and increment counter
+			foreach (i: int; def(node.fields[i]))
+				foreach (j: int; node.fields[i].modifiers[j].kind == ModifierKind.OTHER
+								&& node.fields[i].modifiers[j].other == "transient")
+					count++;
+		} else
+			stop;
+	}
+	after node: Declaration -> {
+		# output result
+		TransientTotal << count;
+		TransientMax << p.id weight count;
+		TransientMin << p.id weight count;
+		TransientMean << count;
+
+		# restore previous value
+		count = pop(s);
+	}
+});

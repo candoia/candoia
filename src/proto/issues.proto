@@ -1,0 +1,123 @@
+package boa.types;
+
+import "shared.proto";
+
+option optimize_for = SPEED;
+
+message IssueRepository {
+    enum IssueRepositoryKind {
+        UNKNOWN = 1;
+        GITISSUE = 2;
+        SVNTICKETS = 3;
+        BUGZILLA = 4;
+        JIRA = 5;
+    }
+    required string url = 1;
+    repeated Issue issues = 2;
+    required IssueRepositoryKind kind = 3;
+}
+
+message Issue {
+    enum IssueKind {
+        UNKNOWN = 1;
+        BUG = 2;
+        DUPLICATE = 3;
+        ENHANCEMENT = 4;
+        HELP_WANTED = 5;
+        INVALID = 6;
+        QUESTION = 7;
+        WONTFIX = 8;
+        TASK = 9;
+        INCOMPLETE = 10;
+        WORKSFORME = 11;
+    }
+    enum Priority {
+        P1 = 1;
+        P2 = 2;
+        P3 = 3;
+        P4 = 4;
+        P5 = 5;
+    }
+    enum Severity {
+        BLOCKER = 1;
+        CRITICAL = 2;
+        MAJOR = 3;
+        NORMAL = 4;
+        MINOR = 5;
+        TRIVIAL = 6;
+    }
+    enum State {
+        UNCONFIRMED = 1;
+        NEW = 2;
+        ASSIGNED = 3;
+        REOPENED = 4;
+        RESOLVED = 5;
+        VERIFIED = 6;
+        OPEN = 7;
+    }
+    required int32 id = 1;;
+    optional int32 number = 2;
+    required IssueKind kind = 3;
+    repeated IssueComment comments = 4;
+    repeated IssueAttachment attachments = 5;
+    required string title = 6;
+    optional string body = 7;
+    required State state = 8;
+    optional Person assignee = 9;
+    optional Person created_by = 10;
+    optional Person closed_by = 11;
+    required int64 created_at = 12;
+    optional int64 updated_at = 13;
+    optional int64 closed_at = 14;
+    optional PullRequest pull_request = 15;
+    optional Milestone milestone = 16;
+}
+
+message IssueComment {
+    required int32 id = 1;
+    required Person user = 2;
+    required uint64 created_at = 3;
+    optional uint64 updated_at = 4;
+    optional string body = 5;
+    repeated string attachments = 6;
+}
+
+message IssueAttachment {   
+    required int32 id = 1;
+    optional string type = 2;
+    optional string description = 3;
+    required string filename = 4;
+    optional bytes content = 5;
+    optional uint64 date = 6;
+    optional string url = 7;
+}
+
+message PullRequest {
+    required int32 id = 1;
+    optional uint64 merged_at = 2;
+    optional string merge_commit_sha = 3;
+    optional int32 review_comments = 4;
+    optional int32 commits = 5;
+    optional bool merged = 6;
+    optional bool mergeable = 7;
+    optional string mergeable_state = 8;
+    optional Person merged_by = 9;
+    optional int32 additions = 10;
+    optional int32 deletions = 11;
+    optional int32 changed_files = 12;
+}
+
+message Milestone {
+    required int32 id = 1;
+    required int32 number = 2;
+    optional string state = 3;
+    optional string title = 4;
+    optional string description = 5;
+    optional Person creator = 6;
+    optional int32 open_issues = 7;
+    optional int32 closed_issues = 8;
+    optional uint64 created_at = 9;
+    optional uint64 updated_at = 10;
+    optional uint64 due_on = 11;
+}
+

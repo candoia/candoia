@@ -1,0 +1,45 @@
+ChurnRate: output sum[string] of int;
+fileCollection: output collection of string;
+p: Project = input;
+
+# map of file names to the last revision of that file
+LOCs: map[string] of int;
+churn: map[string] of int;
+changes: output sum of int;
+revisionCount: int = 0;
+
+
+visit(p, visitor {
+	before node: Revision ->{
+		revisionCount++;
+	}
+
+	before node: ChangedFile -> {
+	    lines: int = node.loc;
+		if (haskey(LOCs, node.name)) {
+			prevLOC: int = LOCs[node.name];
+			change: int = prevLOC - lines;
+			if(change > 0){
+			  churn[node.name] = churn[node.name] + change;
+			}else{
+			  churn[node.name] = churn[node.name] + (-1 * change);
+			}
+		}else{
+		  churn[node.name] = lines;
+		  LOCs[node.name] = lines;
+		}
+		stop;
+	}
+});
+
+allKeys := keys(churn);
+total: int = len(allKeys);
+
+for(i:int = 0; i< total; i++){
+  fileName: string = allKeys[i];
+  
+  aggregateValue: int = churn[fileName]/revisionCount;
+  if(aggregateValue > 1){
+    ChurnRate[fileName] << aggregateValue;
+  }
+}

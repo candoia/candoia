@@ -1,0 +1,17 @@
+AddedNullCheck: output sum of int;
+p: Project = input;
+
+bugs : map[string] of bool;
+logs : output collection of string;
+test : output sum of int;
+
+visit(p, visitor {
+	before node : Issue ->{
+	  bugs[node.number] = true;  
+	}
+});
+
+allBugs := keys(bugs);
+totalBugs : int := len(allBugs);
+
+test << totalbugs;

@@ -1,0 +1,37 @@
+# How often are generic fields declared in each project?
+p: Project = input;
+GenericFields: output sum[string] of int;
+
+visit(p, visitor {
+	before node: Type ->
+		if (strfind("<", node.name) > -1)
+			GenericFields[p.project_url] << 1;
+
+	before node: Declaration -> {
+		# check all fields
+		foreach (i: int; node.fields[i])
+			visit(node.fields[i]);
+
+		# also look at nested declarations
+		foreach (i: int; node.methods[i])
+			visit(node.methods[i]);
+		foreach (i: int; node.nested_declarations[i])
+			visit(node.nested_declarations[i]);
+		stop;
+	}
+	before node: Method -> {
+		foreach (i: int; node.statements[i])
+			visit(node.statements[i]);
+		stop;
+	}
+	before node: Statement -> {
+		foreach (i: int; node.statements[i])
+			visit(node.statements[i]);
+		if (def(node.type_declaration))
+			visit(node.type_declaration);
+		stop;
+	}
+
+	# fields cant be below expressions or modifiers
+	before Expression, Modifier -> stop;
+});

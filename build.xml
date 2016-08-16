@@ -1,0 +1,363 @@
+<?xml version="1.0" ?>
+<project name="boa" default="package">
+	<!-- paths -->
+	<property name="src.proto" location="src/proto" />
+	<property name="dst.proto" location="src/compiled-proto" />
+
+	<!-- Java version -->
+	<property name="ant.build.javac.source" value="1.7" />
+	<property name="ant.build.javac.target" value="1.7" />
+
+	<!-- ANTLR version -->
+	<property name="antlr.version" value="4.5" />
+
+	<!-- debug properties -->
+	<property name="debug.enabled" value="on" />
+	<property name="debug.level" value="lines,vars,source" />
+
+
+	<!-- paths -->
+	<path id="project.class.path">
+		<fileset dir="lib">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="rtlib">
+			<include name="**/*.jar" />
+		</fileset>
+		<dirset dir="build/classes">
+			<include name="**" />
+		</dirset>
+	</path>
+
+	<path id="test.class.path">
+		<path refid="project.class.path" />
+		<dirset dir="build/tests">
+			<include name="**" />
+		</dirset>
+	</path>
+
+	<path id="src.paths">
+		<pathelement location="src/java" />
+	</path>
+	<property name="src.paths" refid="src.paths" />
+	<path id="src.parser.paths">
+		<pathelement location="build/java" />
+		<path refid="src.paths" />
+	</path>
+	<property name="src.parser.paths" refid="src.parser.paths" />
+
+
+	<!-- ensure target dirs exist -->
+	<target name="-init">
+		<mkdir dir="build/java/boa/parser" />
+		<mkdir dir="build/classes" />
+		<mkdir dir="build/depcache" />
+		<mkdir dir="build/tests" />
+		<mkdir dir="dist" />
+	</target>
+
+	<!-- do a dependency check -->
+	<target name="-check-deps">
+		<depend srcdir="src/test;src/compiled-proto;${src.paths};${src.parser.paths}" destdir="build/classes" cache="build/depcache" closure="yes" />
+	</target>
+
+	<!-- Protocol Buffers schemas -->
+	<target name="-check-protobuf" depends="-init">
+		<condition property="protobuf.uptodate">
+			<and>
+				<uptodate srcfile="src/proto/ast.proto" targetfile="src/compiled-proto/boa/types/Ast.java" />
+				<uptodate srcfile="src/proto/code.proto" targetfile="src/compiled-proto/boa/types/Code.java" />
+				<uptodate srcfile="src/proto/diff.proto" targetfile="src/compiled-proto/boa/types/Diff.java" />
+				<uptodate srcfile="src/proto/issues.proto" targetfile="src/compiled-proto/boa/types/Issues.java" />
+				<uptodate srcfile="src/proto/shared.proto" targetfile="src/compiled-proto/boa/types/Shared.java" />
+				<uptodate srcfile="src/proto/toplevel.proto" targetfile="src/compiled-proto/boa/types/Toplevel.java" />
+			</and>
+		</condition>
+	</target>
+
+	<target name="-translate-protobuf" depends="-check-protobuf" unless="protobuf.uptodate">
+		<echo level="error" message="Translating Protocol Buffer files to Java" />
+		<apply executable="protoc" parallel="true">
+			<arg value="--proto_path=${src.proto}" />
+			<arg value="--java_out=src/compiled-proto" />
+			<srcfile />
+			<fileset dir="${src.proto}" includes="*.proto" />
+		</apply>
+	</target>
+
+	<target name="compile-protobuf" depends="-translate-protobuf,-check-deps" description="Compiles the generated protobuf code.">
+		<javac includeantruntime="true" srcdir="src/compiled-proto" destdir="build/classes" debug="${debug.enabled}" debuglevel="${debug.level}">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
+
+	<target name="clean-proto" description="Clean the compiled protobuf files.">
+		<delete>
+			<fileset dir="build/classes">
+				<patternset>
+					<include name="boa/types/" />
+					<exclude name="boa/types/Boa*" />
+					<exclude name="boa/types/proto/*" />
+				</patternset>
+			</fileset>
+		</delete>
+	</target>
+
+
+	<!-- parser -->
+	<target name="-check-parser" depends="-init">
+		<condition property="parser.uptodate">
+			<and>
+				<uptodate srcfile="src/antlr/Boa.g" targetfile="build/java/boa/parser/BoaParser.java" />
+				<uptodate srcfile="src/antlr/Boa.g" targetfile="build/java/boa/parser/BoaLexer.java" />
+				<uptodate srcfile="src/antlr/Boa.g" targetfile="build/java/boa/parser/BoaListener.java" />
+			</and>
+		</condition>
+	</target>
+
+	<target name="-parser" depends="-check-parser" unless="parser.uptodate">
+		<echo level="error" message="Generating parser code" />
+		<java jar="lib/antlr-${antlr.version}-complete.jar" dir="src/antlr/" fork="true" failonerror="true">
+			<arg value="-o" />
+			<arg value="../../build/java/boa/parser/" />
+			<arg value="-package" />
+			<arg value="boa.parser" />
+			<arg value="Boa.g" />
+		</java>
+	</target>
+
+	<target name="compile-parser" depends="-parser,-check-deps" description="Compile the parser.">
+		<javac includeantruntime="true" srcdir="${src.parser.paths}" destdir="build/classes" debug="${debug.enabled}" debuglevel="${debug.level}">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
+
+	<target name="clean-parser" description="Clean all generated/compiled parser files.">
+		<delete dir="build/java" />
+		<delete dir="build/classes/boa/parser" />
+	</target>
+
+
+	<!-- main compilation targets -->
+	<target name="compile" depends="compile-protobuf,compile-parser,-check-deps" description="Compile the compiler.">
+		<javac includeantruntime="true" srcdir="${src.paths}" destdir="build/classes" debug="${debug.enabled}" debuglevel="${debug.level}">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
+
+	<target name="clean-src" description="Clean the compiled files (excluding protobuf and parser).">
+		<delete>
+			<fileset dir="build/classes">
+				<patternset>
+					<include name="boa/**" />
+					<exclude name="boa/parser/**" />
+					<exclude name="boa/types/**" />
+				</patternset>
+			</fileset>
+			<fileset dir="build/classes/boa/types">
+				<patternset>
+					<include name="Boa*" />
+					<include name="proto/**" />
+				</patternset>
+			</fileset>
+		</delete>
+	</target>
+
+
+	<!-- testing -->
+	<target name="test" depends="-compile-tests" description="Run all unit tests.">
+		<junit fork="yes">
+			<classpath refid="test.class.path" />
+			<batchtest>
+				<formatter type="plain" usefile="false" />
+				<fileset dir="build/tests">
+					<include name="boa/**/Test*.class" />
+					<exclude name="**/*$*.class" />
+				</fileset>
+			</batchtest>
+		</junit>
+		<delete file="SecurityAuth.audit" />
+	</target>
+	<target name="test-lexer" depends="-compile-tests" description="Run lexer unit tests.">
+		<junit fork="yes" haltonfailure="no">
+			<classpath refid="test.class.path" />
+			<test name="boa.test.compiler.TestLexerBad">
+				<formatter type="plain" usefile="false" />
+			</test>
+			<test name="boa.test.compiler.TestLexerGood">
+				<formatter type="plain" usefile="false" />
+			</test>
+		</junit>
+		<delete file="SecurityAuth.audit" />
+	</target>
+	<target name="test-parser" depends="-compile-tests" description="Run parser unit tests.">
+		<junit fork="yes" haltonfailure="no">
+			<classpath refid="test.class.path" />
+			<test name="boa.test.compiler.TestParserBad">
+				<formatter type="plain" usefile="false" />
+			</test>
+			<test name="boa.test.compiler.TestParserGood">
+				<formatter type="plain" usefile="false" />
+			</test>
+		</junit>
+		<delete file="SecurityAuth.audit" />
+	</target>
+	<target name="test-typecheck" depends="-compile-tests" description="Run typechecker unit tests.">
+		<junit fork="yes" haltonfailure="no">
+			<classpath refid="test.class.path" />
+			<test name="boa.test.compiler.TestTypecheckBad">
+				<formatter type="plain" usefile="false" />
+			</test>
+			<test name="boa.test.compiler.TestTypecheckGood">
+				<formatter type="plain" usefile="false" />
+			</test>
+		</junit>
+		<delete file="SecurityAuth.audit" />
+	</target>
+	<target name="test-codegen" depends="-compile-tests" description="Run code generation unit tests.">
+		<junit fork="yes" haltonfailure="no">
+			<classpath refid="test.class.path" />
+			<test name="boa.test.compiler.TestCodegenGood">
+				<formatter type="plain" usefile="false" />
+			</test>
+		</junit>
+		<delete file="SecurityAuth.audit" />
+	</target>
+	<target name="test-knowngood" depends="-compile-tests" description="Run known good tests.">
+		<junit fork="yes" haltonfailure="no">
+			<classpath refid="test.class.path" />
+			<test name="boa.test.compiler.TestGood">
+				<formatter type="plain" usefile="false" />
+			</test>
+		</junit>
+		<delete file="SecurityAuth.audit" />
+	</target>
+
+	<target name="-compile-tests" depends="compile,-check-deps">
+		<javac includeantruntime="true" srcdir="src/test" destdir="build/tests" debug="${debug.enabled}" debuglevel="${debug.level}">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
+
+	<target name="clean-tests" description="Clean the compiled test files.">
+		<delete dir="build/tests" />
+	</target>
+
+
+	<!-- packaging -->
+	<target name="package" depends="package-runtime,package-compiler" description="Package both the compiler and runtime JARs." />
+
+	<target name="package-runtime" depends="compile" description="Package the runtime JAR.">
+		<jar destfile="dist/boa-runtime.jar">
+			<fileset dir="build/classes">
+				<patternset>
+					<include name="boa/" />
+					<include name="com/" />
+					<exclude name="**/compiler/" />
+					<exclude name="**/parser/" />
+					<exclude name="**/boa/types/proto/" />
+					<exclude name="**/boa/types/Boa*" />
+				</patternset>
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="package-compiler" depends="compile" description="Package the compiler JAR.">
+		<jar destfile="dist/boa-compiler.jar">
+			<manifest>
+				<attribute name="Main-Class" value="boa.compiler.BoaCompiler" />
+			</manifest>
+			<fileset dir="build/classes" />
+			<fileset dir="conf" />
+			<fileset dir="templates" />
+			<fileset dir=".">
+				<patternset>
+					<include name="templates/" />
+				</patternset>
+			</fileset>
+			<zipfileset excludes="META-INF/" src="lib/datagen/atlassian-event-2.2.0.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/atlassian-httpclient-apache-httpcomponents-0.11.0.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/atlassian-httpclient-api-0.11.0.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/atlassian-httpclient-spi-0.11.0.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/atlassian-util-concurrent-2.4.0-M9.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/httpasyncclient-4.0-beta3-atlassian-1.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/httpasyncclient-cache-4.0-beta3-atlassian-1.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/httpclient-cache-4.2.1-atlassian-2.jar" />
+			<zipfileset excludes="META-INF/" src="rtlib/antlr-runtime-4.5.jar" />
+			<zipfileset excludes="META-INF/" src="rtlib/protobuf-java-2.5.0.jar" />
+			<zipfileset excludes="META-INF/" src="rtlib/log4j-1.2.15.jar" />
+			<zipfileset excludes="META-INF/" src="rtlib/commons-cli-1.2.jar" />
+			<zipfileset excludes="META-INF/" src="rtlib/scannotation-1.0.3.jar" />
+			<zipfileset excludes="META-INF/" src="rtlib/ST-4.0.8.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/commons-logging-1.1.1.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/commons-configuration-1.10.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/commons-lang-2.5.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/hadoop-core-1.0.4.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/hbase-0.94.5.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/javassist-3.8.0.GA.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/org.eclipse.jgit_4.0.1.201506240215-r.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/svnkit-1.7.6.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/groundhog-0.1.0-jar-with-dependencies.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/json-lib-2.4-jdk15.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/slf4j-api-1.7.7.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/ezmorph-1.0.6.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/zookeeper-3.4.3.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/guice-4.1.0.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/commons-collections-3.2.1.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/commons-beanutils-1.9.2.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/org.eclipse.wst.jsdt.core_1.3.1.v201401291437.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/org.eclipse.jdt.core_3.11.0.v20150602-1242.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/org.eclipse.core.runtime_3.7.0.dist.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/org.eclipse.core.contenttype_3.4.100.dist.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/org.eclipse.core.jobs_3.5.101.dist.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/org.eclipse.core.resources_3.7.101.dist.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/org.eclipse.equinox.common_3.6.0.dist.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/org.eclipse.equinox.preferences_3.4.2.dist.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/org.eclipse.equinox.registry_3.5.100.v20110502.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/org.eclipse.equinox.registry.source_3.5.100.v20110502.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/org.eclipse.osgi_3.7.2.dist.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/commons-codec-1.9.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/commons-configuration-1.10.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/commons-io-2.4.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/guava-13.0.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/avro-1.3.2.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/b4j-2.0.2.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/com.jcraft.jsch_0.1.27.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/commons-math-2.1.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/hadoop-common-0.21.0.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/jena-core-2.7.3.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/jena-iri-0.9.3.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/baselib-1.2.9.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/jtb132.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/junit-4.11.jar" />
+			<zipfileset excludes="META-INF/" src="lib/mockito-all-1.8.5.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/mrunit-0.9.0-incubating-hadoop1.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/xercesImpl.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/xml-apis.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/jira-rest-java-client-2.0.0-m2.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/sal-api-2.7.0.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/spring-beans-2.5.6.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/httpcore-nio-4.2.2.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/javax.mail-api-1.5.2.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/javax.ws.rs-api-2.0.1.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/jersey-client-1.5.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/jersey-core-1.5.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/jersey-json-1.5.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/httpmime-4.1.2.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/jettison-1.1.jar" />
+			<zipfileset excludes="META-INF/" src="lib/datagen/joda-time-1.6.jar" />
+
+		</jar>
+	</target>
+
+	<target name="clean-dist" description="Clean all JAR files.">
+		<delete dir="dist" />
+	</target>
+
+
+	<!-- project cleanup -->
+	<target name="clean" description="Clean all generated/compiled files.">
+		<delete dir="build" />
+		<delete dir="dist" />
+	</target>
+</project>
