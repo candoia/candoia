@@ -49,7 +49,7 @@ public class SetVal<V> extends BoaType implements Value {
 		return set.contains(obj);
 	}
 
-	public Set<V> getMap() {
+	public Set<V> getSet() {
 		return set;
 	}
 

@@ -1,39 +1,19 @@
-NullCheckFixingRevisions: output sum of int;
-BugFixingRevisions: output sum of int;
-TotalBugs: output sum of int;
+out: output sum[string] of int;
+NullCheckRevisions: output sum[string] of int;
 p: Project = input;
 
 isfixing := false;
-bugfix := false;
 count := 0;
 # map of file names to the last revision of that file
 files: map[string] of ChangedFile;
 
-isBugFixing := function(commitlog: string, issueRecord: set of string): bool{
-    lst := getAsArray(issueRecord);
-    foreach(i: int; def(lst[i])){
-        if(strfind(lst[i], commitlog) > -1){
-            return true;
-        }
-    }
-    return false;
-};
-
-issues: set of string;
-visit(p, visitor {
-    before node: Issue -> {
-          TotalBugs << 1;
-          add(issues, node.number);
-        }
-});
-
 visit(p, visitor {
 	before node: Revision -> {
         comment := node.log;
+        out["TotalRevisions"] << 1;
         isfixing = isfixingrevision(comment);
-        bugfix= isBugFixing(comment, issues);
-        if(bugfix){
-          BugFixingRevisions << 1;
+        if(isfixing){
+          out["TotalFixingRevisions"] << 1;
         }
     }
 	before node: ChangedFile -> {
@@ -51,7 +31,7 @@ visit(p, visitor {
 
 			# if there are more null checks, output
 			if (count > last){
-              NullCheckFixingRevisions << 1;
+              out["NullCheckRevisions"] << 1;
             }
 
 		}

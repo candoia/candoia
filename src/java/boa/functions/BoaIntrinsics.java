@@ -34,8 +34,8 @@ import boa.types.Toplevel.Project;
  */
 public class BoaIntrinsics {
 	private final static String[] fixingRegex = {
-//		"\\bfix(s|es|ing|ed)?\\b",
-//		"\\b(error|bug|issue)(s)?\\b",
+		"\\bfix(s|es|ing|ed)?\\b",
+		"\\b(error|bug|issue)(s)?\\b",
 		"\\b(bug|issue|fix)(s)?\\b\\s*(#)?\\s*[0-9]+",
 		"\\b(bug|issue|fix)\\b\\s*id(s)?\\s*(=)?\\s*[0-9]+"
 	};

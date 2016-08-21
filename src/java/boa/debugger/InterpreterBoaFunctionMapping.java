@@ -1,18 +1,36 @@
 package boa.debugger;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Set;
+
 import boa.debugger.Env.LookupException;
-import boa.debugger.value.*;
-import boa.types.Ast.*;
+import boa.debugger.value.AnyVal;
+import boa.debugger.value.BoolVal;
+import boa.debugger.value.DoubleVal;
+import boa.debugger.value.DynamicError;
+import boa.debugger.value.ListVal;
+import boa.debugger.value.MapVal;
+import boa.debugger.value.NumVal;
+import boa.debugger.value.PairVal;
+import boa.debugger.value.SetVal;
+import boa.debugger.value.StackVal;
+import boa.debugger.value.StringVal;
+import boa.debugger.value.UnitVal;
+import boa.debugger.value.Value;
+import boa.debugger.value.VisitorVal;
+import boa.types.Ast.ASTRoot;
+import boa.types.Ast.Declaration;
+import boa.types.Ast.Expression;
+import boa.types.Ast.Method;
 import boa.types.Ast.Modifier.ModifierKind;
 import boa.types.Ast.Modifier.Visibility;
+import boa.types.Ast.Namespace;
+import boa.types.Ast.Variable;
 import boa.types.Code.CodeRepository;
 import boa.types.Code.Revision;
 import boa.types.Diff.ChangedFile;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 public class InterpreterBoaFunctionMapping {
 
@@ -249,12 +267,9 @@ public class InterpreterBoaFunctionMapping {
 	public static Value callCompilerContains(ArrayList<Value> operands, Env<Value> env) {
 		Object firstArgument = operands.get(0);
 		Value secondArgument = operands.get(1);
-
 		if (firstArgument instanceof SetVal) {
-			SetVal map = (SetVal) firstArgument;
-			String SecondArg = ((StringVal) secondArgument).v();
-			System.out.println("Searching:" + SecondArg + " in " + ((StringVal) firstArgument).v());
-			boolean result = map.contains(SecondArg);
+			SetVal<Value> map = (SetVal<Value>) firstArgument;
+			boolean result = map.contains(secondArgument);
 			return new BoolVal(result);
 		} else
 			return new DynamicError("contains Expects Map as First argument");
@@ -263,26 +278,31 @@ public class InterpreterBoaFunctionMapping {
 
 	public static Value callCompilerRemove(ArrayList<Value> operands, Env<Value> env) {
 		Object firstArgument = operands.get(0);
-		String secondArgument = operands.get(1).toString();
+		Value snd = operands.get(1);
 		if (firstArgument instanceof MapVal) {
-			MapVal map = (MapVal) firstArgument;
-			map.remove(secondArgument);
+			MapVal<Value, Value> map = (MapVal<Value, Value>) firstArgument;
+			map.remove(snd);
 			return UnitVal.v;
-
 		} else if (firstArgument instanceof SetVal) {
-			SetVal set = (SetVal) firstArgument;
-			set.remove(secondArgument);
+			SetVal<Value> set = (SetVal<Value>) firstArgument;
+			set.remove(snd);
 			return UnitVal.v;
-
 		}
 		return UnitVal.v;
 	}
 
 	public static Value callCompilerStrFind(ArrayList<Value> operands, Env<Value> env) {
-		String firstArg = ((StringVal) operands.get(0)).v();
-		String SecondArg = ((StringVal) operands.get(1)).v();
+		String firstArg = operands.get(0).toString();
+		String SecondArg = operands.get(1).toString();
 		long result = boa.functions.BoaStringIntrinsics.indexOf(firstArg, SecondArg);
 		return new NumVal(result);
+	}
+	
+	public static Value callCompilerLastIndexOf(ArrayList<Value> operands, Env<Value> env) {
+		String firstArg = operands.get(0).toString();
+		String SecondArg = operands.get(1).toString();
+		long index = firstArg.lastIndexOf(SecondArg);
+		return new NumVal(index);
 	}
 
 	public static Value callCompilerStrContains(ArrayList<Value> operands, Env<Value> env) {
@@ -994,10 +1014,10 @@ public class InterpreterBoaFunctionMapping {
 	public static Value callCompileGetAsArray(ArrayList<Value> operands, Env<Value> env) {
 		Value fst = operands.get(0);
 		if (fst instanceof SetVal) {
-			Set set = ((SetVal) fst).getMap();
-			ArrayList<Object> list = new ArrayList<Object>(Arrays.asList(set.toArray()));
+			Set<Value> set = ((SetVal<Value>) fst).getSet();
+			ArrayList<Value> list = new ArrayList(Arrays.asList(set.toArray()));
 			ListVal<Value> result = new ListVal<Value>();
-			switch (((SetVal) fst).getType().toString()) {
+			switch (((SetVal<?>) fst).getType().toString()) {
 			case "string": {
 				for (Object ob : list) {
 					result.add(new StringVal(ob.toString()));
@@ -1005,8 +1025,8 @@ public class InterpreterBoaFunctionMapping {
 				return result;
 			}
 			default: {
-				for (Object ob : list) {
-					result.add(new AnyVal(ob));
+				for (Value ob : list) {
+					result.add(ob);
 				}
 				return result;
 			}
@@ -1015,12 +1035,24 @@ public class InterpreterBoaFunctionMapping {
 		throw new UnsupportedOperationException();
 	}
 
+	public static Value callCompileDiffBetweenTime(ArrayList<Value> operands, Env<Value> env) {
+		Value fst = operands.get(0);
+		Value snd = operands.get(1);
+		Date d1 = new Date((long) fst.get());
+		Date d2 = new Date((long) snd.get());
+		long diff = d1.getTime() - d2.getTime();
+		if(diff < 0){
+			diff = -1*diff;
+		}
+		return new NumVal(diff);
+	}
+	
+	
 	public static Value callCompilerAdd(ArrayList<Value> operands, Env<Value> env) {
 		Value fst = operands.get(0);
 		Value snd = operands.get(1);
 		if (fst instanceof SetVal) {
-			HashSet set = (HashSet) ((SetVal) fst).getMap();
-			((SetVal) fst).add(snd.toString());
+			((SetVal<Value>) fst).add(snd);
 			return fst;
 		}
 		throw new UnsupportedOperationException();
@@ -1035,7 +1067,7 @@ public class InterpreterBoaFunctionMapping {
 
 	public static Value callCompilerDef(ArrayList<Value> operands, Env<Value> env) {
 		return new BoolVal(operands != null && !(operands.get(0) instanceof DynamicError)
-				&& !(operands.get(0) instanceof UnitVal));
+				&& !(operands.get(0) instanceof UnitVal) && (operands.get(0) != null));
 	}
 
 	public static Value callCompilerAcos(ArrayList<Value> operands, Env<Value> env) {
@@ -1096,14 +1128,10 @@ public class InterpreterBoaFunctionMapping {
 	}
 
 	public static Value callCompilerNow(ArrayList<Value> operands, Env<Value> env) {
-		if (boa.debugger.Evaluator.DEBUG)
-			System.out.println("Returning current time");
 		return new NumVal(System.currentTimeMillis());
 	}
 
 	public static Value callCompilerDayofyear(ArrayList<Value> operands, Env<Value> env) {
-		if (boa.debugger.Evaluator.DEBUG)
-			System.out.println("Reday of year");
 		if (operands.get(0) instanceof NumVal) {
 			long inputTime = (((NumVal) operands.get(0)).v());
 			return new NumVal(boa.functions.BoaTimeIntrinsics.dayOfYear(inputTime));
@@ -1111,9 +1139,6 @@ public class InterpreterBoaFunctionMapping {
 			Value operator = env.get((((StringVal) operands.get(0)).v()));
 			if (operator instanceof NumVal) {
 				long inputTime = (((NumVal) operator).v());
-				if (boa.debugger.Evaluator.DEBUG)
-					System.out.println(
-							"day of function is returning" + boa.functions.BoaTimeIntrinsics.dayOfYear(inputTime));
 				return new NumVal(boa.functions.BoaTimeIntrinsics.dayOfYear(inputTime));
 			}
 		}

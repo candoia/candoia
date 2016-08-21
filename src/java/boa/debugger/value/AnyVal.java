@@ -1,7 +1,11 @@
 package boa.debugger.value;
 
-import boa.debugger.Evaluator;
-import boa.types.Ast.*;
+import boa.types.Ast.ASTRoot;
+import boa.types.Ast.Declaration;
+import boa.types.Ast.Expression;
+import boa.types.Ast.Modifier;
+import boa.types.Ast.Namespace;
+import boa.types.Ast.Type;
 import boa.types.Code.CodeRepository;
 import boa.types.Code.Revision;
 import boa.types.Diff.ChangedFile;
@@ -700,22 +704,29 @@ public class AnyVal extends TupleVal implements Value {
 				else
 					return new DynamicError("No closed by found for this issue");
 
-			} else if (search.equals("closed_at")) {
+			} else if (search.equals("closed_date")) {
 				try {
-					return new NumVal(p.getCreatedAt());
+					return new NumVal(p.getClosedAt());
 				} catch (NullPointerException ex) {
 					return new DynamicError("No created at found for this issue");
 				}
+			} else if (search.equals("has_closed_date")) {
+				try {
+					p.getClosedAt();
+					return new BoolVal(true);
+				} catch (NullPointerException ex) {
+					return new BoolVal(false);
+				}
 			}
 
-			else if (search.equals("updated_at")) {
+			else if (search.equals("updated_date")) {
 				if (p.hasUpdatedAt())
 					return new NumVal(p.getUpdatedAt());
 				else
 					return new DynamicError("No updated  at found for this issue");
 			}
 
-			else if (search.equals("created_at")) {
+			else if (search.equals("created_date")) {
 				try {
 					return new NumVal(p.getCreatedAt());
 				} catch (NullPointerException ex) {
@@ -753,14 +764,14 @@ public class AnyVal extends TupleVal implements Value {
 					return new DynamicError("No assignee found for this issue");
 			}
 
-			else if (search.equals("updated_at")) {
+			else if (search.equals("updated_date")) {
 				if (p.hasUpdatedAt())
 					return new NumVal(p.getUpdatedAt());
 				else
 					return new DynamicError("No updated  at found for this issue");
 			}
 
-			else if (search.equals("created_at")) {
+			else if (search.equals("created_date")) {
 				if (p.hasCreatedAt())
 					return new NumVal(p.getCreatedAt());
 				else
@@ -793,7 +804,7 @@ public class AnyVal extends TupleVal implements Value {
 					return new DynamicError("No assignee found for this issue");
 			}
 
-			else if (search.equals("merged_at")) {
+			else if (search.equals("merged_date")) {
 				if (p.hasMergedAt())
 					return new NumVal(p.getMergedAt());
 				else
@@ -881,14 +892,14 @@ public class AnyVal extends TupleVal implements Value {
 					return new DynamicError("No closed at found for this issue");
 			}
 
-			else if (search.equals("updated_at")) {
+			else if (search.equals("updated_date")) {
 				if (p.hasUpdatedAt())
 					return new NumVal(p.getUpdatedAt());
 				else
 					return new DynamicError("No updated  at found for this issue");
 			}
 
-			else if (search.equals("created_at")) {
+			else if (search.equals("created_date")) {
 				if (p.hasCreatedAt())
 					return new NumVal(p.getCreatedAt());
 				else
@@ -906,8 +917,7 @@ public class AnyVal extends TupleVal implements Value {
 			}
 
 		}
-		
-		throw new UnsupportedOperationException("value: " + search.length() + " and " + value);
+		throw new UnsupportedOperationException("search: " + search + " and " + value.getClass());
 	}
 
 	@Override

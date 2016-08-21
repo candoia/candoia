@@ -55,6 +55,9 @@ public class IssueProtoTuple extends BoaProtoTuple {
 
 		names.put("created_date", counter++);
 		members.add(new BoaTime());
+		
+		names.put("closed_date", counter++);
+		members.add(new BoaTime());
 
 		names.put("modified_date", counter++);
 		members.add(new BoaTime());
@@ -82,6 +85,9 @@ public class IssueProtoTuple extends BoaProtoTuple {
 		
 		names.put("number", counter++);
 		members.add(new BoaString());
+		
+		names.put("has_closed_date", counter++);
+		members.add(new BoaBool());
 	}
 
 	/**

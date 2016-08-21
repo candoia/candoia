@@ -1,0 +1,11 @@
+AddedNullCheck: output sum of int;
+p: Project = input;
+
+bugs : output sum[string] of int;
+
+visit(p, visitor {
+	before node : Issue ->{
+	  bugs[p.id] << 1;  
+	}
+});
+

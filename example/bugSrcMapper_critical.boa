@@ -1,0 +1,49 @@
+BugSrcMapper: output sum[string] of int;
+p: Project = input;
+isfixing := false;
+bugfix :Issue;
+issues: set of Issue;
+
+getLongestBug := function(logging: string, issueRecord: set of Issue): Issue{
+    lst := getAsArray(issueRecord);
+    longestIssue: Issue;
+    foreach(i: int; def(lst[i])){
+      issue: Issue = lst[i];
+      if(strfind(issue.number, logging) > -1){
+        if(issue.has_closed_date){
+          if(!def(longestIssue)){
+            longestIssue = issue;
+          }else{
+            if((longestIssue.closed_date - longestIssue.created_date) < (issue.closed_date - issue.created_date)){
+             longestIssue = issue;
+            }
+          }
+        }
+      }
+    }
+    return longestIssue;
+};
+
+visit(p, visitor {
+    before node: Issue -> {
+          add(issues, node);
+        }
+});
+
+visit(p, visitor {
+	before node: Revision -> {
+        comment := node.log;
+        isfixing = isfixingrevision(comment);
+        if(isfixing){
+          bugfix= getLongestBug(comment, issues);
+        }
+    }
+	before node: ChangedFile -> {
+       if(def(bugfix)){
+         BugSrcMapper[node.name] << diffBetweenTime(bugfix.closed_date, bugfix.created_date)/ ((60 * 60 * 1000000 * 24));
+       }
+	}
+  after node: Revision -> {
+    isfixing = false;
+  }
+});

@@ -153,7 +153,9 @@ public class SymbolTable {
 
 		// set functions
 		globalFunctions.addFunction("contains", new BoaFunction(new BoaBool(), new BoaType[] { new BoaSet(new BoaScalar()), new BoaScalar() }, "${0}.contains(${1})"));
+		globalFunctions.addFunction("lastindexof", new BoaFunction(new BoaInt(), new BoaType[] { new BoaString(), new BoaString() }, "${0}.contains(${1})"));
 		globalFunctions.addFunction("add", new BoaFunction(new BoaAny(), new BoaType[] { new BoaSet(new BoaTypeVar("V")), new BoaTypeVar("V") }, "${0}.add(${1})"));
+		globalFunctions.addFunction("diffBetweenTime", new BoaFunction(new BoaInt(), new BoaType[] { new BoaTime(), new BoaTime() }, "${0}.add(${1})"));
 		globalFunctions.addFunction("remove", new BoaFunction(new BoaAny(), new BoaType[] { new BoaSet(new BoaTypeVar("V")), new BoaTypeVar("V") }, "${0}.remove(${1})"));
 		globalFunctions.addFunction("clear", new BoaFunction(new BoaAny(), new BoaType[] { new BoaSet(new BoaTypeVar("V")) }, "${0}.clear()"));
 		globalFunctions.addFunction("getAsArray", new BoaFunction(new BoaArray(new BoaTypeVar("K")), new BoaType[] { new BoaSet(new BoaTypeVar("K")) }, "boa.functions.BoaIntrinsics.basic_array(${0}.toArray())"));

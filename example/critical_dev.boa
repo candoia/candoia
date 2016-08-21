@@ -1,9 +1,9 @@
-BugSrcMapper: output sum[string] of int;
+BugSrcMapper: output collection[string] of string;
 p: Project = input;
 isfixing := false;
 bugfix := false;
 issues: set of string;
-
+committer_name : Person;
 isBugFixing := function(logging: string, issueRecord: set of string): bool{
     lst := getAsArray(issueRecord);
     foreach(i: int; def(lst[i])){
@@ -27,10 +27,18 @@ visit(p, visitor {
         if(isfixing){
           bugfix= isBugFixing(comment, issues);
         }
+        committer_name = node.committer;
     }
 	before node: ChangedFile -> {
        if(bugfix){
-         BugSrcMapper[node.name] << 1;
+         module := node.name;
+         index := lastindexof(node.name, "/");
+         if(index > 0){
+            module = substring(module, 0, index);
+            BugSrcMapper[module] << committer_name.username;             
+         }else{
+           BugSrcMapper[node.name] << committer_name.username;
+         }
        }
 	}
 

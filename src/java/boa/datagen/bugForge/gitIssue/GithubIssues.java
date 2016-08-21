@@ -227,10 +227,8 @@ public class GithubIssues implements BugForge {
 
 				milestoneBuilder.setCreator(personBuilder.build());
 			}
-
 			milestoneBuilder.setOpenIssues(milestone.getOpenIssuesCount());
 			milestoneBuilder.setClosedIssues(milestone.getClosedIssuesCount());
-
 			if (milestone.getCreatedAt() != null)
 				milestoneBuilder.setCreatedAt(milestone.getCreatedAt().getTime());
 			if (milestone.getUpdatedAt() != null)
@@ -240,7 +238,6 @@ public class GithubIssues implements BugForge {
 
 			issueBuilder.setMilestone(milestoneBuilder.build());
 		}
-
 		return issueBuilder.build();
 	}
 

@@ -32,7 +32,7 @@ import java.util.ArrayList;
  */
 public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	public static ArrayList<String> pathToDataSet = new ArrayList<>();
-	public static boolean DEBUG = false;
+	public static boolean DEBUG = true;
 	public static Logger LOG = Logger.getLogger(Evaluator.class);
 	public static String visitorVar = "_$declaredVisitor$";
 	ByteArrayOutputStream op = new ByteArrayOutputStream();
@@ -281,6 +281,9 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 		String name = op.getOperand().toString();
 		Value operand = env.get(name);
 		Value rhs = n.getRhs().accept(this, env);
+		if(rhs instanceof ReturnVal){
+			rhs = ((ReturnVal)rhs).getVal();
+		}
 		if (operand instanceof MapVal) {
 			Node ind = op.getOp(0);
 			PairVal index = (PairVal) ind.accept(this, env);
@@ -460,7 +463,7 @@ public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	}
 
 	public Value visit(final IfStatement n, Env<Value> env) {
-		Value condition = n.getCondition().accept(this, env);
+			Value condition = n.getCondition().accept(this, env);
 		BoolVal cond = null;
 		if (condition instanceof BoolVal) {
 			cond = (BoolVal) condition;

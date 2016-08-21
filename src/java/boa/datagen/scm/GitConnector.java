@@ -124,10 +124,11 @@ public class GitConnector extends AbstractConnector {
 				final GitCommit gc = new GitCommit(repository, this);
 				gc.setId(rc.getName());
 				gc.setAuthor(rc.getAuthorIdent().getName());
-				if(rc.getCommitterIdent() != null)
+				if(rc.getCommitterIdent() == null)
 				  gc.setCommitter(rc.getAuthorIdent().getName());
-				else
+				else{
 					gc.setCommitter(rc.getCommitterIdent().getName());
+				}
 				gc.setDate(new Date(((long) rc.getCommitTime()) * 1000));
 				gc.setMessage(rc.getFullMessage());
 				gc.getChangeFiles(this.revisionMap, rc);

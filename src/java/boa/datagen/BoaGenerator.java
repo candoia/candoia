@@ -311,12 +311,14 @@ public class BoaGenerator {
 						AbstractForge forgeHandler = getCorrectForgeHandler(file, listOfForges);
 						if (forgeHandler != null) {
 							Project project = forgeHandler.toBoaProject(file);
-							Project.Builder pb = project.toBuilder();
-							Issues.IssueRepository.Builder ir = Issues.IssueRepository.newBuilder();
-							ir.setUrl(bugUrl);
-							ir.setKind(Issues.IssueRepository.IssueRepositoryKind.UNKNOWN);
-							pb.addIssueRepositories(ir.build());
-							project = pb.build();
+							if(bugUrl != null && bugUrl.trim().length()>0){
+								Project.Builder pb = project.toBuilder();
+								Issues.IssueRepository.Builder ir = Issues.IssueRepository.newBuilder();
+								ir.setUrl(bugUrl);
+								ir.setKind(Issues.IssueRepository.IssueRepositoryKind.UNKNOWN);
+								pb.addIssueRepositories(ir.build());
+								project = pb.build();
+							}
 							synchronized (repos) {
 								repos.put(project.getId(), project.toByteArray());
 							}

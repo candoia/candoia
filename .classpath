@@ -5,19 +5,10 @@
 	<classpathentry kind="src" path="src/java"/>
 	<classpathentry kind="src" path="src/test"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/avro-1.3.2.jar"/>
-	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/b4j-2.0.3.jar"/>
-	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/baselib-1.2.5.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/com.jcraft.jsch_0.1.27.jar"/>
-	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-beanutils-1.8.3.jar"/>
-	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-codec-1.4.jar"/>
-	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-codec-1.10.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-collections-3.2.1.jar"/>
-	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-configuration-1.6.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-io-2.4.jar"/>
-	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-lang-2.4.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-logging-1.2-javadoc.jar"/>
-	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-logging-1.2.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-math-2.1.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/ezmorph-1.0.6.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/groundhog-0.1.0-jar-with-dependencies.jar"/>
@@ -32,8 +23,6 @@
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/jtb132.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/junit-4.8.2.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/junit-4.11.jar"/>
-	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/log4j-1.2.16.jar"/>
-	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/mockito-all-1.8.5.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/mrunit-0.9.0-incubating-hadoop1.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/org.eclipse.core.contenttype_3.4.100.dist.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/org.eclipse.core.jobs_3.5.101.dist.jar"/>
@@ -47,8 +36,6 @@
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/org.eclipse.jgit_4.0.1.201506240215-r.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/org.eclipse.osgi_3.7.2.dist.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/org.eclipse.wst.jsdt.core_1.3.1.v201401291437.jar"/>
-	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/slf4j-api-1.4.3.jar"/>
-	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/slf4j-log4j12-1.4.3.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/svnkit-1.7.6.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/xml-apis.jar"/>
@@ -67,5 +54,74 @@
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/rtlib/protobuf-java-2.5.0.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/rtlib/scannotation-1.0.3.jar"/>
 	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/rtlib/ST-4.0.8.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/activation-1.1.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/aopalliance-1.0.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/atlassian-event-2.2.0.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/atlassian-httpclient-apache-httpcomponents-0.11.0.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/atlassian-httpclient-api-0.11.0.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/atlassian-httpclient-spi-0.11.0.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/atlassian-util-concurrent-2.4.0-M9.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/b4j-2.0.2-javadoc.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/b4j-2.0.2-sources.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/b4j-2.0.2.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/baselib-1.2.9.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-beanutils-1.9.2.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-cli-1.2.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-codec-1.9.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-configuration-1.10.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-digester-1.8.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-exec-1.3.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-lang-2.5.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/commons-validator-1.4.0.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/csv-2.7.1.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/gson-2.2.10.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/guava-13.0.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/guice-4.1.0.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/httpasyncclient-4.0-beta3-atlassian-1.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/httpasyncclient-cache-4.0-beta3-atlassian-1.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/httpclient-4.2.1-atlassian-2.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/httpclient-cache-4.2.1-atlassian-2.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/httpcore-4.2.2.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/httpcore-nio-4.2.2.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/httpmime-4.1.2.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/jackson-core-asl-1.5.5.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/jackson-jaxrs-1.5.5.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/jackson-mapper-asl-1.5.5.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/jackson-xc-1.5.5.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/javax.mail-api-1.5.2.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/jaxb-api-2.2.2.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/jaxb-impl-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/jersey-client-1.5.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/jersey-core-1.5.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/jersey-json-1.5.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/jettison-1.1.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/jira-rest-java-client-2.0.0-m2.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/joda-time-1.6.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/json-20160212.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/mysql-connector-java-5.1.34.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/org.eclipse.text-3.5.101.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/org.json-chargebee-1.0.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/persistence-api-1.0.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/poi-3.10-FINAL.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/poi-ooxml-3.10-FINAL.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/poi-ooxml-schemas-3.10-FINAL.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/sal-api-2.7.0.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/slf4j-api-1.7.7.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/slf4j-log4j12-1.7.7.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/slf4j-site-1.7.21.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/spring-beans-2.5.6.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/spring-context-2.5.6.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/spring-core-2.5.6.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/stax-api-1.0-2.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/stax-api-1.0.1.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/templating-1.2.9.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/text-3.3.0-v20070606-0010.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/ws-commons-util-1.0.2.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/xml-apis-1.0.b2.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/xmlbeans-2.3.0.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/xmlrpc-client-3.1.3.jar"/>
+	<classpathentry kind="lib" path="/Users/nmtiwari/git/research/candoia/compiler/lib/datagen/xmlrpc-common-3.1.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
