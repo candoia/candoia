@@ -17,4 +17,6 @@ public abstract class Reader {
      */
     public abstract RawData readData(String path);
 
+    public abstract boolean canRead(String path);
+
 }

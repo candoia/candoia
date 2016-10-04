@@ -1,0 +1,16 @@
+package boa.types;
+
+import "toplevel.proto";
+
+message DataSet {
+    enum Type { MSR = 1; FARS = 2; BIO = 3; }
+
+    // Identifies domain of data type
+    required Type type = 1;
+
+    // An analysis can run over only one domain
+    // At present we believe that fatality analysis does not make sense for Bio or Software data
+    repeated Project project = 2; // MSR data
+    //repeated Bar bar = 3; // FARS Data
+    //repeated Baz baz = 4; // Bio Data
+}

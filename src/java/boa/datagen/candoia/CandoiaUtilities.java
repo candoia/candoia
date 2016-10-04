@@ -12,6 +12,7 @@ import boa.datagen.scm.AbstractConnector;
 import boa.types.Code;
 import boa.types.Toplevel;
 import net.sf.json.JSONObject;
+import org.json.JSONException;
 
 /**
  * Created by nmtiwari on 7/15/16.
@@ -59,7 +60,7 @@ public class CandoiaUtilities {
 		}
 	}
 
-	private static List<org.json.JSONObject> getExistingProjs(File cacheFile) throws IOException {
+	private static List<org.json.JSONObject> getExistingProjs(File cacheFile) throws IOException, JSONException {
 		ArrayList<org.json.JSONObject> projs = new ArrayList<org.json.JSONObject>(); 
 		List<String> cached = Files.readAllLines(Paths.get(cacheFile.getAbsolutePath()));
 		for(String line: cached){

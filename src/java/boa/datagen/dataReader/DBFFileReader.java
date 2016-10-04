@@ -1,13 +1,14 @@
 package boa.datagen.dataReader;
 
-import boa.datagen.dataFormat.Domains;
 import boa.datagen.dataFormat.RawData;
 import com.linuxense.javadbf.DBFField;
 import com.linuxense.javadbf.DBFReader;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import boa.datagen.dataFormat.*;
 
 /**
  * Created by nmtiwari on 10/4/16.
@@ -15,12 +16,11 @@ import java.io.InputStream;
 public class DBFFileReader extends Reader {
 
     @Override
-    public RawData readData(String path) {
+    public DBFData readData(String path) {
         try{
             InputStream inputStream  = new FileInputStream(path); // path is path to dbf file
             DBFReader reader = new DBFReader(inputStream);
 
-            // get the field count if you want for some reasons like the following
             int numberOfFields = reader.getFieldCount();
 
             for( int i=0; i<numberOfFields; i++) {
@@ -40,5 +40,19 @@ public class DBFFileReader extends Reader {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public boolean canRead(String path) {
+        File dir = new File(path);
+        boolean isRedable = true;
+        if(dir.isDirectory()){
+            for(File f: dir.listFiles()){
+                isRedable = isRedable && f.getName().endsWith(".dbf");
+            }
+        }else{
+            isRedable = isRedable && dir.getName().endsWith(".dbf");
+        }
+        return isRedable;
     }
 }
