@@ -1,10 +1,10 @@
-package boa.datagen.dataFormat;
+package boa.datagen;
 
 /**
  * Created by nmtiwari on 10/4/16.
  */
 public enum Domains {
-    FARS, BIO, MSR, RAW;
+    FARS, BIO, MSR;
 
     public static Domains getDomain(String name){
         for(Domains d: Domains.values()){

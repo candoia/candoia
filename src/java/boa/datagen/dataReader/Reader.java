@@ -1,15 +1,14 @@
 package boa.datagen.dataReader;
 
-import boa.datagen.dataFormat.Data;
-import boa.datagen.dataFormat.Domains;
-import boa.datagen.dataFormat.RawData;
 
+import boa.datagen.dataFormat.rawdata.RawData;
+
+import java.util.ArrayList;
 
 /**
  * Created by nmtiwari on 10/4/16.
  */
 public abstract class Reader {
-
 
     /**
      *

@@ -30,11 +30,8 @@ import boa.datagen.BoaGenerator;
 import boa.datagen.DefaultProperties;
 import boa.datagen.candoia.CandoiaConfiguration;
 import boa.datagen.candoia.CandoiaUtilities;
-import boa.datagen.dataFormat.Domains;
-import boa.datagen.dataReader.DBFFileReader;
 import boa.debugger.Env.EmptyEnv;
 import boa.debugger.Evaluator;
-import boa.datagen.dataFormat.Domains;
 import boa.debugger.value.Value;
 import boa.parser.BoaLexer;
 import boa.parser.BoaParser;
@@ -46,7 +43,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.FileDeleteStrategy;
-import org.apache.hadoop.hbase.thrift.generated.IllegalArgument;
 import org.apache.log4j.Logger;
 import org.scannotation.ClasspathUrlFinder;
 
@@ -82,28 +78,18 @@ public class BoaCompilerNew {
 		String[] bugs = new String[0];
 		ArrayList<String> actualCloning = new ArrayList<String>();
 
-		// get the name of the generated class
 		final String className = getGeneratedClass(cl);
 
-		// get the filename of the jar we will be writing
-		final String jarName;
-
-		if (cl.hasOption('o'))
-			jarName = cl.getOptionValue('o');
-		else
-			jarName = className + ".jar";
-
-		// make the output directory
 		final File outputRoot = new File(new File(System.getProperty("java.io.tmpdir")), UUID.randomUUID().toString());
 		final File outputSrcDir = new File(outputRoot, "boa");
 		if (!outputSrcDir.mkdirs())
 			throw new IOException("unable to mkdir " + outputSrcDir);
 
-		// find custom libs to load
 		final List<URL> libs = new ArrayList<URL>();
-		if (cl.hasOption('l'))
+		if (cl.hasOption('l')) {
 			for (final String lib : cl.getOptionValues('l'))
 				libs.add(new File(lib).toURI().toURL());
+		}
 
 		final File outputFile = new File(outputSrcDir, className + ".java");
 		final BufferedOutputStream o = new BufferedOutputStream(new FileOutputStream(outputFile));
@@ -115,33 +101,12 @@ public class BoaCompilerNew {
 					+ DefaultProperties.JSON_DIR_NAME;
 			DefaultProperties.GH_JSON_CACHE_PATH = cl.getOptionValue("output").split(",")[0];
 			DefaultProperties.GH_TICKETS_PATH = DefaultProperties.GH_JSON_PATH;
-			// Evaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH);
 		} else {
 			System.err.println("Output directory is not provided");
 			o.close();
 			return;
 		}
 
-		String domaintype = cl.getOptionValue(CandoiaConfiguration.getDomainTypeCMDOption());
-		if((domaintype == null) || ("".equals(domaintype.trim()))) {
-            throw new IllegalArgumentException("Please provide the domain type such as msr, fars, bio etc");
-        }
-
-		switch(Domains.getDomain(domaintype)){
-            case BIO:
-                    throw new IllegalArgumentException("Candoia has not been extended to support the domain of " + domaintype);
-
-            case FARS:
-                    String[] datapath = null;
-                        datapath= cl.getOptionValue("data").split(",");
-                        DBFFileReader reader = new DBFFileReader();
-                        for(String path: datapath){
-                            if(reader.canRead(path)){
-                                reader.readData(path);
-                            }
-                        }
-                        break;
-		}
 
 		if (cl.hasOption("repo")) {
 			localRepos = cl.getOptionValue("repo").split(",");
@@ -202,8 +167,6 @@ public class BoaCompilerNew {
 						DefaultProperties.GH_JSON_CACHE_PATH + "/" + DefaultProperties.CLONE_DIR_NAME,
 						new ArrayList<String>(Arrays.asList(cloneRepos)));
 				if (prevDataExists && (actualCloning.size() > 0)) {
-					// if dataset is older then delete the existing dataset and
-					// rebuild it
 					CandoiaUtilities.cleanOlderDataset(DefaultProperties.GH_JSON_CACHE_PATH);
 				}
 				if (!prevDataExists) {
