@@ -1,6 +1,5 @@
 package boa.datagen.dataMapper;
 
-import boa.datagen.dataFormat.processeddata.ProcessedData;
 import boa.datagen.dataFormat.rawdata.RawData;
 import boa.datagen.Domains;
 import boa.datagen.dataReader.DataReadingTechnologies;
@@ -9,7 +8,7 @@ import boa.datagen.dataReader.DataReadingTechnologies;
  * Created by nmtiwari on 10/4/16.
  */
 public abstract class DataMapper {
-    public abstract ProcessedData processRawData(RawData data);
+    public abstract com.google.protobuf.GeneratedMessage processRawData(RawData data);
 
     public DataMapper getValidDataMapper(RawData data){
         if(data.getDomainType() == Domains.FARS && data.getUsedTech() == DataReadingTechnologies.DBF){

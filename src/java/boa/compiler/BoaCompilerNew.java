@@ -27,11 +27,13 @@ import boa.compiler.visitors.CodeGeneratingVisitor;
 import boa.compiler.visitors.TaskClassifyingVisitor;
 import boa.compiler.visitors.TypeCheckingVisitor;
 import boa.datagen.BoaGenerator;
+import boa.datagen.DataScienceDataGeneration;
 import boa.datagen.DefaultProperties;
 import boa.datagen.candoia.CandoiaConfiguration;
 import boa.datagen.candoia.CandoiaUtilities;
 import boa.debugger.Env.EmptyEnv;
 import boa.debugger.Evaluator;
+import boa.debugger.FARSEvaluator;
 import boa.debugger.value.Value;
 import boa.parser.BoaLexer;
 import boa.parser.BoaParser;
@@ -107,22 +109,15 @@ public class BoaCompilerNew {
 			return;
 		}
 
-
-		if (cl.hasOption("repo")) {
-			localRepos = cl.getOptionValue("repo").split(",");
-		}
-		if (cl.hasOption("clone")) {
-			cloneRepos = cl.getOptionValue("clone").split(",");
-			DefaultProperties.NUM_THREADS = Integer.toString(cloneRepos.length);
-		}
-		if (cl.hasOption("bug")) {
-			bugs = cl.getOptionValue("bug").split(",");
-			if(bugs.length < (cloneRepos.length + localRepos.length)){
-				throw new IllegalArgumentException("Number of BugUrls does not match with repos. If only few repos have external bug url then please use empty string as repos which does not have any");
+		if(cl.hasOption("domain")){
+			String file = cl.getOptionValue("output").split(",")[0]+"/transportation.seq";
+			if(!new File(file).exists()){
+				String domain = cl.getOptionValue("domain").split(",")[0];
+				DataScienceDataGeneration generation  = new DataScienceDataGeneration(cl);
+				generation.generateCompleteDataset();
 			}
-		}else{
-			bugs = new String[cloneRepos.length + localRepos.length];
 		}
+
 
 		try {
 			SymbolTable.initialize(libs);
@@ -150,7 +145,8 @@ public class BoaCompilerNew {
 					p = parse(tokens, parser, parserErrorListener);
 					try {
 						if (!parserErrorListener.hasError) {
-							new TypeCheckingVisitor().start(p, new SymbolTable());
+							System.out.println("Skipped Type Checking");
+//							new TypeCheckingVisitor().start(p, new SymbolTable());
 						}
 					} catch (final TypeCheckException e) {
 						parserErrorListener.error("typecheck", lexer, null, e.n.beginLine, e.n.beginColumn,
@@ -162,18 +158,19 @@ public class BoaCompilerNew {
 				}
 				BoaGenerator generator = new BoaGenerator();
 
-				boolean prevDataExists = CandoiaUtilities.prevDataExists(DefaultProperties.GH_JSON_CACHE_PATH);
-				actualCloning = CandoiaUtilities.getToBeCloned(
-						DefaultProperties.GH_JSON_CACHE_PATH + "/" + DefaultProperties.CLONE_DIR_NAME,
-						new ArrayList<String>(Arrays.asList(cloneRepos)));
-				if (prevDataExists && (actualCloning.size() > 0)) {
-					CandoiaUtilities.cleanOlderDataset(DefaultProperties.GH_JSON_CACHE_PATH);
-				}
-				if (!prevDataExists) {
-					generator.generate(cloneRepos, localRepos, bugs);
-				}
-				Evaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH);
-				Evaluator evaluator = new Evaluator();
+//				boolean prevDataExists = CandoiaUtilities.prevDataExists(DefaultProperties.GH_JSON_CACHE_PATH);
+//				actualCloning = CandoiaUtilities.getToBeCloned(
+//						DefaultProperties.GH_JSON_CACHE_PATH + "/" + DefaultProperties.CLONE_DIR_NAME,
+//						new ArrayList<String>(Arrays.asList(cloneRepos)));
+//				if (prevDataExists && (actualCloning.size() > 0)) {
+//					CandoiaUtilities.cleanOlderDataset(DefaultProperties.GH_JSON_CACHE_PATH);
+//				}
+//				if (!prevDataExists) {
+//					generator.generate(cloneRepos, localRepos, bugs);
+//				}
+
+				FARSEvaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH);
+				FARSEvaluator evaluator = new FARSEvaluator();
 				Value result = (evaluator).start(p.getProgram(), new EmptyEnv<Value>());
 				String resultOfProgram = result.toString();
 				BufferedWriter writer = null;

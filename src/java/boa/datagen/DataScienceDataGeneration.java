@@ -1,11 +1,11 @@
 package boa.datagen;
 
 import boa.datagen.candoia.CandoiaConfiguration;
-import boa.datagen.dataFormat.processeddata.ProcessedData;
 import boa.datagen.dataFormat.rawdata.DBFData;
 import boa.datagen.dataMapper.FARSDBFDataMapper;
 import boa.datagen.dataMapper.farsdata.FARSDataType;
 import boa.datagen.dataReader.DBFFileReader;
+import boa.transportation.types.Transportation;
 import org.apache.commons.cli.CommandLine;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class DataScienceDataGeneration {
         this.commandLine = commandLine;
     }
 
-    public ArrayList<ProcessedData> generateProcessedData(){
+    public ArrayList<com.google.protobuf.GeneratedMessage> generateProcessedData(){
         String domaintype = commandLine.getOptionValue(CandoiaConfiguration.getDomainTypeCMDOption());
         Domains dataDomain = Domains.getDomain(domaintype);
         if((domaintype == null) || ("".equals(domaintype.trim()))) {
@@ -42,8 +42,8 @@ public class DataScienceDataGeneration {
     }
 
 
-    private ArrayList<ProcessedData> getFARSProcessedData(){
-        ArrayList<ProcessedData> processedDatas = new ArrayList<>();
+    private ArrayList<com.google.protobuf.GeneratedMessage> getFARSProcessedData(){
+        ArrayList<com.google.protobuf.GeneratedMessage> processedDatas = new ArrayList<>();
         String[] datapath = null;
         datapath= commandLine.getOptionValue("data").split(",");
         DBFFileReader reader = new DBFFileReader();
@@ -53,10 +53,22 @@ public class DataScienceDataGeneration {
                 data.setFarsDataType(FARSDataType.getFARSDATAType(path));
                 data.setDomainType(Domains.FARS);
                 FARSDBFDataMapper mapper = new FARSDBFDataMapper();
-                ProcessedData pData = mapper.processRawData(data);
+                com.google.protobuf.GeneratedMessage pData = mapper.processRawData(data);
                 processedDatas.add(pData);
             }
         }
         return processedDatas;
     }
+
+  public boolean generateCompleteDataset(){
+      ArrayList<com.google.protobuf.GeneratedMessage> messages = generateProcessedData();
+      DataSetWriter writer = new DataSetWriter("/Users/nmtiwari/Desktop/transportation.seq");
+      Integer  counter = 0;
+      for(com.google.protobuf.GeneratedMessage message: messages){
+        writer.write(message, counter.toString());
+      }
+      writer.close();
+      return true;
+  }
+
 }

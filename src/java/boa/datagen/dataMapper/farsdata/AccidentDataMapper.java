@@ -1,8 +1,6 @@
 package boa.datagen.dataMapper.farsdata;
 
-import boa.datagen.dataFormat.processeddata.ProcessedData;
 import boa.datagen.dataFormat.rawdata.DBFData;
-import boa.datagen.dataReader.DataReadingTechnologies;
 import com.linuxense.javadbf.DBFField;
 import boa.transportation.types.*;
 
@@ -12,7 +10,7 @@ import boa.transportation.types.*;
 public class AccidentDataMapper {
 
 
-    public ProcessedData processData(DBFData data){
+    public com.google.protobuf.GeneratedMessage processData(DBFData data){
         Transportation.TransportData.Builder processed = Transportation.TransportData.newBuilder();
         DBFField[] fields = data.getFields();
         Object[][] records = data.getRowObjects();
@@ -26,9 +24,7 @@ public class AccidentDataMapper {
             processed.addAccidents(accident.build());
         }
         boa.transportation.types.Transportation.TransportData transportation = processed.build();
-        ProcessedData processedData = new ProcessedData();
-        processedData.setProcessedData(transportation);
-        return processedData;
+        return transportation;
     }
 
     private void processField(String field, Accident.AccidentData.Builder builder, Object value){

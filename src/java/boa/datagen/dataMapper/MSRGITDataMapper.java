@@ -1,7 +1,6 @@
 package boa.datagen.dataMapper;
 
 import boa.datagen.Domains;
-import boa.datagen.dataFormat.processeddata.ProcessedData;
 import boa.datagen.dataFormat.rawdata.RawData;
 
 /**
@@ -10,7 +9,7 @@ import boa.datagen.dataFormat.rawdata.RawData;
 public class MSRGITDataMapper extends DataMapper {
 
     @Override
-    public ProcessedData processRawData(RawData rawData) {
+    public com.google.protobuf.GeneratedMessage processRawData(RawData rawData) {
         if(rawData.getDomainType() != Domains.MSR){
             throw new IllegalArgumentException("Dataset is not a MSR Data");
         }

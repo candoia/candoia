@@ -60,17 +60,17 @@ public class DoubleVal extends BoaType implements Value {
 	public Value compute(Value rhs, String op) {
 		switch (op) {
 		case "==":
-			return new BoolVal(rhs.equals(rhs));
+			return new BoolVal(this.equals(rhs));
 		case "!=":
-			return new BoolVal(!rhs.equals(rhs));
+			return new BoolVal(!this.equals(rhs));
 		case "<":
-			return new BoolVal(rhs.isLessThan(rhs));
+			return new BoolVal(this.isLessThan(rhs));
 		case "<=":
-			return new BoolVal(rhs.isLessThanOrEqualTo(rhs));
+			return new BoolVal(this.isLessThanOrEqualTo(rhs));
 		case ">":
-			return new BoolVal(!rhs.isLessThanOrEqualTo(rhs));
+			return new BoolVal(!this.isLessThanOrEqualTo(rhs));
 		case ">=":
-			return new BoolVal(rhs.isLessThan(rhs));
+			return new BoolVal(this.isLessThan(rhs));
 		case "&&":
 			throw new UnsupportedOperationException();
 		case "||":

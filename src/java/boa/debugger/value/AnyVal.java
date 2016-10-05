@@ -1,5 +1,6 @@
 package boa.debugger.value;
 
+import boa.transportation.types.Accident;
 import boa.types.Ast.ASTRoot;
 import boa.types.Ast.Declaration;
 import boa.types.Ast.Expression;
@@ -917,6 +918,32 @@ public class AnyVal extends TupleVal implements Value {
 			}
 
 		}
+
+
+		else if (value instanceof boa.transportation.types.Transportation.TransportData) {
+			boa.transportation.types.Transportation.TransportData p = (boa.transportation.types.Transportation.TransportData) value;
+			if (search.equals("accidents")) {
+				ListVal<Value> accidents = new ListVal<Value>();
+				for (Accident.AccidentData s : p.getAccidentsList()) {
+					accidents.add(new AnyVal(s));
+				}
+				return accidents;
+			}
+		}
+
+		else if (value instanceof boa.transportation.types.Accident.AccidentData) {
+			boa.transportation.types.Accident.AccidentData p = (boa.transportation.types.Accident.AccidentData) value;
+			if (search.equals("MONTH")) {
+				return new DoubleVal(p.getMONTH());
+			}else if (search.equals("FATALS")) {
+				return new DoubleVal(p.getFATALS());
+			}else if (search.equals("DRUNK_DR")) {
+				return new DoubleVal(p.getDRUNKDR());
+			}else if (search.equals("HOUR")) {
+				return new DoubleVal(p.getHOUR());
+			}
+		}
+
 		throw new UnsupportedOperationException("search: " + search + " and " + value.getClass());
 	}
 
