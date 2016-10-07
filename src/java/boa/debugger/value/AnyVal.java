@@ -941,6 +941,13 @@ public class AnyVal extends TupleVal implements Value {
 				return new DoubleVal(p.getDRUNKDR());
 			}else if (search.equals("HOUR")) {
 				return new DoubleVal(p.getHOUR());
+			}else if (search.equals("NOT_HOUR")) {
+				return new DoubleVal(p.getNOTHOUR());
+			}else if (search.equals("MIN")) {
+				return new DoubleVal(p.getMINUTE());
+			}else if (search.equals("NOT_MIN")) {
+//				System.out.println(p.getNOTHOUR() + " " + p.getHOUR() + " " + p.getNOTMIN() + " " + p.getMINUTE() + " " + (p.getNOTHOUR()-p.getHOUR()) * 60 + (p.getNOTMIN()-p.getMINUTE()));
+				return new DoubleVal(p.getNOTMIN());
 			}
 		}
 

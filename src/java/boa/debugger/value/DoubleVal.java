@@ -24,7 +24,7 @@ public class DoubleVal extends BoaType implements Value {
 	@Override
 	public boolean equals(Value v) {
 		if (v instanceof DoubleVal) {
-			return ((NumVal) v).v() == this.v();
+			return ((DoubleVal) v).v() == this.v();
 		}
 		return false;
 	}

@@ -29,6 +29,7 @@ import boa.compiler.visitors.TypeCheckingVisitor;
 import boa.datagen.BoaGenerator;
 import boa.datagen.DataScienceDataGeneration;
 import boa.datagen.DefaultProperties;
+import boa.datagen.Domains;
 import boa.datagen.candoia.CandoiaConfiguration;
 import boa.datagen.candoia.CandoiaUtilities;
 import boa.debugger.Env.EmptyEnv;
@@ -67,480 +68,496 @@ import java.util.zip.ZipEntry;
  */
 public class BoaCompilerNew {
 
-	static ArrayList<File> inputFiles = null;
-	private static Logger LOG = Logger.getLogger(BoaCompilerNew.class);
+    static ArrayList<File> inputFiles = null;
+    private static Logger LOG = Logger.getLogger(BoaCompilerNew.class);
 
-	public static void main(final String[] args) throws IOException {
-		CommandLine cl = processCommandLineOptions(args);
-		if (cl == null)
-			return;
-		final ArrayList<File> inputFiles = BoaCompilerNew.inputFiles;
-		String[] localRepos = new String[0];
-		String[] cloneRepos = new String[0];
-		String[] bugs = new String[0];
-		ArrayList<String> actualCloning = new ArrayList<String>();
+    public static void main(final String[] args) throws IOException {
+        CommandLine cl = processCommandLineOptions(args);
+        if (cl == null)
+            return;
 
-		final String className = getGeneratedClass(cl);
+        final String className = getGeneratedClass(cl);
 
-		final File outputRoot = new File(new File(System.getProperty("java.io.tmpdir")), UUID.randomUUID().toString());
-		final File outputSrcDir = new File(outputRoot, "boa");
-		if (!outputSrcDir.mkdirs())
-			throw new IOException("unable to mkdir " + outputSrcDir);
+        final File outputRoot = new File(new File(System.getProperty("java.io.tmpdir")), UUID.randomUUID().toString());
+        final File outputSrcDir = new File(outputRoot, "boa");
+        if (!outputSrcDir.mkdirs())
+            throw new IOException("unable to mkdir " + outputSrcDir);
 
-		final List<URL> libs = new ArrayList<URL>();
-		if (cl.hasOption('l')) {
-			for (final String lib : cl.getOptionValues('l'))
-				libs.add(new File(lib).toURI().toURL());
-		}
+        final List<URL> libs = new ArrayList<URL>();
 
-		final File outputFile = new File(outputSrcDir, className + ".java");
-		final BufferedOutputStream o = new BufferedOutputStream(new FileOutputStream(outputFile));
+        if (cl.hasOption('l')) {
+            for (final String lib : cl.getOptionValues('l'))
+                libs.add(new File(lib).toURI().toURL());
+        }
 
-		if (cl.hasOption("output")) {
-			DefaultProperties.GH_GIT_PATH = cl.getOptionValue("output").split(",")[0]
-					+ DefaultProperties.CLONE_DIR_NAME;
-			DefaultProperties.GH_JSON_PATH = cl.getOptionValue("output").split(",")[0]
-					+ DefaultProperties.JSON_DIR_NAME;
-			DefaultProperties.GH_JSON_CACHE_PATH = cl.getOptionValue("output").split(",")[0];
-			DefaultProperties.GH_TICKETS_PATH = DefaultProperties.GH_JSON_PATH;
-		} else {
-			System.err.println("Output directory is not provided");
-			o.close();
-			return;
-		}
-
-		if(cl.hasOption("domain")){
-			String file = cl.getOptionValue("output").split(",")[0]+"/transportation.seq";
-			if(!new File(file).exists()){
-				String domain = cl.getOptionValue("domain").split(",")[0];
-				DataScienceDataGeneration generation  = new DataScienceDataGeneration(cl);
-				generation.generateCompleteDataset();
-			}
-		}
+        final File outputFile = new File(outputSrcDir, className + ".java");
+        final BufferedOutputStream o = new BufferedOutputStream(new FileOutputStream(outputFile));
 
 
-		try {
-			SymbolTable.initialize(libs);
-			for (int i = 0; i < inputFiles.size(); i++) {
-				final File f = inputFiles.get(i);
-				Start p = null;
-				try {
-					final BoaLexer lexer = new BoaLexer(new ANTLRFileStream(f.getAbsolutePath()));
-					lexer.removeErrorListeners();
-					lexer.addErrorListener(new LexerErrorListener());
+        try {
+            SymbolTable.initialize(libs);
+            for (int i = 0; i < inputFiles.size(); i++) {
+                final File f = inputFiles.get(i);
+                Start p = null;
+                try {
+                    final BoaLexer lexer = new BoaLexer(new ANTLRFileStream(f.getAbsolutePath()));
+                    lexer.removeErrorListeners();
+                    lexer.addErrorListener(new LexerErrorListener());
 
-					final CommonTokenStream tokens = new CommonTokenStream(lexer);
-					final BoaParser parser = new BoaParser(tokens);
-					parser.removeErrorListeners();
-					parser.addErrorListener(new BaseErrorListener() {
-						@Override
-						public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
-								int charPositionInLine, String msg, RecognitionException e)
-								throws ParseCancellationException {
-							throw new ParseCancellationException(e);
-						}
-					});
+                    final CommonTokenStream tokens = new CommonTokenStream(lexer);
+                    final BoaParser parser = new BoaParser(tokens);
+                    parser.removeErrorListeners();
+                    parser.addErrorListener(new BaseErrorListener() {
+                        @Override
+                        public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
+                                                int charPositionInLine, String msg, RecognitionException e)
+                                throws ParseCancellationException {
+                            throw new ParseCancellationException(e);
+                        }
+                    });
 
-					final BoaErrorListener parserErrorListener = new ParserErrorListener();
-					p = parse(tokens, parser, parserErrorListener);
-					try {
-						if (!parserErrorListener.hasError) {
-							System.out.println("Skipped Type Checking");
+                    final BoaErrorListener parserErrorListener = new ParserErrorListener();
+                    p = parse(tokens, parser, parserErrorListener);
+                    try {
+                        if (!parserErrorListener.hasError) {
+                            System.out.println("Skipped Type Checking");
 //							new TypeCheckingVisitor().start(p, new SymbolTable());
-						}
-					} catch (final TypeCheckException e) {
-						parserErrorListener.error("typecheck", lexer, null, e.n.beginLine, e.n.beginColumn,
-								e.n2.endColumn - e.n.beginColumn + 1, e.getMessage(), e);
-					}
-				} catch (final Exception e) {
-					System.err.print(f.getName() + ": compilation failed: ");
-					e.printStackTrace();
-				}
-				BoaGenerator generator = new BoaGenerator();
+                        }
+                    } catch (final TypeCheckException e) {
+                        parserErrorListener.error("typecheck", lexer, null, e.n.beginLine, e.n.beginColumn,
+                                e.n2.endColumn - e.n.beginColumn + 1, e.getMessage(), e);
+                    }
+                } catch (final Exception e) {
+                    System.err.print(f.getName() + ": compilation failed: ");
+                    e.printStackTrace();
+                }
 
-//				boolean prevDataExists = CandoiaUtilities.prevDataExists(DefaultProperties.GH_JSON_CACHE_PATH);
-//				actualCloning = CandoiaUtilities.getToBeCloned(
-//						DefaultProperties.GH_JSON_CACHE_PATH + "/" + DefaultProperties.CLONE_DIR_NAME,
-//						new ArrayList<String>(Arrays.asList(cloneRepos)));
-//				if (prevDataExists && (actualCloning.size() > 0)) {
-//					CandoiaUtilities.cleanOlderDataset(DefaultProperties.GH_JSON_CACHE_PATH);
-//				}
-//				if (!prevDataExists) {
-//					generator.generate(cloneRepos, localRepos, bugs);
-//				}
+                String domainName = cl.getOptionValue("domain").split(",")[0];
+                Domains domain  = Domains.getDomain(domainName);
+                Value result = null;
 
-				FARSEvaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH);
-				FARSEvaluator evaluator = new FARSEvaluator();
-				Value result = (evaluator).start(p.getProgram(), new EmptyEnv<Value>());
-				String resultOfProgram = result.toString();
-				BufferedWriter writer = null;
-				FileWriter filewriter = null;
-				try {
-					filewriter = new FileWriter("output.txt");
-					writer = new BufferedWriter(filewriter);
-					writer.write(resultOfProgram);
-				} catch (IOException e) {
-				} finally {
-					try {
-						if (writer != null) {
-							writer.close();
-							filewriter.close();
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		} finally {
-			o.close();
-		}
-	}
 
-	private static boolean needDataGen(String path, String projName) {
-		int countForAllThreeFiles = 0;
-		File directory = new File(path);
-		boolean needDatagen = true;
-		ArrayList<String> repos = new ArrayList<>();
-		if (directory.exists()) {
-			for (String fileName : directory.list()) {
-				if ((fileName.equals("data")) || fileName.equals("index") || fileName.equals("projects.seq")) {
-					countForAllThreeFiles++;
-				} else if ((fileName.equals(CandoiaConfiguration.getCachefilename()))) {
-					FileReader fr = null;
-					BufferedReader cacheReader = null;
-					String nextRepo = null;
-					try {
-						fr = new FileReader(path + "/" + CandoiaConfiguration.getCachefilename());
-						cacheReader = new BufferedReader(fr);
-						while ((nextRepo = cacheReader.readLine()) != null) {
-							repos.add(nextRepo);
-						}
-						fr.close();
-						cacheReader.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-		if (countForAllThreeFiles == 3) {
-			for (String name : repos) {
-				if (name.equals(projName)) {
-					needDatagen = false;
-				}
-			}
-			if (needDatagen) {
-				try {
-					delete(new File(directory.getAbsolutePath() + "/data"));
-					delete(new File(directory.getAbsolutePath() + "/index"));
-					delete(new File(directory.getAbsolutePath() + "/projects.seq"));
-					delete(new File(directory.getAbsolutePath() + "/" + CandoiaConfiguration.getCachefilename()));
-					return needDatagen;
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return needDatagen;
-	}
+                switch (domain) {
+                    case BIO:
+                        throw new IllegalArgumentException("Bio Yet not supported");
 
-	public static void parseOnly(final String[] args) throws IOException {
-		CommandLine cl = processParseCommandLineOptions(args);
-		if (cl == null)
-			return;
-		final ArrayList<File> inputFiles = BoaCompilerNew.inputFiles;
+                    case FARS:
+                        String file = cl.getOptionValue("output").split(",")[0] + "/transportation.seq";
+                        File trans = new File(file);
+                        LOG.warn("Looking for transportation file at: "+ trans.getAbsolutePath() + " and file exist: " + trans.exists());
+                        if (!trans.exists()) {
+                            DataScienceDataGeneration generation = new DataScienceDataGeneration(cl);
+                            LOG.warn("Generating DataScience Dataset for you");
+                            generation.generateCompleteDataset(file);
+                        }
+                        FARSEvaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH);
+                        FARSEvaluator farsEvaluator = new FARSEvaluator();
+                        result = farsEvaluator.start(p.getProgram(), new EmptyEnv<Value>());
+                        break;
 
-		// find custom libs to load
-		final List<URL> libs = new ArrayList<URL>();
-		if (cl.hasOption('l'))
-			for (final String lib : cl.getOptionValues('l'))
-				libs.add(new File(lib).toURI().toURL());
+                    case MSR:
+                        boolean prevDataExists = CandoiaUtilities.prevDataExists(DefaultProperties.GH_JSON_CACHE_PATH);
+                        String[] cloneRepos = new String[0];
+                        String[] bugs = new String[0];
+                        ArrayList<String> actualCloning = new ArrayList<String>();
+                        actualCloning = CandoiaUtilities.getToBeCloned(
+                                DefaultProperties.GH_JSON_CACHE_PATH + "/" + DefaultProperties.CLONE_DIR_NAME,
+                                new ArrayList<String>(Arrays.asList(cloneRepos)));
+                        if (prevDataExists && (actualCloning.size() > 0)) {
+                            CandoiaUtilities.cleanOlderDataset(DefaultProperties.GH_JSON_CACHE_PATH);
+                        }
+                        if (!prevDataExists) {
+                            String[] localRepos = new String[0];
+                            BoaGenerator generator = new BoaGenerator();
+                            generator.generate(cloneRepos, localRepos, bugs);
+                        }
+                        Evaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH);
+                        Evaluator msrEvaluator = new Evaluator();
+                        result = msrEvaluator.start(p.getProgram(), new EmptyEnv<Value>());
+                        break;
+                }
 
-		final List<String> jobnames = new ArrayList<String>();
-		final List<String> jobs = new ArrayList<String>();
-		boolean isSimple = true;
+                String resultOfProgram = result.toString();
+                BufferedWriter writer = null;
+                FileWriter filewriter = null;
+                try {
+                    filewriter = new FileWriter("output.txt");
+                    writer = new BufferedWriter(filewriter);
+                    writer.write(resultOfProgram);
+                } catch (IOException e) {
+                } finally {
+                    try {
+                        if (writer != null) {
+                            writer.close();
+                            filewriter.close();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } finally {
+            o.close();
+        }
+    }
 
-		final List<Program> visitorPrograms = new ArrayList<Program>();
+    private static boolean needDataGen(String path, String projName) {
+        int countForAllThreeFiles = 0;
+        File directory = new File(path);
+        boolean needDatagen = true;
+        ArrayList<String> repos = new ArrayList<>();
+        if (directory.exists()) {
+            for (String fileName : directory.list()) {
+                if ((fileName.equals("data")) || fileName.equals("index") || fileName.equals("projects.seq")) {
+                    countForAllThreeFiles++;
+                } else if ((fileName.equals(CandoiaConfiguration.getCachefilename()))) {
+                    FileReader fr = null;
+                    BufferedReader cacheReader = null;
+                    String nextRepo = null;
+                    try {
+                        fr = new FileReader(path + "/" + CandoiaConfiguration.getCachefilename());
+                        cacheReader = new BufferedReader(fr);
+                        while ((nextRepo = cacheReader.readLine()) != null) {
+                            repos.add(nextRepo);
+                        }
+                        fr.close();
+                        cacheReader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        if (countForAllThreeFiles == 3) {
+            for (String name : repos) {
+                if (name.equals(projName)) {
+                    needDatagen = false;
+                }
+            }
+            if (needDatagen) {
+                try {
+                    delete(new File(directory.getAbsolutePath() + "/data"));
+                    delete(new File(directory.getAbsolutePath() + "/index"));
+                    delete(new File(directory.getAbsolutePath() + "/projects.seq"));
+                    delete(new File(directory.getAbsolutePath() + "/" + CandoiaConfiguration.getCachefilename()));
+                    return needDatagen;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return needDatagen;
+    }
 
-		SymbolTable.initialize(libs);
+    public static void parseOnly(final String[] args) throws IOException {
+        CommandLine cl = processParseCommandLineOptions(args);
+        if (cl == null)
+            return;
+        final ArrayList<File> inputFiles = BoaCompilerNew.inputFiles;
 
-		for (int i = 0; i < inputFiles.size(); i++) {
-			final File f = inputFiles.get(i);
-			try {
-				final BoaLexer lexer = new BoaLexer(new ANTLRFileStream(f.getAbsolutePath()));
-				lexer.removeErrorListeners();
-				lexer.addErrorListener(new LexerErrorListener());
-				final CommonTokenStream tokens = new CommonTokenStream(lexer);
-				final BoaParser parser = new BoaParser(tokens);
-				parser.removeErrorListeners();
-				parser.addErrorListener(new BaseErrorListener() {
-					@Override
-					public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
-							int charPositionInLine, String msg, RecognitionException e)
-							throws ParseCancellationException {
-						throw new ParseCancellationException(e);
-					}
-				});
+        // find custom libs to load
+        final List<URL> libs = new ArrayList<URL>();
+        if (cl.hasOption('l'))
+            for (final String lib : cl.getOptionValues('l'))
+                libs.add(new File(lib).toURI().toURL());
 
-				final BoaErrorListener parserErrorListener = new ParserErrorListener();
-				Start p = parse(tokens, parser, parserErrorListener);
+        final List<String> jobnames = new ArrayList<String>();
+        final List<String> jobs = new ArrayList<String>();
+        boolean isSimple = true;
 
-				final String jobName = "" + i;
+        final List<Program> visitorPrograms = new ArrayList<Program>();
 
-				try {
-					if (!parserErrorListener.hasError) {
-						new TypeCheckingVisitor().start(p, new SymbolTable());
+        SymbolTable.initialize(libs);
 
-						final TaskClassifyingVisitor simpleVisitor = new TaskClassifyingVisitor();
-						simpleVisitor.start(p);
+        for (int i = 0; i < inputFiles.size(); i++) {
+            final File f = inputFiles.get(i);
+            try {
+                final BoaLexer lexer = new BoaLexer(new ANTLRFileStream(f.getAbsolutePath()));
+                lexer.removeErrorListeners();
+                lexer.addErrorListener(new LexerErrorListener());
+                final CommonTokenStream tokens = new CommonTokenStream(lexer);
+                final BoaParser parser = new BoaParser(tokens);
+                parser.removeErrorListeners();
+                parser.addErrorListener(new BaseErrorListener() {
+                    @Override
+                    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
+                                            int charPositionInLine, String msg, RecognitionException e)
+                            throws ParseCancellationException {
+                        throw new ParseCancellationException(e);
+                    }
+                });
 
-						LOG.info(f.getName() + ": task complexity: "
-								+ (!simpleVisitor.isComplex() ? "simple" : "complex"));
-						isSimple &= !simpleVisitor.isComplex();
-						new LocalAggregationTransformer().start(p);
-						if (!simpleVisitor.isComplex() || cl.hasOption("nv") || inputFiles.size() == 1) {
-							new VisitorOptimizingTransformer().start(p);
-							final CodeGeneratingVisitor cg = new CodeGeneratingVisitor(jobName);
-							cg.start(p);
-							jobs.add(cg.getCode());
-							jobnames.add(jobName);
-						} else {
-							p.getProgram().jobName = jobName;
-							visitorPrograms.add(p.getProgram());
-						}
-					}
-				} catch (final TypeCheckException e) {
-					parserErrorListener.error("typecheck", lexer, null, e.n.beginLine, e.n.beginColumn,
-							e.n2.endColumn - e.n.beginColumn + 1, e.getMessage(), e);
-				}
-			} catch (final Exception e) {
-				System.err.print(f.getName() + ": parsing failed: ");
-				e.printStackTrace();
-			}
-		}
-	}
+                final BoaErrorListener parserErrorListener = new ParserErrorListener();
+                Start p = parse(tokens, parser, parserErrorListener);
 
-	private static Start parse(final CommonTokenStream tokens, final BoaParser parser,
-			final BoaErrorListener parserErrorListener) {
+                final String jobName = "" + i;
 
-		parser.setBuildParseTree(false);
-		parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
+                try {
+                    if (!parserErrorListener.hasError) {
+                        new TypeCheckingVisitor().start(p, new SymbolTable());
 
-		try {
-			return parser.start().ast;
-		} catch (final ParseCancellationException e) {
-			// fall-back to LL mode parsing if SLL fails
-			tokens.reset();
-			parser.reset();
+                        final TaskClassifyingVisitor simpleVisitor = new TaskClassifyingVisitor();
+                        simpleVisitor.start(p);
 
-			parser.removeErrorListeners();
-			parser.addErrorListener(parserErrorListener);
-			parser.getInterpreter().setPredictionMode(PredictionMode.LL);
+                        LOG.info(f.getName() + ": task complexity: "
+                                + (!simpleVisitor.isComplex() ? "simple" : "complex"));
+                        isSimple &= !simpleVisitor.isComplex();
+                        new LocalAggregationTransformer().start(p);
+                        if (!simpleVisitor.isComplex() || cl.hasOption("nv") || inputFiles.size() == 1) {
+                            new VisitorOptimizingTransformer().start(p);
+                            final CodeGeneratingVisitor cg = new CodeGeneratingVisitor(jobName);
+                            cg.start(p);
+                            jobs.add(cg.getCode());
+                            jobnames.add(jobName);
+                        } else {
+                            p.getProgram().jobName = jobName;
+                            visitorPrograms.add(p.getProgram());
+                        }
+                    }
+                } catch (final TypeCheckException e) {
+                    parserErrorListener.error("typecheck", lexer, null, e.n.beginLine, e.n.beginColumn,
+                            e.n2.endColumn - e.n.beginColumn + 1, e.getMessage(), e);
+                }
+            } catch (final Exception e) {
+                System.err.print(f.getName() + ": parsing failed: ");
+                e.printStackTrace();
+            }
+        }
+    }
 
-			return parser.start().ast;
-		}
-	}
+    private static Start parse(final CommonTokenStream tokens, final BoaParser parser,
+                               final BoaErrorListener parserErrorListener) {
 
-	private static void compileGeneratedSrc(final CommandLine cl, final String jarName, final File outputRoot,
-			final File outputFile) throws RuntimeException, IOException, FileNotFoundException {
-		// compile the generated .java file
-		final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-		if (compiler == null)
-			throw new RuntimeException("Could not get javac - are you running the Boa compiler with a JDK or a JRE?");
-		LOG.info("compiling: " + outputFile);
-		LOG.info("classpath: " + System.getProperty("java.class.path"));
-		if (compiler.run(null, null, null, "-source", "5", "-target", "5", "-cp", System.getProperty("java.class.path"),
-				outputFile.toString()) != 0)
-			throw new RuntimeException("compile failed");
+        parser.setBuildParseTree(false);
+        parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
 
-		// find the location of the jar this class is in
-		final String path = ClasspathUrlFinder.findClassBase(BoaCompilerNew.class).getPath();
-		// find the location of the compiler distribution
-		final File root = new File(path.substring(path.indexOf(':') + 1, path.indexOf('!'))).getParentFile();
+        try {
+            return parser.start().ast;
+        } catch (final ParseCancellationException e) {
+            // fall-back to LL mode parsing if SLL fails
+            tokens.reset();
+            parser.reset();
 
-		final List<File> libJars = new ArrayList<File>();
-		libJars.add(new File(root, "boa-runtime.jar"));
-		if (cl.hasOption('l'))
-			for (final String s : Arrays.asList(cl.getOptionValues('l')))
-				libJars.add(new File(s));
+            parser.removeErrorListeners();
+            parser.addErrorListener(parserErrorListener);
+            parser.getInterpreter().setPredictionMode(PredictionMode.LL);
 
-		generateJar(jarName, outputRoot, libJars);
+            return parser.start().ast;
+        }
+    }
 
-		delete(outputRoot);
-	}
+    private static void compileGeneratedSrc(final CommandLine cl, final String jarName, final File outputRoot,
+                                            final File outputFile) throws RuntimeException, IOException, FileNotFoundException {
+        // compile the generated .java file
+        final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        if (compiler == null)
+            throw new RuntimeException("Could not get javac - are you running the Boa compiler with a JDK or a JRE?");
+        LOG.info("compiling: " + outputFile);
+        LOG.info("classpath: " + System.getProperty("java.class.path"));
+        if (compiler.run(null, null, null, "-source", "5", "-target", "5", "-cp", System.getProperty("java.class.path"),
+                outputFile.toString()) != 0)
+            throw new RuntimeException("compile failed");
 
-	private static CommandLine processCommandLineOptions(final String[] args) {
-		final Options options = new Options();
-		options.addOption("l", "libs", true, "extra jars (functions/aggregators) to be compiled in");
-		options.addOption("i", "in", true, "file(s) to be compiled (comma-separated list)");
-		options.addOption("o", "output", true, "the name of the resulting jar");
-		options.addOption("nv", "no-visitor-fusion", false, "disable visitor fusion");
-		options.addOption("v", "visitors-fused", true, "number of visitors to fuse");
-		options.addOption("n", "name", true, "the name of the generated main class");
-		options.addOption("output", "path", true, "path of the output and cached data generated as result of analysis");
-		options.addOption("repo", "path", true, "path of local repositories");
-		options.addOption("clone", "username@url", true, "username@url for cloning");
-		options.addOption("bug", "username@url", true, "username@url for bug");
+        // find the location of the jar this class is in
+        final String path = ClasspathUrlFinder.findClassBase(BoaCompilerNew.class).getPath();
+        // find the location of the compiler distribution
+        final File root = new File(path.substring(path.indexOf(':') + 1, path.indexOf('!'))).getParentFile();
+
+        final List<File> libJars = new ArrayList<File>();
+        libJars.add(new File(root, "boa-runtime.jar"));
+        if (cl.hasOption('l'))
+            for (final String s : Arrays.asList(cl.getOptionValues('l')))
+                libJars.add(new File(s));
+
+        generateJar(jarName, outputRoot, libJars);
+
+        delete(outputRoot);
+    }
+
+    private static CommandLine processCommandLineOptions(final String[] args) {
+        final Options options = new Options();
+        options.addOption("l", "libs", true, "extra jars (functions/aggregators) to be compiled in");
+        options.addOption("i", "in", true, "file(s) to be compiled (comma-separated list)");
+        options.addOption("o", "output", true, "the name of the resulting jar");
+        options.addOption("nv", "no-visitor-fusion", false, "disable visitor fusion");
+        options.addOption("v", "visitors-fused", true, "number of visitors to fuse");
+        options.addOption("n", "name", true, "the name of the generated main class");
+        options.addOption("output", "path", true, "path of the output and cached data generated as result of analysis");
+        options.addOption("repo", "path", true, "path of local repositories");
+        options.addOption("clone", "username@url", true, "username@url for cloning");
+        options.addOption("bug", "username@url", true, "username@url for bug");
         options.addOption("domain", "domain", true, "domain of data");
         options.addOption("data", "data", true, "domain data");
 
-		final CommandLine cl;
-		try {
-			cl = new PosixParser().parse(options, args);
-		} catch (final org.apache.commons.cli.ParseException e) {
-			System.err.println(e.getMessage());
-			new HelpFormatter().printHelp("Boa Compiler", options);
-			return null;
-		}
+        final CommandLine cl;
+        try {
+            cl = new PosixParser().parse(options, args);
+        } catch (final org.apache.commons.cli.ParseException e) {
+            System.err.println(e.getMessage());
+            new HelpFormatter().printHelp("Boa Compiler", options);
+            return null;
+        }
 
-		// get the filename of the program we will be compiling
-		inputFiles = new ArrayList<File>();
-		if (cl.hasOption('i')) {
-			final String[] inputPaths = cl.getOptionValue('i').split(",");
+        // get the filename of the program we will be compiling
+        inputFiles = new ArrayList<File>();
+        if (cl.hasOption('i')) {
+            final String[] inputPaths = cl.getOptionValue('i').split(",");
 
-			for (final String s : inputPaths) {
-				final File f = new File(s);
-				if (!f.exists())
-					System.err.println("File '" + s + "' does not exist, skipping");
-				else
-					inputFiles.add(new File(s));
-			}
-		}
+            for (final String s : inputPaths) {
+                final File f = new File(s);
+                if (!f.exists())
+                    System.err.println("File '" + s + "' does not exist, skipping");
+                else
+                    inputFiles.add(new File(s));
+            }
+        }
 
-		if (inputFiles.size() == 0) {
-			System.err.println("no valid input files found - did you use the --in option?");
-			// new HelpFormatter().printHelp("BoaCompiler", options);
-			new HelpFormatter().printHelp("Boa Compiler", options);
-			return null;
-		}
+        if (inputFiles.size() == 0) {
+            System.err.println("no valid input files found - did you use the --in option?");
+            // new HelpFormatter().printHelp("BoaCompiler", options);
+            new HelpFormatter().printHelp("Boa Compiler", options);
+            return null;
+        }
 
-		return cl;
-	}
+        if (cl.hasOption("output")) {
+            DefaultProperties.GH_GIT_PATH = cl.getOptionValue("output").split(",")[0]
+                    + DefaultProperties.CLONE_DIR_NAME;
+            DefaultProperties.GH_JSON_PATH = cl.getOptionValue("output").split(",")[0]
+                    + DefaultProperties.JSON_DIR_NAME;
+            DefaultProperties.GH_JSON_CACHE_PATH = cl.getOptionValue("output").split(",")[0];
+            DefaultProperties.GH_TICKETS_PATH = DefaultProperties.GH_JSON_PATH;
+        } else {
+            System.err.println("Output directory is not provided");
+            return null;
+        }
 
-	private static CommandLine processParseCommandLineOptions(final String[] args) {
-		// parse the command line options
-		final Options options = new Options();
-		options.addOption("l", "libs", true, "extra jars (functions/aggregators) to be compiled in");
-		options.addOption("i", "in", true, "file(s) to be parsed (comma-separated list)");
+        return cl;
+    }
 
-		final CommandLine cl;
-		try {
-			cl = new PosixParser().parse(options, args);
-		} catch (final org.apache.commons.cli.ParseException e) {
-			System.err.println(e.getMessage());
-			new HelpFormatter().printHelp("Boa Parser", options);
-			return null;
-		}
+    private static CommandLine processParseCommandLineOptions(final String[] args) {
+        // parse the command line options
+        final Options options = new Options();
+        options.addOption("l", "libs", true, "extra jars (functions/aggregators) to be compiled in");
+        options.addOption("i", "in", true, "file(s) to be parsed (comma-separated list)");
 
-		// get the filename of the program we will be compiling
-		inputFiles = new ArrayList<File>();
-		if (cl.hasOption('i')) {
-			final String[] inputPaths = cl.getOptionValue('i').split(",");
+        final CommandLine cl;
+        try {
+            cl = new PosixParser().parse(options, args);
+        } catch (final org.apache.commons.cli.ParseException e) {
+            System.err.println(e.getMessage());
+            new HelpFormatter().printHelp("Boa Parser", options);
+            return null;
+        }
 
-			for (final String s : inputPaths) {
-				final File f = new File(s);
-				if (!f.exists())
-					System.err.println("File '" + s + "' does not exist, skipping");
-				else
-					inputFiles.add(new File(s));
-			}
-		}
+        // get the filename of the program we will be compiling
+        inputFiles = new ArrayList<File>();
+        if (cl.hasOption('i')) {
+            final String[] inputPaths = cl.getOptionValue('i').split(",");
 
-		if (inputFiles.size() == 0) {
-			System.err.println("no valid input files found - did you use the --in option?");
-			// new HelpFormatter().printHelp("BoaCompiler", options);
-			new HelpFormatter().printHelp("Boa Parser", options);
-			return null;
-		}
+            for (final String s : inputPaths) {
+                final File f = new File(s);
+                if (!f.exists())
+                    System.err.println("File '" + s + "' does not exist, skipping");
+                else
+                    inputFiles.add(new File(s));
+            }
+        }
 
-		return cl;
-	}
+        if (inputFiles.size() == 0) {
+            System.err.println("no valid input files found - did you use the --in option?");
+            // new HelpFormatter().printHelp("BoaCompiler", options);
+            new HelpFormatter().printHelp("Boa Parser", options);
+            return null;
+        }
 
-	private static final String getGeneratedClass(final CommandLine cl) {
-		// get the name of the generated class
-		final String className;
-		if (cl.hasOption('n')) {
-			className = cl.getOptionValue('n');
-		} else {
-			String s = "";
-			for (final File f : inputFiles) {
-				if (s.length() != 0)
-					s += "_";
-				if (f.getName().indexOf('.') != -1)
-					s += f.getName().substring(0, f.getName().lastIndexOf('.'));
-				else
-					s += f.getName();
-			}
-			className = pascalCase(s);
-		}
-		return className;
-	}
+        return cl;
+    }
 
-	private static final void delete(final File f) throws IOException {
-		if (f.isDirectory())
-			for (final File g : f.listFiles())
-				delete(g);
-		FileDeleteStrategy.FORCE.delete(f);
-	}
+    private static final String getGeneratedClass(final CommandLine cl) {
+        // get the name of the generated class
+        final String className;
+        if (cl.hasOption('n')) {
+            className = cl.getOptionValue('n');
+        } else {
+            String s = "";
+            for (final File f : inputFiles) {
+                if (s.length() != 0)
+                    s += "_";
+                if (f.getName().indexOf('.') != -1)
+                    s += f.getName().substring(0, f.getName().lastIndexOf('.'));
+                else
+                    s += f.getName();
+            }
+            className = pascalCase(s);
+        }
+        return className;
+    }
 
-	private static void generateJar(final String jarName, final File dir, final List<File> libJars)
-			throws IOException, FileNotFoundException {
-		final int offset = dir.toString().length() + 1;
+    private static final void delete(final File f) throws IOException {
+        if (f.isDirectory())
+            for (final File g : f.listFiles())
+                delete(g);
+        FileDeleteStrategy.FORCE.delete(f);
+    }
 
-		final JarOutputStream jar = new JarOutputStream(
-				new BufferedOutputStream(new FileOutputStream(new File(jarName))));
-		try {
-			for (final File f : findFiles(dir, new ArrayList<File>()))
-				putJarEntry(jar, f, f.getPath().substring(offset));
+    private static void generateJar(final String jarName, final File dir, final List<File> libJars)
+            throws IOException, FileNotFoundException {
+        final int offset = dir.toString().length() + 1;
 
-			for (final File f : libJars)
-				putJarEntry(jar, f, "lib" + File.separatorChar + f.getName());
-		} finally {
-			jar.close();
-		}
-	}
+        final JarOutputStream jar = new JarOutputStream(
+                new BufferedOutputStream(new FileOutputStream(new File(jarName))));
+        try {
+            for (final File f : findFiles(dir, new ArrayList<File>()))
+                putJarEntry(jar, f, f.getPath().substring(offset));
 
-	private static final List<File> findFiles(final File f, final List<File> l) {
-		if (f.isDirectory())
-			for (final File g : f.listFiles())
-				findFiles(g, l);
-		else
-			l.add(f);
+            for (final File f : libJars)
+                putJarEntry(jar, f, "lib" + File.separatorChar + f.getName());
+        } finally {
+            jar.close();
+        }
+    }
 
-		return l;
-	}
+    private static final List<File> findFiles(final File f, final List<File> l) {
+        if (f.isDirectory())
+            for (final File g : f.listFiles())
+                findFiles(g, l);
+        else
+            l.add(f);
 
-	private static void putJarEntry(final JarOutputStream jar, final File f, final String path) throws IOException {
-		jar.putNextEntry(new ZipEntry(path));
+        return l;
+    }
 
-		final InputStream in = new BufferedInputStream(new FileInputStream(f));
-		try {
-			final byte[] b = new byte[4096];
-			int len;
-			while ((len = in.read(b)) > 0)
-				jar.write(b, 0, len);
-		} finally {
-			in.close();
-		}
+    private static void putJarEntry(final JarOutputStream jar, final File f, final String path) throws IOException {
+        jar.putNextEntry(new ZipEntry(path));
 
-		jar.closeEntry();
-	}
+        final InputStream in = new BufferedInputStream(new FileInputStream(f));
+        try {
+            final byte[] b = new byte[4096];
+            int len;
+            while ((len = in.read(b)) > 0)
+                jar.write(b, 0, len);
+        } finally {
+            in.close();
+        }
 
-	private static String pascalCase(final String string) {
-		final StringBuilder pascalized = new StringBuilder();
+        jar.closeEntry();
+    }
 
-		boolean upper = true;
-		for (final char c : string.toCharArray())
-			if (Character.isDigit(c) || c == '_') {
-				pascalized.append(c);
-				upper = true;
-			} else if (!Character.isDigit(c) && !Character.isLetter(c)) {
-				upper = true;
-			} else if (Character.isLetter(c)) {
-				pascalized.append(upper ? Character.toUpperCase(c) : c);
-				upper = false;
-			}
+    private static String pascalCase(final String string) {
+        final StringBuilder pascalized = new StringBuilder();
 
-		return pascalized.toString();
-	}
+        boolean upper = true;
+        for (final char c : string.toCharArray())
+            if (Character.isDigit(c) || c == '_') {
+                pascalized.append(c);
+                upper = true;
+            } else if (!Character.isDigit(c) && !Character.isLetter(c)) {
+                upper = true;
+            } else if (Character.isLetter(c)) {
+                pascalized.append(upper ? Character.toUpperCase(c) : c);
+                upper = false;
+            }
+
+        return pascalized.toString();
+    }
 }

@@ -60,9 +60,9 @@ public class DataScienceDataGeneration {
         return processedDatas;
     }
 
-  public boolean generateCompleteDataset(){
+  public boolean generateCompleteDataset(String path){
       ArrayList<com.google.protobuf.GeneratedMessage> messages = generateProcessedData();
-      DataSetWriter writer = new DataSetWriter("/Users/nmtiwari/Desktop/transportation.seq");
+      DataSetWriter writer = new DataSetWriter(path);
       Integer  counter = 0;
       for(com.google.protobuf.GeneratedMessage message: messages){
         writer.write(message, counter.toString());
