@@ -1,0 +1,11 @@
+# Computes Number of fatalities involving drunk driving
+p: Project = input;
+drunken: output sum of int;
+nondrunken: output sum of int;
+foreach (i: int; def(p.accidents[i])){
+  if(p.accidents[i].DRUNK_DR > 0.0){
+    drunken << p.accidents[i].FATALS;
+  }else{
+    nondrunken << p.accidents[i].FATALS;
+  }
+}

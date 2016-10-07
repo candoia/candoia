@@ -1,0 +1,11 @@
+
+p: Project = input;
+count: output sum[double] of int;
+foreach (i: int; def(p.accidents[i]))
+if(p.accidents[i].NOT_HOUR != 99.0 && p.accidents[i].HOUR != 99.0){
+  if(p.accidents[i].NOT_HOUR == p.accidents[i].HOUR){
+    count[p.accidents[i].NOT_MIN - p.accidents[i].MIN] << p.accidents[i].FATALS;
+  }else if(p.accidents[i].NOT_HOUR > p.accidents[i].HOUR){
+    count[((p.accidents[i].NOT_HOUR -p.accidents[i].HOUR) * 60.0) + (p.accidents[i].NOT_MIN - p.accidents[i].MIN)] << p.accidents[i].FATALS;
+  }
+}

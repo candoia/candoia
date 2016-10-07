@@ -1,0 +1,5 @@
+# Computes Number of fatalities in each month
+p: Project = input;
+count: output sum[double] of int;
+foreach (i: int; def(p.accidents[i]))
+  count[p.accidents[i].MONTH] << p.accidents[i].FATALS;
