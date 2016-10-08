@@ -1,0 +1,6 @@
+package boa.transportation.types;
+import "Accident.proto";
+
+message TransportData{
+  repeated AccidentData accidents=1;
+}

@@ -2,6 +2,7 @@ package boa.datagen;
 
 import java.io.IOException;
 
+import boa.bio.types.Biology;
 import boa.transportation.types.Transportation;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -36,12 +37,10 @@ public class TestSequenceFile {
 		SequenceFile.Reader r = new SequenceFile.Reader(fileSystem,
 				new Path("/Users/nmtiwari/Desktop/transportation.seq"), conf);
 		while (r.next(key, val)) {
-			System.out.println("next project");
 			byte[] bytes = val.getBytes();
-			System.out.print("Parse after writing to sequence file: ");
-			// System.out.println(ASTRoot.parseFrom(bytes).getImportsList());
-			System.out.println(key);
-			System.out.println(Transportation.TransportData.parseFrom(CodedInputStream.newInstance(bytes, 0, val.getLength())));
+			System.out.print(key + " ");
+//			System.out.println(Biology.BiologyDataset.parseFrom(CodedInputStream.newInstance(bytes, 0, val.getLength())));
+			System.out.println(boa.transportation.types.Transportation.TransportData.parseFrom(CodedInputStream.newInstance(bytes, 0, val.getLength())));
 		}
 		r.close();
 	}

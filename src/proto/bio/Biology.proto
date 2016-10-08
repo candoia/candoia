@@ -1,0 +1,6 @@
+package boa.bio.types;
+import "Bio.proto";
+
+message BiologyDataset{
+  repeated BioData bio=1;
+}

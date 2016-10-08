@@ -1,11 +1,13 @@
 package boa.datagen;
 
 import boa.datagen.candoia.CandoiaConfiguration;
+import boa.datagen.dataFormat.rawdata.CVSData;
 import boa.datagen.dataFormat.rawdata.DBFData;
+import boa.datagen.dataMapper.BIOCVSDataMapper;
 import boa.datagen.dataMapper.FARSDBFDataMapper;
 import boa.datagen.dataMapper.farsdata.FARSDataType;
+import boa.datagen.dataReader.CVSFileReader;
 import boa.datagen.dataReader.DBFFileReader;
-import boa.transportation.types.Transportation;
 import org.apache.commons.cli.CommandLine;
 
 import java.util.ArrayList;
@@ -28,8 +30,7 @@ public class DataScienceDataGeneration {
         }
 
         switch(dataDomain){
-            case BIO:
-                throw new IllegalArgumentException("Candoia has not been extended to support the domain of " + domaintype);
+            case BIO: return getBIOProcessedData();
 
             case FARS: return getFARSProcessedData();
 
@@ -59,6 +60,24 @@ public class DataScienceDataGeneration {
         }
         return processedDatas;
     }
+
+    private ArrayList<com.google.protobuf.GeneratedMessage> getBIOProcessedData(){
+        ArrayList<com.google.protobuf.GeneratedMessage> processedDatas = new ArrayList<>();
+        String[] datapath = null;
+        datapath= commandLine.getOptionValue("data").split(",");
+        CVSFileReader reader = new CVSFileReader();
+        for(String path: datapath){
+            if(reader.canRead(path)){
+                CVSData data  = reader.readData(path);
+                data.setDomainType(Domains.BIO);
+                BIOCVSDataMapper mapper = new BIOCVSDataMapper();
+                com.google.protobuf.GeneratedMessage pData = mapper.processRawData(data);
+                processedDatas.add(pData);
+            }
+        }
+        return processedDatas;
+    }
+
 
   public boolean generateCompleteDataset(String path){
       ArrayList<com.google.protobuf.GeneratedMessage> messages = generateProcessedData();

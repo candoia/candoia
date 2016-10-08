@@ -34,7 +34,7 @@ import boa.datagen.candoia.CandoiaConfiguration;
 import boa.datagen.candoia.CandoiaUtilities;
 import boa.debugger.Env.EmptyEnv;
 import boa.debugger.Evaluator;
-import boa.debugger.FARSEvaluator;
+import boa.debugger.DataScienceEvaluator;
 import boa.debugger.value.Value;
 import boa.parser.BoaLexer;
 import boa.parser.BoaParser;
@@ -136,10 +136,21 @@ public class BoaCompilerNew {
                 Domains domain  = Domains.getDomain(domainName);
                 Value result = null;
 
+                DataScienceEvaluator dataScienceEvaluator = new DataScienceEvaluator();
 
                 switch (domain) {
                     case BIO:
-                        throw new IllegalArgumentException("Bio Yet not supported");
+                        String filePath = cl.getOptionValue("output").split(",")[0] + "/bio.seq";
+                        File bioFile = new File(filePath);
+                        LOG.warn("Looking for bio file at: "+ bioFile.getAbsolutePath() + " and file exist: " + bioFile.exists());
+                        if (!bioFile.exists()) {
+                            DataScienceDataGeneration generation = new DataScienceDataGeneration(cl);
+                            generation.generateCompleteDataset(filePath);
+                        }
+                        dataScienceEvaluator.setDomain(Domains.BIO);
+                        DataScienceEvaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH + "/bio.seq");
+                        result = dataScienceEvaluator.start(p.getProgram(), new EmptyEnv<Value>());
+                        break;
 
                     case FARS:
                         String file = cl.getOptionValue("output").split(",")[0] + "/transportation.seq";
@@ -147,12 +158,11 @@ public class BoaCompilerNew {
                         LOG.warn("Looking for transportation file at: "+ trans.getAbsolutePath() + " and file exist: " + trans.exists());
                         if (!trans.exists()) {
                             DataScienceDataGeneration generation = new DataScienceDataGeneration(cl);
-                            LOG.warn("Generating DataScience Dataset for you");
                             generation.generateCompleteDataset(file);
                         }
-                        FARSEvaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH);
-                        FARSEvaluator farsEvaluator = new FARSEvaluator();
-                        result = farsEvaluator.start(p.getProgram(), new EmptyEnv<Value>());
+                        dataScienceEvaluator.setDomain(Domains.FARS);
+                        DataScienceEvaluator.pathToDataSet.add(DefaultProperties.GH_JSON_CACHE_PATH + "/transportation.seq");
+                        result = dataScienceEvaluator.start(p.getProgram(), new EmptyEnv<Value>());
                         break;
 
                     case MSR:

@@ -1,0 +1,23 @@
+package boa.transportation.types;
+
+message AccidentData{
+  required double STATE_CASE=1;
+  required double STATE = 2;
+  required double DAY=3;
+  required double MONTH=4;
+  required double YEAR=5;
+  required double DAY_WEEK=6;
+  required double HOUR=7;
+  required double MINUTE=8;
+  optional float LATITUDE=9;
+  optional float LONGITUD=10;
+  required double SCH_BUS=11;
+  required double FATALS=12;
+  required double DRUNK_DR=13;
+  required double NOT_HOUR=14;
+  required double NOT_MIN=15;
+  required double ARR_HOUR=16;
+  required double ARR_MIN=17;
+  required double HOSP_HR=18;
+  required double HOSP_MIN=19;
+}

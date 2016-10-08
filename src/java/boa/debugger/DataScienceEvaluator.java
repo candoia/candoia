@@ -8,7 +8,7 @@ import boa.compiler.ast.expressions.*;
 import boa.compiler.ast.literals.*;
 import boa.compiler.ast.statements.*;
 import boa.compiler.ast.types.*;
-import boa.compiler.visitors.AbstractVisitor;
+import boa.datagen.Domains;
 import boa.debugger.Env.EmptyEnv;
 import boa.debugger.Env.ExtendEnv;
 import boa.debugger.Env.LookupException;
@@ -30,19 +30,21 @@ import java.util.ArrayList;
  * @author nmtiwari
  *
  */
-public class FARSEvaluator extends Evaluator {
+public class DataScienceEvaluator extends Evaluator {
 	public static ArrayList<String> pathToDataSet = new ArrayList<>();
-	public static boolean DEBUG = false;
-	public static Logger LOG = Logger.getLogger(FARSEvaluator.class);
+	public static boolean DEBUG = true;
+	public static Logger LOG = Logger.getLogger(DataScienceEvaluator.class);
 	public static String visitorVar = "_$declaredVisitor$";
 	ByteArrayOutputStream op = new ByteArrayOutputStream();
 	PrintStream ps = new PrintStream(op);
 	PrintStream old = System.out;
 	ArrayList<String> aggregators = new ArrayList<>();
+	private  Domains domain;
 
-	public FARSEvaluator() {
-
+	public void setDomain(Domains d){
+		this.domain = d;
 	}
+
 
 	protected Env<Value> initEnv() {
 		Env<Value> initEnv = new EmptyEnv<Value>();
@@ -80,7 +82,7 @@ public class FARSEvaluator extends Evaluator {
 	public Value visit(Program n, Env<Value> env) {
 		Configuration conf = new Configuration();
 
-		SequenceFile.Reader sequenceFileReader = this.open(pathToDataSet.get(0) + "/transportation.seq", conf);
+		SequenceFile.Reader sequenceFileReader = this.open(pathToDataSet.get(0), conf);
 		org.apache.hadoop.io.Text key = (org.apache.hadoop.io.Text) ReflectionUtils
 				.newInstance(sequenceFileReader.getKeyClass(), conf);
 		org.apache.hadoop.io.BytesWritable keyValue = (org.apache.hadoop.io.BytesWritable) ReflectionUtils
@@ -89,7 +91,7 @@ public class FARSEvaluator extends Evaluator {
 		Env<Value> baseEnv = initEnv(n);
 		env = baseEnv;
 		Value value = UnitVal.v;
-		boa.transportation.types.Transportation.TransportData _input = null;
+		com.google.protobuf.GeneratedMessage _input = null;
 
 		if (!DEBUG)
 			System.setOut(ps);
@@ -98,8 +100,12 @@ public class FARSEvaluator extends Evaluator {
 
 		try {
 			while (sequenceFileReader.next(key, keyValue)) {
-				_input = boa.transportation.types.Transportation.TransportData.parseFrom(
+				if(this.domain == Domains.FARS)
+				  _input = boa.transportation.types.Transportation.TransportData.parseFrom(
 						com.google.protobuf.CodedInputStream.newInstance(keyValue.getBytes(), 0, keyValue.getLength()));
+				else if(this.domain == Domains.BIO)
+					_input = boa.bio.types.Biology.BiologyDataset.parseFrom(
+							com.google.protobuf.CodedInputStream.newInstance(keyValue.getBytes(), 0, keyValue.getLength()));
 				env = new ExtendEnv<Value>(env, "input", new AnyVal(_input));
 				for (Statement s : n.getStatements()) {
 					if (s instanceof VarDeclStatement && ((VarDeclStatement) s).getType() instanceof OutputType) {
@@ -346,8 +352,14 @@ public class FARSEvaluator extends Evaluator {
 			weight = n.getWeight().accept(this, env).toString();
 		}
 		String key = " ";
+		boolean multipleKeys = false;
 		for (Expression ind : n.getIndices()) {
-			key += ind.accept(this, env).toString();
+			if(multipleKeys){
+				key += "][" + ind.accept(this, env).toString();
+			}else{
+				key += ind.accept(this, env).toString();
+			}
+			multipleKeys = true;
 		}
 		ag.aggregate(weight.toString(), key, value.toString(), n.getId().getToken());
 		return UnitVal.v;
@@ -747,7 +759,7 @@ public class FARSEvaluator extends Evaluator {
 	}
 
 	private SequenceFile.Reader open(String seqPath, Configuration conf) {
-		Path path = new Path(pathToDataSet.get(0) + "/transportation.seq");
+		Path path = new Path(pathToDataSet.get(0));
 		SequenceFile.Reader sequenceFileReader = null;
 		FileSystem fs;
 		try {

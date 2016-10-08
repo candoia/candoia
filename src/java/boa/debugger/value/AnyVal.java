@@ -1,5 +1,6 @@
 package boa.debugger.value;
 
+import boa.bio.types.Bio;
 import boa.transportation.types.Accident;
 import boa.types.Ast.ASTRoot;
 import boa.types.Ast.Declaration;
@@ -946,11 +947,27 @@ public class AnyVal extends TupleVal implements Value {
 			}else if (search.equals("MIN")) {
 				return new DoubleVal(p.getMINUTE());
 			}else if (search.equals("NOT_MIN")) {
-//				System.out.println(p.getNOTHOUR() + " " + p.getHOUR() + " " + p.getNOTMIN() + " " + p.getMINUTE() + " " + (p.getNOTHOUR()-p.getHOUR()) * 60 + (p.getNOTMIN()-p.getMINUTE()));
 				return new DoubleVal(p.getNOTMIN());
+			}else if (search.equals("STATE")) {
+				return new DoubleVal(p.getSTATE());
 			}
 		}
-
+		else if (value instanceof boa.bio.types.Biology.BiologyDataset) {
+			boa.bio.types.Biology.BiologyDataset p = (boa.bio.types.Biology.BiologyDataset) value;
+			if (search.equals("BioData")) {
+				ListVal<Value> bio = new ListVal<Value>();
+				for (Bio.BioData s : p.getBioList()) {
+					bio.add(new AnyVal(s));
+				}
+				return bio;
+			}
+		}
+		else if (value instanceof Bio.BioData) {
+			Bio.BioData p = (Bio.BioData) value;
+			if (search.equals("Organism_Name")) {
+				return new StringVal(p.getOrganismName());
+			}
+		}
 		throw new UnsupportedOperationException("search: " + search + " and " + value.getClass());
 	}
 

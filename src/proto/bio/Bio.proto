@@ -1,0 +1,21 @@
+package boa.bio.types;
+
+message BioData{
+  required string Experiment_Accession = 1;
+  required string Experiment_Title = 2;
+  required string Organism_Name = 3;
+  required string Instrument = 4;
+  optional string Submitter = 5;
+  required string Study_Accession = 6;
+  required string Study_Title = 7;
+  required string Sample_Accession = 8;
+  optional string Sample_Title = 9;
+  required float Total_Size = 10;
+  required int64 Total_RUNs = 11;
+  required int64 Total_Spots = 12;
+  required int64 Total_Bases = 13;
+  required string Library_Name = 14;
+  required string Library_Strategy = 15;
+  required string Library_Source = 16;
+  required string Library_Selection = 17;
+}
