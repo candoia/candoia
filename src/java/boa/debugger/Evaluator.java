@@ -32,7 +32,7 @@ import java.util.ArrayList;
  */
 public class Evaluator extends AbstractVisitor<Value, Env<Value>> {
 	public static ArrayList<String> pathToDataSet = new ArrayList<>();
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
 	public static Logger LOG = Logger.getLogger(Evaluator.class);
 	public static String visitorVar = "_$declaredVisitor$";
 	ByteArrayOutputStream op = new ByteArrayOutputStream();
